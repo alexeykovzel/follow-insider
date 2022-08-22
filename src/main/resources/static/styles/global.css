@@ -1,0 +1,382 @@
+:root {
+    /* main colors */
+    --grey: #444;
+    --blue-0: #72F7FF;
+    --blue-1: #3DA8AE;
+    --blue-2: #314069;
+    --blue-3: #192b5c;
+    --blue-4: #0A142F;
+
+    /* rating colors */
+    --very-good: #00773E;
+    --good: #00B75F;
+    --so-so: #EBD82C;
+    --bad: #F51A1A;
+    --very-bad: #B70000;
+
+    /* transaction colors */
+    --buy: #4f8d15;
+    --sell: #b71d1d;
+    --grant: #9b209b;
+    --options: #1d8e94;
+    --taxes: #c2790f;
+    --other: #666666;
+
+    /* border-related */
+    --small-border: 1px solid #ccc;
+    --shadow-0: 0px 1px 4px 1px rgba(0, 0, 0, 0.10);
+    --shadow-1: 0px 2px 4px 2px rgba(0, 0, 0, 0.15);
+    --panel-radius: 20px;
+
+    /* fonts */
+    --header-font: 14px
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 62.5%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    font-size: 1.6rem;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+button,
+input,
+label {
+    font-family: 'ABeeZee', sans-serif !important;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+button,
+li {
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+}
+
+h1 {
+    color: var(--blue-4);
+}
+
+/**
+    =================================
+               COMPONENTS
+    =================================
+*/
+
+.center {
+    display: flex;
+    position: absolute;
+    width: fit-content;
+    margin: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+}
+
+.content {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: calc(50% + 300px);
+    margin: 120px auto 50px auto;
+    gap: 30px;
+}
+
+.link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: var(--blue-1);
+}
+
+@media screen and (max-width: 768px) {
+    .content {
+        width: 90%;
+    }
+}
+
+/**
+    =================================
+                 HEADER
+    =================================
+*/
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: fixed;
+    box-shadow: var(--shadow-1);
+    background-color: var(--blue-4);
+    width: 100%;
+    z-index: 99;
+}
+
+header>div {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 25px;
+}
+
+header h2 {
+    color: var(--blue-2);
+    cursor: pointer;
+    margin-right: auto;
+    font-size: 32px;
+    padding-left: 30px;
+    white-space: nowrap;
+}
+
+/* navigation menu */
+
+.header-menu {
+    display: flex;
+    overflow: hidden;
+    background-color: var(--blue-2);
+    flex-direction: column;
+    transition: max-height .2s ease-out;
+    max-height: 0;
+}
+
+.header-menu a {
+    padding: 20px 20px;
+}
+
+.nav-links a {
+    display: inline-block;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-links a::after {
+    content: "";
+    display: block;
+    margin: auto;
+    background: white;
+    transition: all 0.3s;
+    height: 3px;
+    width: 0;
+    top: 5px;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-btn {
+    background-color: inherit;
+    transition: background-color .2s ease-out;
+    height: 60px;
+    width: 60px;
+}
+
+.nav-btn:hover {
+    background-color: var(--blue-3);
+}
+
+.nav-icon {
+    margin: auto;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    background: white;
+    transition: all .2s ease-out;
+    width: 18px;
+    height: 2px;
+}
+
+.nav-icon:before,
+.nav-icon:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: white;
+    transition: all .2s ease-out;
+    width: 100%;
+    height: 100%;
+}
+
+.nav-icon:before {
+    top: 5px;
+}
+
+.nav-icon:after {
+    top: -5px;
+}
+
+/* menu btn */
+
+.nav-box {
+    display: none;
+}
+
+.nav-box:checked~label .nav-icon {
+    background: transparent;
+}
+
+.nav-box:checked~label .nav-icon:before {
+    transform: rotate(-45deg);
+}
+
+.nav-box:checked~label .nav-icon:after {
+    transform: rotate(45deg);
+}
+
+.nav-box:checked~label:not(.steps) .nav-icon:before,
+.nav-box:checked~label:not(.steps) .nav-icon:after {
+    top: 0;
+}
+
+/* search bar */
+
+.search {
+    font-size: var(--header-font);
+    flex-grow: 1;
+}
+
+.search input {
+    border-radius: 20px;
+    padding: 11px 20px 11px 50px;
+    font-size: var(--header-font);
+    width: calc(100% - 50px);
+}
+
+.search>object {
+    margin-left: 20px;
+    width: 16px;
+    height: 16px;
+}
+
+.search input:focus {
+    outline: none;
+}
+
+.search input::placeholder {
+    color: #ccc;
+    opacity: 1;
+}
+
+/* autocomplete */
+
+.autocomplete {
+    display: inline-block;
+    position: relative;
+    z-index: 99;
+}
+
+.autocomplete-items {
+    overflow: hidden;
+    border-radius: 20px;
+    position: absolute;
+    box-shadow: var(--shadow-1);
+    max-width: fit-content;
+    min-width: 100%;
+    margin-top: 5px;
+    font-size: var(--header-font);
+    font-weight: normal;
+    right: 0;
+    left: 0;
+}
+
+.autocomplete-items div {
+    padding: 15px 30px;
+    background-color: white;
+    color: var(--blue-4);
+    cursor: pointer;
+}
+
+.autocomplete-items div:hover {
+    background-color: #eee;
+}
+
+.autocomplete-active {
+    background-color: DodgerBlue !important;
+    color: white !important;
+}
+
+@media (min-width: 1080px) {
+    header {
+        flex-direction: row;
+    }
+
+    header>div {
+        width: 50%;
+    }
+
+    .header-menu {
+        flex-direction: row;
+        background-color: inherit;
+        max-height: none !important;
+        margin-left: 30px;
+        width: 50%;
+    }
+
+    .search {
+        flex-grow: 0;
+        width: 360px;
+    }
+
+    .nav-btn {
+        display: none;
+    }
+}
+
+/**
+    =================================
+                 FOOTER
+    =================================
+*/
+
+footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    color: white;
+    background: var(--blue-4);
+    min-height: 180px;
+    gap: 25px;
+}
+
+footer ul {
+    display: flex;
+    gap: 30px;
+}
+
+.social {
+    display: flex;
+    gap: 30px;
+}
+
+.fa {
+    color: white;
+    text-decoration: none;
+    font-size: 25px;
+}
+
+.copyright {
+    font-size: 14px;
+    opacity: 0.6;
+}

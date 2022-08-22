@@ -1,0 +1,72 @@
+/* panels with data */
+.panels {
+    display: grid;
+    grid-template-areas:
+        'picture info'
+        'table table';
+    margin: 50px auto;
+    gap: 40px;
+}
+
+.panels>* {
+    box-shadow: var(--small-shadow);
+    border-radius: 15px;
+}
+
+/* profile picture */
+.default-pic {
+    padding: 40px
+}
+
+.pic {
+    grid-area: picture;
+    border-radius: 15px;
+    object-fit: cover;
+    height: 250px;
+    width: 250px;
+}
+
+/* profile info */
+.info {
+    display: flex;
+    flex-direction: column;
+    grid-area: info;
+    padding: 40px 60px;
+    width: 450px;
+    gap: 10px;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    gap: 10px;
+}
+
+.stats>* {
+    display: flex;
+}
+
+.score {
+    display: flex;
+    margin-left: auto;
+    gap: 5px;
+}
+
+.score>* {
+    height: 12px;
+    width: 12px;
+}
+
+/* transactions */
+table {
+    grid-area: table;
+}
+
+tbody {
+    max-height: 430px;
+}
+
+tr {
+    grid-template-columns: repeat(5, 1fr);
+}
