@@ -2,23 +2,6 @@
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
 
-### NetBeans ###
-nbproject/private/
-.nb-gradle/
-nbbuild/
-nbdist/
-dist/
-
-### STS ###
-.apt_generated
-.springBeans
-.factorypath
-.sts4-cache
-.classpath
-.settings
-.project
-bin/
-
 ### IDE ###
 .idea
 *.iws
@@ -26,11 +9,6 @@ bin/
 *.ipr
 .vscode/
 out/
-
-### CDK ###
-.cdk.staging
-cdk.out
-.aws/
 
 ### Other ###
 *.properties
