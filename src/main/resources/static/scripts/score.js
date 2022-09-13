@@ -6,6 +6,16 @@ let ratings = [
     {value: "Bad", box: "red-box", color: "var(--bad)", from: 2, to: 3}
 ];
 
+function initScore(boxes, score) {
+    let defaultBoxPath = getDefaultBoxPath();
+    let boxPath = getBoxPathByScore(score);
+
+    for (let i = 0; i < 10; i++) {
+        let finalPath = (score > i) ? boxPath : defaultBoxPath;
+        boxes.append(`<img src="${finalPath}">`);
+    }
+}
+
 function getBoxPathByScore(score) {
     let rating = ratings.find(r => (score >= r.from) && (score < r.to));
     return getBoxPathByName(rating.box);
@@ -16,5 +26,5 @@ function getDefaultBoxPath() {
 }
 
 function getBoxPathByName(name) {
-    return `/images/boxes/${name}.jpg`;
+    return `../static/images/boxes/${name}.jpg`;
 }

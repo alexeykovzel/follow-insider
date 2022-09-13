@@ -59,6 +59,70 @@
 
 </body>
 
+<style>
+    /* panels with data */
+    .panels {
+        display: grid;
+        grid-template-areas:
+            'picture info'
+            'table table';
+        margin: 50px auto;
+        gap: 40px;
+    }
+
+    .panels>* {
+        box-shadow: var(--small-shadow);
+        border-radius: 15px;
+    }
+
+    /* profile picture */
+    .default-pic {
+        padding: 40px
+    }
+
+    .pic {
+        grid-area: picture;
+        border-radius: 15px;
+        object-fit: cover;
+        height: 250px;
+        width: 250px;
+    }
+
+    /* profile info */
+    .info {
+        display: flex;
+        flex-direction: column;
+        grid-area: info;
+        padding: 40px 60px;
+        width: 450px;
+        gap: 10px;
+    }
+
+    .stats {
+        display: flex;
+        flex-direction: column;
+        margin-top: auto;
+        gap: 10px;
+    }
+
+    .stats>* {
+        display: flex;
+    }
+
+    /* transactions */
+    table {
+        grid-area: table;
+    }
+
+    tbody {
+        max-height: 430px;
+    }
+
+    tr {
+        grid-template-columns: repeat(5, 1fr);
+    }
+</style>
+
 <script>
     let typeColors = {
         "Sell": "red",
@@ -71,8 +135,6 @@
         initScore($("#trend-score"), 9);
         initScore($("#efficiency-score"), 5);
 
-        let trades = $("#trades");
-
         let testTransaction = {
             type: "Sell",
             price: 52.01,
@@ -82,11 +144,12 @@
         };
 
         // fill test trades
+        let table = $("#trades");
         Array(20).fill(testTransaction).forEach(trade => {
             let change = trade["shares"] / trade["leftShares"];
             let type = trade["type"];
 
-            trades.append(`
+            table.append(`
                 <tr>
                     <td style="color: ${typeColors[type]}">${type}</td>
                     <td>${trade["price"]}</td>
@@ -102,16 +165,6 @@
             <img class="pic" src="../static/images/insiders/harry-wolin.png">        
         `);
     })
-
-    function initScore(boxes, score) {
-        let defaultBoxPath = getDefaultBoxPath();
-        let boxPath = getBoxPathByScore(score);
-
-        for (let i = 0; i < 10; i++) {
-            let finalPath = (score > i) ? boxPath : defaultBoxPath;
-            boxes.append(`<img src="${finalPath}">`);
-        }
-    }
 </script>
 
 </html>

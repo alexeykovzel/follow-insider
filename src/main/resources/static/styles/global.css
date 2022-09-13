@@ -23,10 +23,14 @@
     --other: #666666;
 
     /* border-related */
+    --panel-radius: 20px;
     --small-border: 1px solid #ccc;
     --shadow-0: 0px 1px 4px 1px rgba(0, 0, 0, 0.10);
     --shadow-1: 0px 2px 4px 2px rgba(0, 0, 0, 0.15);
-    --panel-radius: 20px;
+
+    /* sizes */
+    --header-height: 60px;
+    --footer-height: 180px;
 
     /* fonts */
     --header-font: 14px
@@ -82,6 +86,12 @@ h1 {
     =================================
 */
 
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .center {
     display: flex;
     position: absolute;
@@ -93,7 +103,7 @@ h1 {
     top: 0;
 }
 
-.content {
+.content-wrapper {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -148,7 +158,6 @@ header h2 {
 }
 
 /* navigation menu */
-
 .header-menu {
     display: flex;
     overflow: hidden;
@@ -158,18 +167,18 @@ header h2 {
     max-height: 0;
 }
 
-.header-menu a {
+.header-menu p {
     padding: 20px 20px;
 }
 
-.nav-links a {
+.nav-links p {
     display: inline-block;
     color: white;
     font-weight: bold;
     text-decoration: none;
 }
 
-.nav-links a::after {
+.nav-links p::after {
     content: "";
     display: block;
     margin: auto;
@@ -180,14 +189,14 @@ header h2 {
     top: 5px;
 }
 
-.nav-links a:hover::after {
+.nav-links p:hover::after {
     width: 100%;
 }
 
 .nav-btn {
     background-color: inherit;
     transition: background-color .2s ease-out;
-    height: 60px;
+    height: var(--header-height);
     width: 60px;
 }
 
@@ -226,7 +235,6 @@ header h2 {
 }
 
 /* menu btn */
-
 .nav-box {
     display: none;
 }
@@ -249,7 +257,6 @@ header h2 {
 }
 
 /* search bar */
-
 .search {
     font-size: var(--header-font);
     flex-grow: 1;
@@ -278,7 +285,6 @@ header h2 {
 }
 
 /* autocomplete */
-
 .autocomplete {
     display: inline-block;
     position: relative;
@@ -291,7 +297,7 @@ header h2 {
     position: absolute;
     box-shadow: var(--shadow-1);
     max-width: fit-content;
-    min-width: 100%;
+    min-width: calc(100% + 20px);
     margin-top: 5px;
     font-size: var(--header-font);
     font-weight: normal;
@@ -311,7 +317,7 @@ header h2 {
 }
 
 .autocomplete-active {
-    background-color: DodgerBlue !important;
+    background-color: var(--blue-2) !important;
     color: white !important;
 }
 
@@ -356,8 +362,14 @@ footer {
     margin-top: auto;
     color: white;
     background: var(--blue-4);
-    min-height: 180px;
+    min-height: var(--footer-height);
+    z-index: 99;
     gap: 25px;
+}
+
+footer a, .fa {
+    color: white;
+    text-decoration: none;
 }
 
 footer ul {
@@ -370,13 +382,11 @@ footer ul {
     gap: 30px;
 }
 
-.fa {
-    color: white;
-    text-decoration: none;
-    font-size: 25px;
-}
-
 .copyright {
     font-size: 14px;
     opacity: 0.6;
+}
+
+.fa {
+    font-size: 25px;
 }

@@ -16,24 +16,24 @@ let testTrade = {
 
 $(document).ready(() => {
     handleFilters();
-    fetchTrades();
+    // fetchTrades();
     // addTradesToTable(Array(20).fill(testTrade));
 });
 
 function handleFilters() {
-    $('.filters :checkbox').change(() => {
-        $("#loader").remove();
-        fetchTrades();
-    });
+    // reload trades from the server if any checkbox is checked 
+    $('.filters :checkbox').change(() => fetchTrades());
 }
 
 function fetchTrades() {
-    $('#trades').empty(); // clear table
-    addLoading($('table')); // add loading animation
+    resetTable($("#trades"))
+    // send GET request to the server
     $.ajax({
         type: 'GET',
         url: `${location.origin}/trades?type=${getCheckedTypes().join(',')}`,
+        // if success, add trades to the table
         success: (trades) => addTradesToTable(trades),
+        // otherwise, print an error message
         error: (error) => console.log('[ERROR] ' + error.responseText),
     });
 }
@@ -43,14 +43,13 @@ function addTradesToTable(trades) {
     $("#loader").remove();
     let table = $("#trades");
     trades.forEach(trade => {
-        console.log(JSON.stringify(trade));
         storedTrades[trade['id']] = trade;
         let typeVal = trade['type'];
 
         // set insider value
         let othersNum = trade['insiders'].length - 1;
         let insiderVal = trade['insiders'][0]['name'] + ((othersNum > 0)
-            ? `, <p class="insider-tail" onClick="showAllInsiders(${trade['id']})">and ${othersNum} others</p>`
+            ? `, <p class="insider-tail" onclick="showAllInsiders(${trade['id']})">and ${othersNum} others</p>`
             : '');
 
         // set position value
@@ -63,7 +62,7 @@ function addTradesToTable(trades) {
         let sharesVal = formatNumber(trade['shareCount']);
         let totalVal = formatNumber(trade['leftShares']);
         let dateVal = new Date(trade['date']).toLocaleDateString('en-US',
-            {month: 'short', day: 'numeric'});
+            { month: 'short', day: 'numeric', year: 'numeric' });
 
         let typeColor = {
             'Buy': 'var(--buy)',
@@ -75,11 +74,11 @@ function addTradesToTable(trades) {
         }[typeVal];
 
         table.append(`
-                <tr id="trade-${trade['id']}"">
+                <tr class="trade-row" id="trade-${trade['id']}"">
                     <td class="link">${trade['symbol']}</td>
-                    <td class="no-1200"> ${trade['company']}</td>
-                    <td class="no-768 insider">${insiderVal}</td>
-                    <td class="no-768">${positionVal}</td>
+                    <td> ${trade['company']}</td>
+                    <td class="insider">${insiderVal}</td>
+                    <td>${positionVal}</td>
                     <td style="color: ${typeColor}">${typeVal}</td>
                     <td>${priceVal}</td>
                     <td>${sharesVal}</td>
@@ -87,23 +86,29 @@ function addTradesToTable(trades) {
                     <td>${dateVal}</td>
                 </tr>
             `);
-        })
+    })
+}
+
+function resetTable(table) {
+    // clear table data
+    table.empty();
+    // remove old loading animation (if exists)
+    $("#loader").remove();
+    // add new loading animation to the center
+    table.after(`<div id="loader" class="center"><div class="lds-facebook"><div></div><div></div><div></div></div></div>`);
 }
 
 function getCheckedTypes() {
     return $('input[type=checkbox]:checked').map(function () {
+        // define types by their "name" attribute
         return $(this).attr('name');
     }).get();
 }
 
-function addLoading(wrapper) {
-    wrapper.after(`<div id="loader" class="center"><div class="lds-facebook"><div></div><div></div><div></div></div></div>`);
-}
-
-function showAllInsiders(id) {
-    let cell = $(`#trade-${id} .insider`);
+function showTradeInsiders(id) {
     let insiders = storedTrades[id]['insiders'];
     let insiderVal = insiders.map(insider => `<p>${insider['name']}</p>`).join('');
+    let cell = $(`#trade-${id} .insider`);
     cell.css('gap', '15px');
     cell.html(insiderVal);
 }
