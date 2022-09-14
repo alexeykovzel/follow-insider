@@ -11,32 +11,33 @@
     <link rel="stylesheet" href="../static/styles/table.css">
     <link rel="stylesheet" href="../static/styles/stock.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="../static/scripts/section.js"></script>
-    <script src="../static/scripts/search.js"></script>
-    <script src="../static/scripts/score.js"></script>
-    <script src="../static/scripts/trade.js"></script>
+    <script type="module" src="../static/scripts/elements.js"></script>
+    <script type="module" src="../static/scripts/stock.js"></script>
     <title>FI - Intel Corporation (INTC)</title>
 </head>
 
 <body>
+
+    <default-header></default-header>
+
     <div class="body">
 
         <!-- side panel with company information -->
-        <div class="c-panel">
+        <div class="s-panel">
 
             <!-- arrow button to toggle the side panel -->
             <img id="panel-arrow" onclick="togglePanel()" src="../static/images/arrow-left.png" alt="Arrow Left"
                 class="link"></p>
 
             <!-- company information -->
-            <div class="c-info">
-                <div class="c-row1">
-                    <div class="c-logo">
+            <div class="s-info">
+                <div class="s-row1">
+                    <div class="s-logo">
                         <img src="../static/images/stocks/intel.png" alt="Stock Image"></img>
                     </div>
-                    <div class="col c-row1-txt">
-                        <h3>Intel Corporation (INTC)</h3>
-                        <p>Last activity: 3 Aug, 2022</p>
+                    <div class="col s-row1-txt">
+                        <h3 id="s-name"></h3>
+                        <p id="last-active"></p>
                     </div>
                 </div>
 
@@ -54,10 +55,7 @@
 
                 <div>
                     <h2>Description</h2>
-                    <p>Intel is best known for developing the microprocessors found in most of the world's personal
-                        computers.
-                        The multinational technology company is also the world's largest manufacturer by revenue of
-                        semiconductor chips, a product used in most of the world's electronic devices.</p>
+                    <p id="s-desc"></p>
                 </div>
             </div>
         </div>
@@ -65,78 +63,19 @@
         <div class="main">
 
             <!-- tab navigation -->
-            <div class="tabs">
-                <a onclick="navigateTo(0)">Insider Trading</a>
-                <a onclick="navigateTo(1)">Insider Trading</a>
+            <div id="tabs">
+                <a onclick="loadTab(0)">Insider Trading</a>
+                <a onclick="loadTab(1)">Insider Trading</a>
             </div>
 
             <!-- tab content -->
-            <div class="content"></div>
+            <div id="tab-content"></div>
+
         </div>
     </div>
+
+    <default-footer></default-footer>
+
 </body>
-
-<script>
-    let defaultTab = 0;
-
-    class Tab {
-        constructor(html, init) {
-            this.html = html;
-            this.init = init;
-        }
-    }
-
-    let tabs = [new Tab(`
-        <div class="table-wrapper scrollbar">
-            <table>
-                <thead>
-                    <tr class="trade-row">
-                        <th>Symbol</th>
-                        <th>Company</th>
-                        <th>Insider</th>
-                        <th>Position</th>
-                        <th>Type</th>
-                        <th>Price</th>
-                        <th>Shares</th>
-                        <th>Total</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="trades"></tbody>
-            </table>
-        </div>
-    `, () => addTradesToTable(Array(20).fill(testTrade))),
-    new Tab(`
-        <p>Nothing yet..</p>
-    `, () => {})];
-
-    $(document).ready(() => {
-        initScore($("#efficiency-score"), 4);
-        initScore($("#liquidity-score"), 9);
-        navigateTo(defaultTab);
-    });
-
-    function togglePanel() {
-        let panel = $(".c-panel");
-        let closed = panel.css("width") == "80px";
-        let width = closed ? "420px" : "80px";
-        panel.css("width", width);
-        $(".main").css("margin-left", width)
-        $(".c-info").css("display", closed ? "flex" : "none");
-        $("#panel-arrow").css("transform", closed ? "rotate(0deg)" : "rotate(180deg)");
-    }
-
-    function navigateTo(idx) {
-        // choose tab on the panel
-        let links = $(".tabs a");
-        links.each(function () {
-            $(this).removeClass("chosen");
-        });
-        links.eq(idx).addClass("chosen");
-        // load tab content
-        $(".content").html(tabs[idx].html);
-        tabs[idx].init();
-    }
-</script>
 
 </html>

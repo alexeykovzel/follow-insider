@@ -1,15 +1,15 @@
-function addTestHints(searchbar) {
-    let hints = ["New York", "A reeeeeeeeally loooooong hint", "Neta1", "Neta2"];
-    autocomplete(searchbar, hints);
-}
-
-function addHints(searchbar) {
+export function addHints(searchbar) {
     $.ajax({
         type: "GET",
         url: location.origin + "/search/hints",
         success: (hints) => autocomplete(searchbar, hints),
         error: (error) => console.log("[ERROR] " + error.responseText),
     });
+}
+
+export function addTestHints(searchbar) {
+    let hints = ["New York", "A reeeeeeeeally loooooong hint", "Neta1", "Neta2"];
+    autocomplete(searchbar, hints);
 }
 
 function autocomplete(inputField, options) {

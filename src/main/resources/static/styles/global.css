@@ -80,6 +80,17 @@ h1 {
     color: var(--blue-4);
 }
 
+article h2 {
+    margin: 30px 0;
+    font-size: 26px;
+}
+
+article p {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #aaa;
+}
+
 /**
     =================================
                COMPONENTS
@@ -130,7 +141,7 @@ h1 {
     =================================
 */
 
-header {
+default-header {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -141,14 +152,14 @@ header {
     z-index: 99;
 }
 
-header>div {
+default-header div {
     display: flex;
     align-items: center;
     width: 100%;
     gap: 25px;
 }
 
-header h2 {
+default-header h2 {
     color: var(--blue-2);
     cursor: pointer;
     margin-right: auto;
@@ -322,11 +333,11 @@ header h2 {
 }
 
 @media (min-width: 1080px) {
-    header {
+    default-header {
         flex-direction: row;
     }
 
-    header>div {
+    default-header>div {
         width: 50%;
     }
 
@@ -354,7 +365,7 @@ header h2 {
     =================================
 */
 
-footer {
+default-footer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -367,12 +378,12 @@ footer {
     gap: 25px;
 }
 
-footer a, .fa {
+default-footer a, .fa {
     color: white;
     text-decoration: none;
 }
 
-footer ul {
+default-footer ul {
     display: flex;
     gap: 30px;
 }

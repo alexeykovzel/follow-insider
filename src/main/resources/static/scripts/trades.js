@@ -26,7 +26,7 @@ function handleFilters() {
 }
 
 function fetchTrades() {
-    resetTable($("#trades"))
+    resetTable($("#trades tbody"))
     // send GET request to the server
     $.ajax({
         type: 'GET',
@@ -38,19 +38,29 @@ function fetchTrades() {
     });
 }
 
-function addTradesToTable(trades) {
+export function mockTableTrades(number) {
+    let testTrades = [];
+    for (let i = 0; i < number; i++) {
+        let uniqueTrade = Object.assign({}, testTrade);
+        uniqueTrade["id"] = i;
+        testTrades.push(uniqueTrade);
+    }
+    addTradesToTable(testTrades);
+}
+
+export function addTradesToTable(trades) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
     $("#loader").remove();
-    let table = $("#trades");
+    let table = $("#trades tbody");
     trades.forEach(trade => {
-        storedTrades[trade['id']] = trade;
+        let id = trade['id'];
+        storedTrades[id] = trade;
         let typeVal = trade['type'];
 
         // set insider value
         let othersNum = trade['insiders'].length - 1;
         let insiderVal = trade['insiders'][0]['name'] + ((othersNum > 0)
-            ? `, <p class="insider-tail" onclick="showAllInsiders(${trade['id']})">and ${othersNum} others</p>`
-            : '');
+            ? `, <p class="insider-tail">and ${othersNum} others</p>` : '');
 
         // set position value
         let positions = [];
@@ -73,8 +83,8 @@ function addTradesToTable(trades) {
             'Other': 'var(--other)'
         }[typeVal];
 
-        table.append(`
-                <tr class="trade-row" id="trade-${trade['id']}"">
+        let tradeRow = $(`
+                <tr id="trade-${id}"">
                     <td class="link">${trade['symbol']}</td>
                     <td> ${trade['company']}</td>
                     <td class="insider">${insiderVal}</td>
@@ -86,12 +96,13 @@ function addTradesToTable(trades) {
                     <td>${dateVal}</td>
                 </tr>
             `);
+        tradeRow.find(".insider-tail").on("click", () => showTradeInsiders(id));
+        table.append(tradeRow);
     })
 }
 
 function resetTable(table) {
-    // clear table data
-    table.empty();
+    table.empty(); // clear table
     // remove old loading animation (if exists)
     $("#loader").remove();
     // add new loading animation to the center
@@ -100,7 +111,6 @@ function resetTable(table) {
 
 function getCheckedTypes() {
     return $('input[type=checkbox]:checked').map(function () {
-        // define types by their "name" attribute
         return $(this).attr('name');
     }).get();
 }

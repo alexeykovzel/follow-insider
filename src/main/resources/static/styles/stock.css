@@ -1,13 +1,11 @@
 /* define variables */
 :root {
-    --panel-width: 420px;
+    --p-width: 420px;
+    --p-delay: .5s;
+    --p-effect: ease;
 }
 
 /* table configuration */
-.trade-row {
-    grid-template-columns: 1fr repeat(3, 2fr) repeat(5, 1.5fr);
-}
-
 .insider {
     display: flex;
     flex-direction: column;
@@ -29,18 +27,19 @@
     width: 100%;
     padding: 60px 80px;
     font-size: 16px;
-    margin-left: var(--panel-width);
+    margin-left: var(--p-width);
+    transition: margin-left var(--p-delay) var(--p-effect);
 }
 
 /* navigation panel */
-.tabs {
+#tabs {
     display: flex;
     margin-bottom: 40px;
     border-bottom: 1px solid #ccc;
     gap: 40px;
 }
 
-.tabs a {
+#tabs a {
     cursor: pointer;
     font-size: 18px;
     line-height: 45px;
@@ -56,20 +55,21 @@
     display: block;
     height: 5px;
     border-radius: 5px;
-    /* margin-top: 10px; */
     background-color: var(--blue-1);
 }
 
 /* side panel */
-.c-panel {
+.s-panel {
     position: fixed;
     background-color: white;
+    overflow: hidden;
+    transition: width var(--p-delay) var(--p-effect);
     box-shadow: var(--shadow-0);
-    width: var(--panel-width);
+    width: var(--p-width);
     height: 100%;
 }
 
-.c-panel .link {
+.s-panel .link {
     position: absolute;
     height: 25px;
     width: 25px;
@@ -78,18 +78,22 @@
 }
 
 /* company information */
-.c-info {
+.s-info {
     display: flex;
     flex-direction: column;
+    transition:
+        visibility var(--p-delay) var(--p-effect),
+        opacity var(--p-delay) var(--p-effect);
     padding: 70px 40px;
+    width: 340px;
     gap: 60px;
 }
 
-.c-info h3 {
+.s-info h3 {
     font-size: 16px;
 }
 
-.c-info h2 {
+.s-info h2 {
     font-size: 18px;
     line-height: 24px;
     border-bottom: 2px solid black;
@@ -97,21 +101,22 @@
     width: min-content;
 }
 
-.c-info p {
+.s-info p {
     font-size: 14px;
 }
 
-.c-row1 {
+.s-row1 {
     display: flex;
     align-items: center;
 }
 
-.c-row1-txt {
+.s-row1-txt {
     margin-left: 30px;
     gap: 10px;
 }
 
-.c-logo {
+/* company logo */
+.s-logo {
     border-radius: 15px;
     box-shadow: var(--shadow-0);
     height: 120px;
@@ -121,7 +126,7 @@
     align-items: center;
 }
 
-.c-logo img {
+.s-logo img {
     width: 90px;
 }
 

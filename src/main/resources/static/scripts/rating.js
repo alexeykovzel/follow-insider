@@ -6,7 +6,7 @@ let ratings = [
     {value: "Bad", box: "red-box", color: "var(--bad)", from: 2, to: 3}
 ];
 
-function initScore(boxes, score) {
+export function initScore(boxes, score) {
     let defaultBoxPath = getDefaultBoxPath();
     let boxPath = getBoxPathByScore(score);
 
@@ -17,7 +17,7 @@ function initScore(boxes, score) {
 }
 
 function getBoxPathByScore(score) {
-    let rating = ratings.find(r => (score >= r.from) && (score < r.to));
+    let rating = ratings.find(r => (score >= r.from) && (score <= r.to));
     return getBoxPathByName(rating.box);
 }
 
