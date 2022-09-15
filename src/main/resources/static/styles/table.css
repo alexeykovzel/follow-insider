@@ -1,3 +1,26 @@
+/**
+    =================================
+             CONFIGURATIONS
+    =================================
+*/
+
+.insider-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.insider-tail {
+    color: #bbb;
+    font-style: italic;
+    cursor: pointer;
+}
+
+/**
+    =================================
+               COMPONENTS
+    =================================
+*/
+
 .table-wrapper {
     overflow-x: auto;
     box-shadow: var(--shadow-1);
@@ -21,7 +44,7 @@ tr {
     padding: 0 20px;
 }
 
-tr>* {
+tr > * {
     text-align: start;
     padding: 20px;
 }
@@ -38,9 +61,10 @@ thead tr {
 
 tbody {
     display: block;
+    position: relative;
     overflow-y: auto;
     font-weight: bold;
-    min-height: 100%;
+    min-height: 200px;
 }
 
 tbody tr {
@@ -63,7 +87,7 @@ tbody tr:hover {
 }
 
 @media screen and (max-width: 768px) {
-    tr>* {
+    tr > * {
         padding: 20px 10px;
     }
 }

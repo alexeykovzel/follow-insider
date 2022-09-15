@@ -1,136 +1,111 @@
+import * as Table from "./table.js";
+import * as Utils from "./utils.js";
+
 let storedTrades = {};
 
-let testTrade = {
-    company: "Intel Corporation",
-    symbol: "INTC",
-    sharePrice: 20,
-    shareCount: 100000,
-    leftShares: 200000,
-    type: "Buy",
-    date: "2022/01/01",
-    insiders: Array(5).fill({
-        name: 'Mega Super Fond',
-        positions: ['CEO', 'Director']
-    })
-};
-
-$(document).ready(() => {
-    handleFilters();
-    // fetchTrades();
-    // addTradesToTable(Array(20).fill(testTrade));
-});
-
-function handleFilters() {
-    // reload trades from the server if any checkbox is checked 
-    $('.filters :checkbox').change(() => fetchTrades());
+class Trade {
+    constructor(id, symbol, company, insiders, type, sharePrice, shareCount, leftShares, date) {
+        this.id = id;
+        this.symbol = symbol;
+        this.company = company;
+        this.insiders = insiders;
+        this.type = type;
+        this.sharePrice = sharePrice;
+        this.shareCount = shareCount;
+        this.leftShares = leftShares;
+        this.date = date;
+    }
 }
 
-function fetchTrades() {
-    resetTable($("#trades tbody"))
-    // send GET request to the server
+class Insider {
+    constructor(name, positions) {
+        this.name = name;
+        this.positions = positions;
+    }
+}
+
+let typeColors = {
+    'Buy': 'var(--buy)',
+    'Sell': 'var(--sell)',
+    'Grant': 'var(--grant)',
+    'Options': 'var(--options)',
+    'Taxes': 'var(--taxes)',
+    'Other': 'var(--other)'
+}
+
+export function fetchTrades(table, types) {
+    Table.reset(table);
+    // send request to retrieve trades from the server
     $.ajax({
         type: 'GET',
-        url: `${location.origin}/trades?type=${getCheckedTypes().join(',')}`,
+        url: `${location.origin}/trades?type=${types.join(',')}`,
         // if success, add trades to the table
-        success: (trades) => addTradesToTable(trades),
+        success: (data) => {
+            let trades = data.map(val => Object.assign(val, new Trade()));
+            addTradesToTable(table, trades);
+        },
         // otherwise, print an error message
         error: (error) => console.log('[ERROR] ' + error.responseText),
     });
 }
 
-export function mockTableTrades(number) {
-    let testTrades = [];
+export function mockTrades(table, number) {
+    Table.reset(table)
+    let trades = [];
     for (let i = 0; i < number; i++) {
-        let uniqueTrade = Object.assign({}, testTrade);
-        uniqueTrade["id"] = i;
-        testTrades.push(uniqueTrade);
+        let insiders = Array(5).fill(new Insider("Mega Super Fond", ["CEO", "Director"]));
+        trades.push(new Trade(i, "INTC", "Intel Corporation", insiders, "Buy",
+            20, 100_000, 200_000, "2022/01/01"));
     }
-    addTradesToTable(testTrades);
+    addTradesToTable(table, trades)
 }
 
-export function addTradesToTable(trades) {
+function addTradesToTable(table, trades) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
-    $("#loader").remove();
-    let table = $("#trades tbody");
-    trades.forEach(trade => {
-        let id = trade['id'];
-        storedTrades[id] = trade;
-        let typeVal = trade['type'];
+    Table.addAll(table, trades.map(trade => {
+        storedTrades[trade.id] = trade;
 
-        // set insider value
-        let othersNum = trade['insiders'].length - 1;
-        let insiderVal = trade['insiders'][0]['name'] + ((othersNum > 0)
-            ? `, <p class="insider-tail">and ${othersNum} others</p>` : '');
+        // get 1-st insider + "others" tail
+        let others = trade.insiders.length - 1;
+        let othersTail = (others > 0) ? `, <p class="insider-tail">and ${others} others</p>` : "";
+        let insiderVal = trade.insiders[0].name + othersTail;
 
-        // set position value
-        let positions = [];
-        trade['insiders'].forEach(insider => insider['positions'].forEach(position => positions.push(position)));
-        let positionVal = (positions.length === 0) ? defaultCell : positions.filter(unique).join(', ');
+        // get unique insider positions
+        let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
+        let positionVal = (positions.length === 0) ? defaultCell : positions.join(', ');
 
-        // set other values
-        let priceVal = (trade['sharePrice'] !== 0) ? trade['sharePrice'].toFixed(1) + '$' : '-';
-        let sharesVal = formatNumber(trade['shareCount']);
-        let totalVal = formatNumber(trade['leftShares']);
-        let dateVal = new Date(trade['date']).toLocaleDateString('en-US',
-            { month: 'short', day: 'numeric', year: 'numeric' });
+        // get other trade values
+        let colorStyle = "color: " + typeColors[trade.type];
+        let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : '-';
+        let sharesVal = Utils.formatNumber(trade.shareCount);
+        let totalVal = Utils.formatNumber(trade.leftShares);
+        let dateVal = Utils.formatDate(trade.date);
 
-        let typeColor = {
-            'Buy': 'var(--buy)',
-            'Sell': 'var(--sell)',
-            'Grant': 'var(--grant)',
-            'Options': 'var(--options)',
-            'Taxes': 'var(--taxes)',
-            'Other': 'var(--other)'
-        }[typeVal];
-
+        // build table row element
         let tradeRow = $(`
-                <tr id="trade-${id}"">
-                    <td class="link">${trade['symbol']}</td>
-                    <td> ${trade['company']}</td>
-                    <td class="insider">${insiderVal}</td>
-                    <td>${positionVal}</td>
-                    <td style="color: ${typeColor}">${typeVal}</td>
-                    <td>${priceVal}</td>
-                    <td>${sharesVal}</td>
-                    <td>${totalVal}</td>
-                    <td>${dateVal}</td>
-                </tr>
-            `);
-        tradeRow.find(".insider-tail").on("click", () => showTradeInsiders(id));
-        table.append(tradeRow);
-    })
+            <tr id="trade-${trade.id}"">
+                <td class="link">${trade.symbol}</td>
+                <td> ${trade.company}</td>
+                <td class="insider-cell">${insiderVal}</td>
+                <td>${positionVal}</td>
+                <td style="${colorStyle}">${trade.type}</td>
+                <td>${priceVal}</td>
+                <td>${sharesVal}</td>
+                <td>${totalVal}</td>
+                <td>${dateVal}</td>
+            </tr>
+        `);
+
+        // show all insiders if "and ** others" is clicked
+        tradeRow.find(".insider-tail").on("click", () => showAllInsiders(trade.id));
+        return tradeRow;
+    }));
 }
 
-function resetTable(table) {
-    table.empty(); // clear table
-    // remove old loading animation (if exists)
-    $("#loader").remove();
-    // add new loading animation to the center
-    table.after(`<div id="loader" class="center"><div class="lds-facebook"><div></div><div></div><div></div></div></div>`);
-}
-
-function getCheckedTypes() {
-    return $('input[type=checkbox]:checked').map(function () {
-        return $(this).attr('name');
-    }).get();
-}
-
-function showTradeInsiders(id) {
-    let insiders = storedTrades[id]['insiders'];
-    let insiderVal = insiders.map(insider => `<p>${insider['name']}</p>`).join('');
-    let cell = $(`#trade-${id} .insider`);
+function showAllInsiders(id) {
+    let insiders = storedTrades[id].insiders;
+    let insiderVal = insiders.map(insider => `<p>${insider.name}</p>`).join('');
+    let cell = $(`#trade-${id} .insider-cell`);
     cell.css('gap', '15px');
     cell.html(insiderVal);
-}
-
-function formatNumber(num) {
-    num = Math.abs(Number(num));
-    if (num >= 1.0e+9) return (num / 1.0e+9).toFixed(1) + 'B';
-    if (num >= 1.0e+6) return (num / 1.0e+6).toFixed(1) + 'M';
-    if (num >= 1.0e+3) return (num / 1.0e+3).toFixed(1) + 'K';
-    return num.toFixed(0);
-}
-
-const unique = (value, index, self) => {
-    return self.indexOf(value) === index
 }

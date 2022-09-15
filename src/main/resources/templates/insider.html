@@ -3,60 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=ABeeZee'>
     <link rel="stylesheet" href="../static/styles/global.css">
     <link rel="stylesheet" href="../static/styles/table.css">
-    <link rel="stylesheet" href="../static/styles/insider.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="../static/scripts/search.js"></script>
+    <script type="module" src="../static/scripts/elements.js"></script>
     <script src="../static/scripts/rating.js"></script>
     <title>FI - Insider Profile</title>
 </head>
 
 <body>
+<default-header></default-header>
 
-    <div class="link">
-        <object data="../static/images/arrow-left.svg" type="image/svg+xml"></object>
-        <p>Intel Corporation (INTC)</p>
+<div class="link">
+    <object data="../static/images/arrow-left.svg" type="image/svg+xml"></object>
+    <p>Intel Corporation (INTC)</p>
+</div>
+
+<div class="panels">
+    <div class="pic">
+        <object class="default-pic" data="../static/images/profile.svg" type="image/svg+xml"></object>
     </div>
-
-    <div class="panels">
-        <div class="pic">
-            <object class="default-pic" data="../static/images/profile.svg" type="image/svg+xml"></object>
-        </div>
-        <div class="info">
-            <h2>WOLIN HARRY A (CEO)</h2>
-            <p>Last active: 3 Aug, 2022</p>
-            <div class="stats">
-                <div>
-                    <h3>Power</h3>
-                    <div id="power-score" class="score"></div>
-                </div>
-                <div>
-                    <h3>Trend</h3>
-                    <div id="trend-score" class="score"></div>
-                </div>
-                <div>
-                    <h3>Efficiency</h3>
-                    <div id="efficiency-score" class="score"></div>
-                </div>
+    <div class="info">
+        <h2>WOLIN HARRY A (CEO)</h2>
+        <p>Last active: 3 Aug, 2022</p>
+        <div class="stats">
+            <div>
+                <h3>Power</h3>
+                <div id="power-score" class="score"></div>
+            </div>
+            <div>
+                <h3>Trend</h3>
+                <div id="trend-score" class="score"></div>
+            </div>
+            <div>
+                <h3>Efficiency</h3>
+                <div id="efficiency-score" class="score"></div>
             </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Transaction</th>
-                    <th>Price</th>
-                    <th>Shares</th>
-                    <th>Change</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody id="trades"></tbody>
-        </table>
     </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Transaction</th>
+            <th>Price</th>
+            <th>Shares</th>
+            <th>Change</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody id="trades"></tbody>
+    </table>
+</div>
 
+<default-footer></default-footer>
 </body>
 
 <style>
@@ -70,8 +73,8 @@
         gap: 40px;
     }
 
-    .panels>* {
-        box-shadow: var(--small-shadow);
+    .panels > * {
+        box-shadow: var(--shadow-0);
         border-radius: 15px;
     }
 
@@ -105,7 +108,7 @@
         gap: 10px;
     }
 
-    .stats>* {
+    .stats > * {
         display: flex;
     }
 

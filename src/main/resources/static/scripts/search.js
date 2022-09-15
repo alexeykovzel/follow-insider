@@ -24,13 +24,12 @@ function autocomplete(inputField, options) {
 
         // calculate matches
         let matches = [];
-        options.forEach(option => {
-            let index = option.toLowerCase().indexOf(input);
+        for (let i = 0; i < Math.min(5, matches.length); i++) {
+            let index = options[i].toLowerCase().indexOf(input);
             if (index !== -1) {
-                matches.push([option, index]);
-                if (matches.length > 5) return;
+                matches.push([options[i], index]);
             }
-        });
+        }
 
         // check if any matches
         if (matches.length > 0) {

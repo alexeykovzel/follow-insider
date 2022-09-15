@@ -13,69 +13,106 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="module" src="../static/scripts/elements.js"></script>
     <script type="module" src="../static/scripts/stock.js"></script>
+    <script src="../static/scripts/tabs.js"></script>
     <title>FI - Intel Corporation (INTC)</title>
 </head>
 
 <body>
+<default-header></default-header>
 
-    <default-header></default-header>
+<div class="body">
 
-    <div class="body">
+    <!-- side panel with stock information -->
+    <div class="s-panel">
 
-        <!-- side panel with company information -->
-        <div class="s-panel">
+        <!-- arrow button to toggle the side panel -->
+        <img id="panel-arrow" src="../static/images/arrow-left.png" alt="Arrow Left"
+             class="link">
 
-            <!-- arrow button to toggle the side panel -->
-            <img id="panel-arrow" onclick="togglePanel()" src="../static/images/arrow-left.png" alt="Arrow Left"
-                class="link"></p>
-
-            <!-- company information -->
-            <div class="s-info">
-                <div class="s-row1">
-                    <div class="s-logo">
-                        <img src="../static/images/stocks/intel.png" alt="Stock Image"></img>
-                    </div>
-                    <div class="col s-row1-txt">
-                        <h3 id="s-name"></h3>
-                        <p id="last-active"></p>
-                    </div>
+        <!-- stock information -->
+        <div class="s-info">
+            <div class="s-row1">
+                <div class="s-logo">
+                    <img src="../static/images/stocks/intel.png" alt="Stock Image">
                 </div>
-
-                <div class="col rating">
-                    <div>
-                        <h3>Efficiency</h3>
-                        <div id="efficiency-score" class="score"></div>
-                    </div>
-
-                    <div>
-                        <h3>Liquidity</h3>
-                        <div id="liquidity-score" class="score"></div>
-                    </div>
+                <div class="col s-row1-txt">
+                    <h3 id="s-name"></h3>
+                    <p id="last-active"></p>
                 </div>
+            </div>
 
+            <div class="col rating">
                 <div>
-                    <h2>Description</h2>
-                    <p id="s-desc"></p>
+                    <h3>Efficiency</h3>
+                    <div id="efficiency-score" class="score"></div>
+                </div>
+                <div>
+                    <h3>Liquidity</h3>
+                    <div id="liquidity-score" class="score"></div>
                 </div>
             </div>
-        </div>
 
-        <div class="main">
-
-            <!-- tab navigation -->
-            <div id="tabs">
-                <a onclick="loadTab(0)">Insider Trading</a>
-                <a onclick="loadTab(1)">Insider Trading</a>
+            <div>
+                <h2>Description</h2>
+                <p id="s-desc"></p>
             </div>
-
-            <!-- tab content -->
-            <div id="tab-content"></div>
-
         </div>
     </div>
 
-    <default-footer></default-footer>
+    <div class="main">
+        <div id="tabs"></div>
+        <div id="tab-content"></div>
+    </div>
+</div>
 
+<default-footer></default-footer>
 </body>
+
+<script type="module">
+    import {Table, addLoader} from "../static/scripts/table.js";
+    import {mockTrades, fetchTrades} from '../static/scripts/trades.js';
+
+    $(document).ready(() => {
+
+        // define table with insider trades
+        let tradeTable = new Table("trades",
+            ["Symbol", "Company", "Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
+            [1, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5]
+        );
+
+        // define table with insider information
+        let insiderTable = new Table("insiders",
+            ["Name", "Position", "Last Active"],
+            [1, 1, 1]
+        );
+
+        // init tabs for navigation
+        initTabs([
+            new Tab("Insider Trading", tradeTable.html, () => {
+                // fetchTrades($("#trades tbody"), ["Buy"]);
+                mockTrades($('#trades tbody'), 20);
+                tradeTable.init();
+            }),
+            new Tab("Insider List", insiderTable.html, () => {
+                addLoader($("#insiders tbody"));
+                insiderTable.init();
+            })
+        ]);
+
+        // insert stock information
+        insertTestStock();
+
+        // toggle side panel on arrow click
+        $("#panel-arrow").on("click", () => {
+            let info = $(".s-info");
+            let closed = info.css("opacity") === "0";
+            let width = closed ? "420px" : "80px";
+            $(".s-panel").css("width", width);
+            $(".main").css("margin-left", width)
+            $("#panel-arrow").css("transform", closed ? "rotate(0deg)" : "rotate(180deg)");
+            info.css({"opacity": closed ? "1" : "0", "visibility": closed ? "visible" : "hidden"});
+        });
+    });
+</script>
 
 </html>

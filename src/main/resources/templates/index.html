@@ -10,66 +10,69 @@
     <link rel="stylesheet" href="../static/styles/global.css">
     <link rel="stylesheet" href="../static/styles/table.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="../static/scripts/sections.js"></script>
-    <script src="../static/scripts/search.js"></script>
-    <script src="../static/scripts/trades.js"></script>
+    <script type="module" src="../static/scripts/elements.js"></script>
+    <script type="module" src="../static/scripts/trades.js"></script>
     <title>FI - Dashboard</title>
 </head>
 
 <body>
-    <div class="content-wrapper">
+<default-header></default-header>
 
-        <!-- transaction filters -->
-        <div class="filters">
-            <div class="checkboxes">
-                <div>
-                    <input type="checkbox" id="buy" name="Buy" checked>
-                    <label style="color: var(--buy)" for="buy">Buy</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="sell" name="Sell">
-                    <label style="color: var(--sell)" for="sell">Sell</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="grant" name="Grant">
-                    <label style="color: var(--grant)" for="grant">Grant</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="options" name="Options">
-                    <label style="color: var(--options)" for="options">Options</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="taxes" name="Taxes">
-                    <label style="color: var(--taxes)" for="taxes">Taxes</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="other" name="Other">
-                    <label style="color: var(--other)" for="other">Other</label>
-                </div>
+<div class="content-wrapper">
+
+    <!-- transaction filters -->
+    <div class="filters">
+        <div class="checkboxes">
+            <div>
+                <input type="checkbox" id="buy" name="Buy" checked>
+                <label style="color: var(--buy)" for="buy">Buy</label>
+            </div>
+            <div>
+                <input type="checkbox" id="sell" name="Sell">
+                <label style="color: var(--sell)" for="sell">Sell</label>
+            </div>
+            <div>
+                <input type="checkbox" id="grant" name="Grant">
+                <label style="color: var(--grant)" for="grant">Grant</label>
+            </div>
+            <div>
+                <input type="checkbox" id="options" name="Options">
+                <label style="color: var(--options)" for="options">Options</label>
+            </div>
+            <div>
+                <input type="checkbox" id="taxes" name="Taxes">
+                <label style="color: var(--taxes)" for="taxes">Taxes</label>
+            </div>
+            <div>
+                <input type="checkbox" id="other" name="Other">
+                <label style="color: var(--other)" for="other">Other</label>
             </div>
         </div>
-
-        <!-- transaction table -->
-        <div class="table-wrapper scrollbar">
-            <table>
-                <thead>
-                    <tr class="trade-row">
-                        <th>Symbol</th>
-                        <th>Company</th>
-                        <th>Insider</th>
-                        <th>Position</th>
-                        <th>Type</th>
-                        <th>Price</th>
-                        <th>Shares</th>
-                        <th>Total</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="trades"></tbody>
-            </table>
-        </div>
-
     </div>
+
+    <!-- transaction table -->
+    <div class="table-wrapper scrollbar">
+        <table>
+            <thead>
+            <tr class="trade-row">
+                <th>Symbol</th>
+                <th>Company</th>
+                <th>Insider</th>
+                <th>Position</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th>Shares</th>
+                <th>Total</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody id="trades"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<default-footer></default-footer>
 </body>
 
 <style>
@@ -88,5 +91,23 @@
         cursor: pointer;
     }
 </style>
+
+<script>
+    $(document).ready(() => {
+        handleFilters();
+        fetchTrades($("#trades tbody"), getCheckedTypes());
+    });
+
+    function handleFilters() {
+        // reload trades from the server whenever a checkbox is checked
+        $('.filters :checkbox').change(() => fetchTrades($("#trades tbody")));
+    }
+
+    function getCheckedTypes() {
+        return $('input[type=checkbox]:checked').map(function () {
+            return $(this).attr('name');
+        }).get();
+    }
+</script>
 
 </html>

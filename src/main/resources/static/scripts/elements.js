@@ -5,7 +5,7 @@ customElements.define('default-header', class extends HTMLElement {
         super();
 
         // set header in place of a custom element 
-        jQuery(this).html(`
+        $(this).html(`
             <div>
                 <h2 onclick="location.assign('/')">FI</h2>
                 <div class="search autocomplete">
@@ -43,7 +43,7 @@ customElements.define('default-footer', class extends HTMLElement {
         super();
 
         // set footer in place of a custom element 
-        jQuery(this).html(`
+        $(this).html(`
             <ul class="nav-links">
                 <li><a href="/">Dashboard</a></li>
                 <li><a href="/faq">FAQ</a></li>
@@ -58,40 +58,3 @@ customElements.define('default-footer', class extends HTMLElement {
         `);
     }
 });
-
-export class Table {
-
-    /**
-     * @param {*} id            id attribute of an html element
-     * @param {*} columns       column names of the table
-     * @param {*} fractions     column fractions of the table
-     */
-    constructor(id, columns, fractions) {
-        this.id = id;
-        this.columns = columns;
-        this.fractions = fractions;
-    }
-
-    setFractions() {
-        if (this.fractions === null) {
-            this.fractions = Array(this.columns.length).fill(1);
-        }
-        let template = this.fractions.map(val => val + "fr").join(" ");
-        $(`#${this.id} *`).css("grid-template-columns", template);
-    }
-
-    get html() {
-        return `
-            <div id="${this.id}" class="table-wrapper scrollbar">
-                <table>
-                    <thead>
-                        <tr>
-                            ${this.columns.map(col => "<th>" + col + "</th>").join("")}
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        `;
-    }
-}
