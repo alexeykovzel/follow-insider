@@ -1,5 +1,4 @@
-import * as Table from "./table.js";
-import * as Utils from "./utils.js";
+import * as Utils from "./util.js";
 
 let storedTrades = {};
 
@@ -34,7 +33,7 @@ let typeColors = {
 }
 
 export function fetchTrades(table, types) {
-    Table.reset(table);
+    table.reset();
     // send request to retrieve trades from the server
     $.ajax({
         type: 'GET',
@@ -49,20 +48,21 @@ export function fetchTrades(table, types) {
     });
 }
 
-export function mockTrades(table, number) {
-    Table.reset(table)
+export function mockTrades(number) {
     let trades = [];
     for (let i = 0; i < number; i++) {
-        let insiders = Array(5).fill(new Insider("Mega Super Fond", ["CEO", "Director"]));
-        trades.push(new Trade(i, "INTC", "Intel Corporation", insiders, "Buy",
-            20, 100_000, 200_000, "2022/01/01"));
+        let insider = new Insider("Mega Super Fond", ["CEO", "Director"]);
+        let insiders = Array(5).fill(insider);
+        let trade = new Trade(i, "INTC", "Intel Corporation", insiders, "Buy",
+            20, 100_000, 200_000, "2022/01/01");
+        trades.push(trade);
     }
-    addTradesToTable(table, trades)
+    return trades;
 }
 
 function addTradesToTable(table, trades) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
-    Table.addAll(table, trades.map(trade => {
+    table.addAll(trades.map(trade => {
         storedTrades[trade.id] = trade;
 
         // get 1-st insider + "others" tail

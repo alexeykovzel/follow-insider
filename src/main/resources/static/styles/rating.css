@@ -1,0 +1,42 @@
+:root {
+    --very-good: #00773E;
+    --good: #00B75F;
+    --so-so: #EBD82C;
+    --bad: #F51A1A;
+    --very-bad: #B70000;
+}
+
+.rating {
+    gap: 5px;
+}
+
+.rating > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    gap: 10px;
+}
+
+.score {
+    display: flex;
+    margin-left: auto;
+    gap: 5px;
+}
+
+.score > * {
+    height: 12px;
+    width: 12px;
+}
+
+.overall {
+    margin-top: 50px;
+}
+
+.overall h3 {
+    font-size: 22px !important;
+}
+
+.overall .score > * {
+    height: 14px;
+    width: 14px;
+}

@@ -1,3 +1,9 @@
+@import "global.css";
+@import "dashboard.css";
+@import "rating.css";
+@import "chart.css";
+@import "table.css";
+
 /* define variables */
 :root {
     --p-width: 420px;
@@ -12,11 +18,11 @@
 }
 
 .main {
-    width: 100%;
-    padding: 60px 80px;
-    font-size: 16px;
+    padding: 60px calc(20px + 3%);
     margin-left: var(--p-width);
     transition: margin-left var(--p-delay) var(--p-effect);
+    font-size: 16px;
+    width: 100%;
 }
 
 /* navigation panel */
@@ -24,7 +30,9 @@
     display: flex;
     margin-bottom: 40px;
     border-bottom: 1px solid #ccc;
-    gap: 40px;
+    overflow: auto;
+    white-space: nowrap;
+    gap: 60px;
 }
 
 #tabs a {
@@ -35,7 +43,7 @@
 
 .chosen {
     font-weight: bold;
-    color: var(--blue-1);
+    color: var(--blue-1) !important;
 }
 
 .chosen:after {
@@ -70,7 +78,7 @@
     display: flex;
     flex-direction: column;
     transition: visibility var(--p-delay) var(--p-effect),
-                opacity var(--p-delay) var(--p-effect);
+    opacity var(--p-delay) var(--p-effect);
     padding: 70px 40px;
     width: calc(var(--p-width) - 80px);
     gap: 60px;
@@ -117,29 +125,6 @@
     width: 90px;
 }
 
-/* company rating */
-.rating {
-    gap: 5px;
-}
-
-.rating > div {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-    gap: 10px;
-}
-
-.score {
-    display: flex;
-    margin-left: auto;
-    gap: 5px;
-}
-
-.score > * {
-    height: 12px;
-    width: 12px;
-}
-
 @media screen and (max-width: 1200px) {
     .body {
         flex-direction: column;
@@ -157,6 +142,7 @@
 
     .s-info {
         width: auto;
+        padding: 40px;
     }
 
     #panel-arrow {

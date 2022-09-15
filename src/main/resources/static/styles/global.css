@@ -1,3 +1,5 @@
+@import "rating.css";
+
 :root {
     /* main colors */
     --grey: #444;
@@ -6,13 +8,6 @@
     --blue-2: #314069;
     --blue-3: #192b5c;
     --blue-4: #0A142F;
-
-    /* rating colors */
-    --very-good: #00773E;
-    --good: #00B75F;
-    --so-so: #EBD82C;
-    --bad: #F51A1A;
-    --very-bad: #B70000;
 
     /* transaction colors */
     --buy: #4f8d15;
@@ -33,7 +28,7 @@
     --footer-height: 180px;
 
     /* fonts */
-    --header-font: 14px
+    --header-font: 14px;
 }
 
 html {
@@ -62,6 +57,7 @@ button,
 input,
 label {
     font-family: 'ABeeZee', sans-serif !important;
+    color: var(--blue-2);
     border: none;
     margin: 0;
     padding: 0;
@@ -96,6 +92,11 @@ article p {
                COMPONENTS
     =================================
 */
+
+.row {
+    display: flex;
+    align-items: center;
+}
 
 .col {
     display: flex;
@@ -250,20 +251,20 @@ default-header h2 {
     display: none;
 }
 
-.nav-box:checked~label .nav-icon {
+.nav-box:checked ~ label .nav-icon {
     background: transparent;
 }
 
-.nav-box:checked~label .nav-icon:before {
+.nav-box:checked ~ label .nav-icon:before {
     transform: rotate(-45deg);
 }
 
-.nav-box:checked~label .nav-icon:after {
+.nav-box:checked ~ label .nav-icon:after {
     transform: rotate(45deg);
 }
 
-.nav-box:checked~label:not(.steps) .nav-icon:before,
-.nav-box:checked~label:not(.steps) .nav-icon:after {
+.nav-box:checked ~ label:not(.steps) .nav-icon:before,
+.nav-box:checked ~ label:not(.steps) .nav-icon:after {
     top: 0;
 }
 
@@ -280,7 +281,7 @@ default-header h2 {
     width: calc(100% - 50px);
 }
 
-.search>object {
+.search > object {
     margin-left: 20px;
     width: 16px;
     height: 16px;
@@ -337,7 +338,7 @@ default-header h2 {
         flex-direction: row;
     }
 
-    default-header>div {
+    default-header > div {
         width: 50%;
     }
 

@@ -7,13 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=ABeeZee'>
-    <link rel="stylesheet" href="../static/styles/global.css">
-    <link rel="stylesheet" href="../static/styles/table.css">
     <link rel="stylesheet" href="../static/styles/stock.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="module" src="../static/scripts/elements.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script type="module" src="../static/scripts/element.js"></script>
     <script type="module" src="../static/scripts/stock.js"></script>
-    <script src="../static/scripts/tabs.js"></script>
+    <script src="../static/scripts/tab.js"></script>
     <title>FI - Intel Corporation (INTC)</title>
 </head>
 
@@ -43,18 +42,17 @@
 
             <div class="col rating">
                 <div>
-                    <h3>Efficiency</h3>
+                    <h3>Insider Return</h3>
                     <div id="efficiency-score" class="score"></div>
                 </div>
                 <div>
                     <h3>Liquidity</h3>
                     <div id="liquidity-score" class="score"></div>
                 </div>
-            </div>
-
-            <div>
-                <h2>Description</h2>
-                <p id="s-desc"></p>
+                <div class="overall">
+                    <h3>Overall</h3>
+                    <div id="overall-score" class="score"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -67,52 +65,5 @@
 
 <default-footer></default-footer>
 </body>
-
-<script type="module">
-    import {Table, addLoader} from "../static/scripts/table.js";
-    import {mockTrades, fetchTrades} from '../static/scripts/trades.js';
-
-    $(document).ready(() => {
-
-        // define table with insider trades
-        let tradeTable = new Table("trades",
-            ["Symbol", "Company", "Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
-            [1, 2, 2, 2, 1.5, 1.5, 1.5, 1.5, 1.5]
-        );
-
-        // define table with insider information
-        let insiderTable = new Table("insiders",
-            ["Name", "Position", "Last Active"],
-            [1, 1, 1]
-        );
-
-        // init tabs for navigation
-        initTabs([
-            new Tab("Insider Trading", tradeTable.html, () => {
-                // fetchTrades($("#trades tbody"), ["Buy"]);
-                mockTrades($('#trades tbody'), 20);
-                tradeTable.init();
-            }),
-            new Tab("Insider List", insiderTable.html, () => {
-                addLoader($("#insiders tbody"));
-                insiderTable.init();
-            })
-        ]);
-
-        // insert stock information
-        insertTestStock();
-
-        // toggle side panel on arrow click
-        $("#panel-arrow").on("click", () => {
-            let info = $(".s-info");
-            let closed = info.css("opacity") === "0";
-            let width = closed ? "420px" : "80px";
-            $(".s-panel").css("width", width);
-            $(".main").css("margin-left", width)
-            $("#panel-arrow").css("transform", closed ? "rotate(0deg)" : "rotate(180deg)");
-            info.css({"opacity": closed ? "1" : "0", "visibility": closed ? "visible" : "hidden"});
-        });
-    });
-</script>
 
 </html>
