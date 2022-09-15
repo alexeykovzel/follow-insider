@@ -1,8 +1,8 @@
-import * as Utils from "./util.js";
+import * as Utils from "./utils.js";
 
 let storedTrades = {};
 
-class Trade {
+class Trades {
     constructor(id, symbol, company, insiders, type, sharePrice, shareCount, leftShares, date) {
         this.id = id;
         this.symbol = symbol;
@@ -40,8 +40,8 @@ export function fetchTrades(table, types) {
         url: `${location.origin}/trades?type=${types.join(',')}`,
         // if success, add trades to the table
         success: (data) => {
-            let trades = data.map(val => Object.assign(val, new Trade()));
-            addTradesToTable(table, trades);
+            let trades = data.map(val => Object.assign(val, new Trades()));
+            addTradesToTable(table, trades, true);
         },
         // otherwise, print an error message
         error: (error) => console.log('[ERROR] ' + error.responseText),
@@ -53,14 +53,14 @@ export function mockTrades(number) {
     for (let i = 0; i < number; i++) {
         let insider = new Insider("Mega Super Fond", ["CEO", "Director"]);
         let insiders = Array(5).fill(insider);
-        let trade = new Trade(i, "INTC", "Intel Corporation", insiders, "Buy",
+        let trade = new Trades(i, "INTC", "Intel Corporation", insiders, "Buy",
             20, 100_000, 200_000, "2022/01/01");
         trades.push(trade);
     }
     return trades;
 }
 
-function addTradesToTable(table, trades) {
+export function addTradesToTable(table, trades, withCompany) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
     table.addAll(trades.map(trade => {
         storedTrades[trade.id] = trade;
@@ -72,11 +72,11 @@ function addTradesToTable(table, trades) {
 
         // get unique insider positions
         let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
-        let positionVal = (positions.length === 0) ? defaultCell : positions.join(', ');
+        let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
 
         // get other trade values
         let colorStyle = "color: " + typeColors[trade.type];
-        let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : '-';
+        let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";
         let sharesVal = Utils.formatNumber(trade.shareCount);
         let totalVal = Utils.formatNumber(trade.leftShares);
         let dateVal = Utils.formatDate(trade.date);
@@ -84,8 +84,8 @@ function addTradesToTable(table, trades) {
         // build table row element
         let tradeRow = $(`
             <tr id="trade-${trade.id}"">
-                <td class="link">${trade.symbol}</td>
-                <td> ${trade.company}</td>
+                ${withCompany ? `<td class="link">${trade.symbol}</td>` : ""}
+                ${withCompany ? `<td> ${trade.company}</td>` : ""}
                 <td class="insider-cell">${insiderVal}</td>
                 <td>${positionVal}</td>
                 <td style="${colorStyle}">${trade.type}</td>

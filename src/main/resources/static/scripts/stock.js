@@ -1,6 +1,8 @@
-import {Dashboard, InfoBlock, Table, LineGraph} from './element.js';
-import {mockTrades, fetchTrades} from './trade.js';
+import {Dashboard, InfoBlock, Table, LineGraph} from './elements.js';
+import {mockTrades, addTradesToTable} from './trades.js';
+import {Tab, initTabs} from "./tabs.js";
 import {initScore} from "./rating.js";
+import * as Utils from "./utils.js";
 
 class Stock {
     constructor(company, symbol, insiders, lastActive, description, keyPoints, efficiency, liquidity, overall) {
@@ -17,9 +19,10 @@ class Stock {
 }
 
 class Insider {
-    constructor(name, positions, lastActive) {
+    constructor(name, positions, sharesTotal, lastActive) {
         this.name = name;
         this.positions = positions;
+        this.sharesTotal = sharesTotal;
         this.lastActive = lastActive;
     }
 }
@@ -29,13 +32,13 @@ $(document).ready(() => {
     // define table with insider trades
     let tradesTable = new Table("trades",
         ["Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
-        [2, 2, 1.5, 1.5, 1.5, 1.5, 1.5]
+        [1.2, 1.2, 1, 1, 1, 1, 1]
     );
 
     // define table with insider information
     let insidersTable = new Table("insiders",
-        ["Name", "Position", "Last Active"],
-        [1, 1, 1]
+        ["Name", "Position", "Shares Total", "Last Active"],
+        [1, 2, 1, 1]
     );
 
     // insert stock data
@@ -47,18 +50,15 @@ $(document).ready(() => {
     let keyPoints = new InfoBlock("key-points", "Key Points", keyPointsVal);
     let description = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");
     let lineGraph0 = new LineGraph("graph0", "Average Value per Buy");
-    let lineGraph1 = new LineGraph("graph1", "Average Value per Buy");
-    let lineGraph2 = new LineGraph("graph2", "Average Value per Buy");
-    let dashboard = new Dashboard([lineGraph0, keyPoints, description, lineGraph1, lineGraph2]);
+    let dashboard = new Dashboard([lineGraph0, keyPoints, description]);
 
     initTabs([
         new Tab("Dashboard", dashboard.html, () => {
             // render graphs with input data
-            lineGraph0.draw();
-            lineGraph1.draw();
-            lineGraph2.draw();
+            lineGraph0.draw(["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May"], [7, 8, 8, 9, 16], 1);
             // set block height in the grid (depends on block content)
-            dashboard.blocks.forEach(block => block.align());
+            $(window).resize(() => dashboard.update());
+            dashboard.update();
         }),
         new Tab("Insiders", insidersTable.html, () => {
             addInsidersToTable(insidersTable, stock.insiders);
@@ -66,7 +66,7 @@ $(document).ready(() => {
         }),
         new Tab("Trades", tradesTable.html, () => {
             // fetchTrades($("#trades tbody"), ["Buy"]);
-            addTradesToTable(tradesTable, mockTrades(20))
+            addTradesToTable(tradesTable, mockTrades(20), false)
             tradesTable.init();
         })
     ]);
@@ -75,25 +75,11 @@ $(document).ready(() => {
     $("#panel-arrow").on("click", () => toggleSidePanel());
 });
 
-function addTradesToTable(table, trades) {
-    table.addAll(trades.map(trade => `<tr>
-        <tr id="trade-${trade.id}"">
-        <td class="link">${trade.symbol}</td>
-        <td> ${trade.company}</td>
-        <td class="insider-cell">${insiderVal}</td>
-        <td>${positionVal}</td>
-        <td style="${colorStyle}">${trade.type}</td>
-        <td>${priceVal}</td>
-        <td>${sharesVal}</td>
-        <td>${totalVal}</td>
-        <td>${dateVal}</td>
-    </tr>`));
-}
-
 function addInsidersToTable(table, insiders) {
     table.addAll(insiders.map(insider => `<tr>
         <td>${insider.name}</td>
-        <td>${insider.positions}</td>
+        <td>${insider.positions.join(", ")}</td>
+        <td>${Utils.formatNumber(insider.sharesTotal)}</td>
         <td>${insider.lastActive}</td>
     </tr>`));
 }
@@ -126,10 +112,10 @@ function mockStock() {
         "personal computers. The multinational technology company is also the world's largest manufacturer by " +
         "revenue of semiconductor chips, a product used in most of the world's electronic devices.";
     let insiders = [
-        new Insider("Steve Jobs0", "CEO", "23 Aug, 2022"),
-        new Insider("Steve Jobs1", ["10% Owner", "CTO"], "24 Aug, 2022"),
-        new Insider("Steve Jobs2", ["10% Owner", "CCO", "Chief Technical Officer"], "20 Aug, 2022"),
-        new Insider("Steve Jobs3", "10% Owner", "01 Jan, 2001"),
+        new Insider("Steve Jobs0", ["CEO"], 2000, "23 Aug, 2022"),
+        new Insider("Steve Jobs1", ["10% Owner", "CTO"], 2312322, "24 Aug, 2022"),
+        new Insider("Steve Jobs2", ["10% Owner", "Chief Technical Officer"], 3298326382, "20 Aug, 2022"),
+        new Insider("Steve Jobs3", ["10% Owner"], 2, "01 Jan, 2001"),
     ];
     let keyPoints = [
         "lowest activity in 5 years",

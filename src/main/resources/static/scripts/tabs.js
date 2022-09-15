@@ -1,6 +1,6 @@
 window.tabs = [];
 
-class Tab {
+export class Tab {
     constructor(name, html, init) {
         this.name = name;
         this.html = html;
@@ -8,11 +8,13 @@ class Tab {
     }
 }
 
-function initTabs(tabs) {
+export function initTabs(tabs) {
     window.tabs = tabs;
-    let tabsEl = $("#tabs")
+    let htmlTabs = $("#tabs")
     for (let i = 0; i < tabs.length; i++) {
-        tabsEl.append(`<a onclick="loadTab(${i})">${tabs[i].name}</a>`);
+        let tab = $(`<a>${tabs[i].name}</a>`);
+        tab.on("click", () => loadTab(i));
+        htmlTabs.append(tab);
     }
     loadTab(0);
 }

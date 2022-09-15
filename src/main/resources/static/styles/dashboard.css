@@ -34,8 +34,4 @@
     .info-block {
         min-width: 200px;
     }
-
-    .info-block:has(>.line-chart) {
-        grid-row-end: span 26 !important;
-    }
 }

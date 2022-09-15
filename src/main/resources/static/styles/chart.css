@@ -1,11 +1,17 @@
+canvas {
+    margin: 10px auto 0 auto;
+    min-height: 290px;
+    max-height: 290px;
+}
+
 .line-chart {
-    min-width: 580px;
-    max-width: 580px;
+    min-height: 290px;
+    max-height: 290px;
 }
 
 @media screen and (max-width: 700px) {
     .line-chart {
-        min-width: 260px;
-        max-width: 260px;
+        min-height: 290px;
+        max-height: 290px;
     }
 }

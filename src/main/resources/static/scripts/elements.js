@@ -1,4 +1,5 @@
-import * as search from "./search.js";
+import * as Search from "./search.js";
+import * as Utils from "./utils.js";
 
 customElements.define('default-header', class extends HTMLElement {
     constructor() {
@@ -34,7 +35,7 @@ customElements.define('default-header', class extends HTMLElement {
         })
 
         // show search hints while typing
-        search.addTestHints($("#search"));
+        Search.addTestHints($("#search"));
     }
 });
 
@@ -128,6 +129,10 @@ export class Dashboard {
         this.blocks = blocks;
     }
 
+    update() {
+        this.blocks.forEach(block => block.align());
+    }
+
     get html() {
         return `
             <div class="dashboard">
@@ -168,32 +173,56 @@ export class LineGraph extends InfoBlock {
         this.name = name;
     }
 
-    draw() {
-        let x = ["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May"];
-        let y = [7, 8, 8, 9, 16];
-
+    draw(labels, data, spread) {
+        let hue = Math.random() * 360;
+        let lightColor = `hsl(${hue}, 100%, 45%)`;
+        let darkColor = `hsl(${hue}, 100%, 20%)`;
         new Chart(this.id, {
             type: "line",
             data: {
-                labels: x,
+                labels: labels,
                 datasets: [{
                     fill: false,
                     lineTension: 0.3,
-                    backgroundColor: "red",
-                    borderColor: "rgba(0,0,255,0.1)",
-                    data: y
+                    backgroundColor: darkColor,
+                    borderColor: lightColor,
+                    data: data
                 }]
             },
             options: {
                 legend: {display: false},
+                maintainAspectRatio: false,
+                responsive: true,
                 scales: {
-                    yAxes: [{ticks: {min: 6, max: 16}}],
+                    yAxes: [{
+                        ticks: {
+                            min: Math.min(...data) - spread,
+                            max: Math.max(...data) + spread,
+                        }
+                    }],
                 },
                 hover: {
                     intersect: false
                 },
                 tooltips: {
                     intersect: false,
+                    callbacks: {
+                        title: function(item, ctx) {
+                            return ctx['labels'][item[0]['index']];
+                        },
+                        label: function(item, ctx) {
+                            let data = ctx['datasets'][0]['data'][item['index']];
+                            return Utils.formatMoney(data);
+                        },
+                    },
+                    displayColors: false,
+                    backgroundColor: "white",
+                    titleFontColor: darkColor,
+                    titleFontSize: 14,
+                    bodyFontColor: lightColor,
+                    bodyFontSize: 12,
+                    borderColor: darkColor,
+                    borderWidth: 0.2,
                 }
             }
         });
