@@ -10,19 +10,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
 public class WebAppInitializer implements WebApplicationInitializer {
+    private static final String BASE_PACKAGES_PATH = "com.alexeykovzel.fi";
 
     @Override
     public void onStartup(ServletContext context) {
 
         // init application config
         var root = new AnnotationConfigWebApplicationContext();
-        root.scan("com.alexeykovzel.insidr");
+        root.scan(BASE_PACKAGES_PATH);
         context.addListener(new ContextLoaderListener(root));
 
         // init dispatcher servlet
-        ServletRegistration.Dynamic servlet = context.addServlet("mvc",
-                new DispatcherServlet(new GenericWebApplicationContext()));
-        servlet.setLoadOnStartup(1);
+        var dispatcher = new DispatcherServlet(new GenericWebApplicationContext());
+        var servlet = context.addServlet("mvc", dispatcher);
         servlet.addMapping("/");
+        servlet.setLoadOnStartup(1);
     }
 }

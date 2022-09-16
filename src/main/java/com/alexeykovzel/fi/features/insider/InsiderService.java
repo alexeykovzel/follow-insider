@@ -31,7 +31,8 @@ public class InsiderService {
                 ratings.add(InsiderRating.builder()
                         .efficiency(calculateEfficiency(insider))
                         .insider(insider)
-                        .build()));
+                        .build())
+        );
         insiderRatingRepository.saveAll(ratings);
     }
 

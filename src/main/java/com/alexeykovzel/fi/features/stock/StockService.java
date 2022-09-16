@@ -18,6 +18,7 @@ public class StockService {
     public void updateStockRecords() {
         stockRecordRepository.deleteAll();
         ProgressBar.execute("Updating stock records...", companyRepository.findAll(), company ->
-                stockRecordRepository.saveAll(alphaVantageAPI.getStockRecords(company)));
+                stockRecordRepository.saveAll(alphaVantageAPI.getStockRecords(company))
+        );
     }
 }

@@ -16,12 +16,14 @@
 <body>
 <default-header></default-header>
 
-<div class="content">
-    <h2 style="margin-top: 30px">
-        [<span th:text="${status}">Status</span>]
-        <span th:text="${error}">Error</span>
-    </h2>
-    <p th:text="${message}">Message</p>
+<div class="content-wrapper">
+    <article>
+        <h2>
+            [<span th:text="${status}">Status</span>]
+            <span th:text="${error}">Error</span>
+        </h2>
+        <p th:text="${message}">Message</p>
+    </article>
 </div>
 
 <default-footer></default-footer>

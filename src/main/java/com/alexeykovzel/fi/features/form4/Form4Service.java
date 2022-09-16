@@ -117,7 +117,7 @@ public class Form4Service extends EdgarService {
                 // receive filing date
                 String dateVal = entry.get("updated").asText();
                 dateVal = dateVal.substring(0, dateVal.indexOf("T"));
-                Date date = DateUtils.parse(dateVal, "yyyy-MM-dd");
+                Date date = DateUtils.parseEdgar(dateVal);
                 // retrieve filing url
                 String cik = entry.get("link").get("href").asText().split("/")[6];
                 String url = String.format(FORM4_URL, cik, accessionNo);
@@ -144,7 +144,7 @@ public class Form4Service extends EdgarService {
                 // skip non-insider transactions (not of 4-th form)
                 if (!forms.get(i).asText().equals("4")) continue;
                 // retrieve filing data and add it to the list
-                Date date = DateUtils.parse(dates.get(i).asText(), "yyyy-MM-dd");
+                Date date = DateUtils.parseEdgar(dates.get(i).asText());
                 String accessionNo = accessions.get(i).asText();
                 String url = String.format(FORM4_URL, company.getCik(), accessionNo);
                 form4s.add(new Form4(accessionNo, date, url));
@@ -172,7 +172,7 @@ public class Form4Service extends EdgarService {
                         .substring(args[4].lastIndexOf("/") + 1)
                         .replace(".txt", "");
                 if (takenFilings.contains(accessionNo)) continue;
-                Date date = DateUtils.parse(args[3], "yyyy-MM-dd");
+                Date date = DateUtils.parseEdgar(args[3]);
                 String url = SEC_URL + "/Archives/" + args[4];
                 form4s.add(new Form4(accessionNo, date, url));
                 takenFilings.add(accessionNo);

@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class ServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(ServerApplication.class);
-        application.setAdditionalProfiles("tls");
-        application.run(args);
+        new SpringApplication(ServerApplication.class).run(args);
     }
 }

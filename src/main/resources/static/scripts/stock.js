@@ -41,7 +41,11 @@ $(document).ready(() => {
         [1, 2, 1, 1]
     );
 
+    // TODO: Fetch data from the server.
+
     // insert stock data
+    let symbol = Utils.getLastUrlSegment();
+    // let stock = fetchStock(symbol);
     let stock = mockStock()
     fillSidePanel(stock);
 

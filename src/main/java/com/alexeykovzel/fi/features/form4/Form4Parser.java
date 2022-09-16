@@ -59,7 +59,7 @@ public class Form4Parser {
         price = (price == null && exercisePrice != null) ? exercisePrice.get("value") : price;
 
         return Trade.builder()
-                .date(DateUtils.parse(root.get("transactionDate").get("value").asText(), "yyyy-MM-dd"))
+                .date(DateUtils.parseEdgar(root.get("transactionDate").get("value").asText()))
                 .code(root.get("transactionCoding").get("transactionCode").asText())
                 .securityTitle(root.get("securityTitle").get("value").asText())
                 .isDirect(ownership.get("value").asText().equals("D"))

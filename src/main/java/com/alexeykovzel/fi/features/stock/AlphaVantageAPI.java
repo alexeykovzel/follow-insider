@@ -45,7 +45,7 @@ public class AlphaVantageAPI {
             String date = dates.next();
             JsonNode stats = timeSeries.get(date);
             records.add(StockRecord.builder()
-                    .date(DateUtils.parse(date, "yyyy-dd-MM"))
+                    .date(DateUtils.parseEdgar(date))
                     .price(stats.get("5. adjusted close").asDouble())
                     .dividends(stats.get("7. dividend amount").asDouble())
                     .company(company)

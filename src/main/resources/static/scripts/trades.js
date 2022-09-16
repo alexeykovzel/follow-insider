@@ -74,17 +74,20 @@ export function addTradesToTable(table, trades, withCompany) {
         let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
         let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
 
-        // get other trade values
+        // get other column values
         let colorStyle = "color: " + typeColors[trade.type];
         let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";
         let sharesVal = Utils.formatNumber(trade.shareCount);
         let totalVal = Utils.formatNumber(trade.leftShares);
         let dateVal = Utils.formatDate(trade.date);
 
+        // reference to the stock page
+        let stockRef = '/stocks/' + trade.symbol.toLowerCase();
+
         // build table row element
         let tradeRow = $(`
             <tr id="trade-${trade.id}"">
-                ${withCompany ? `<td class="link">${trade.symbol}</td>` : ""}
+                ${withCompany ? `<td onclick="location.assign('${stockRef}')" class="link">${trade.symbol}</td>` : ""}
                 ${withCompany ? `<td> ${trade.company}</td>` : ""}
                 <td class="insider-cell">${insiderVal}</td>
                 <td>${positionVal}</td>

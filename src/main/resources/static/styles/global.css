@@ -119,7 +119,7 @@ article p {
     display: flex;
     position: relative;
     flex-direction: column;
-    width: calc(50% + 300px);
+    width: calc(60% + 300px);
     margin: 120px auto 50px auto;
     gap: 30px;
 }
@@ -130,9 +130,10 @@ article p {
     color: var(--blue-1);
 }
 
-@media screen and (max-width: 768px) {
-    .content {
-        width: 90%;
+@media screen and (max-width: 1200px) {
+    .content-wrapper {
+        width: auto;
+        margin: 100px 6% 50px 6%;
     }
 }
 
@@ -333,7 +334,7 @@ default-header h2 {
     color: white !important;
 }
 
-@media (min-width: 1080px) {
+@media (min-width: 1200px) {
     default-header {
         flex-direction: row;
     }
@@ -397,6 +398,7 @@ default-footer ul {
 .copyright {
     font-size: 14px;
     opacity: 0.6;
+    color: white;
 }
 
 .fa {

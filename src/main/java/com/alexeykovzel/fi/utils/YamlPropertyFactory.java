@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.utils;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -13,7 +13,7 @@ public class YamlPropertyFactory implements PropertySourceFactory {
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public @NotNull PropertySource<?> createPropertySource(String name, EncodedResource encodedResource) {
+    public @NonNull PropertySource<?> createPropertySource(String name, EncodedResource encodedResource) {
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(encodedResource.getResource());
 

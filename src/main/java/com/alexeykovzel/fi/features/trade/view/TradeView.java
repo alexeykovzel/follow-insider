@@ -1,7 +1,6 @@
-package com.alexeykovzel.fi.features.trade;
+package com.alexeykovzel.fi.features.trade.view;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Date;
@@ -32,21 +31,13 @@ public interface TradeView {
     Double getLeftShares();
 
     Date getDate();
-}
 
-interface InsiderView {
+    interface InsiderView {
 
-    String getCik();
+        String getCik();
 
-    String getName();
+        String getName();
 
-    Collection<String> getPositions();
-}
-
-@Component
-class ViewBean {
-
-    public String getType(Trade trade) {
-        return TradeType.valueOfCode(trade.getCode());
+        Collection<String> getPositions();
     }
 }

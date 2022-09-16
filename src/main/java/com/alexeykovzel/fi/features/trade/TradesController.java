@@ -1,5 +1,6 @@
 package com.alexeykovzel.fi.features.trade;
 
+import com.alexeykovzel.fi.features.trade.view.TradeView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

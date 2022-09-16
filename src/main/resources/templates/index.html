@@ -12,6 +12,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="module" src="../static/scripts/elements.js"></script>
     <script type="module" src="../static/scripts/trades.js"></script>
+    <script type="module" src="../static/scripts/index.js"></script>
     <title>FI - Dashboard</title>
 </head>
 
@@ -49,65 +50,9 @@
             </div>
         </div>
     </div>
-
-    <!-- transaction table -->
-    <div class="table-wrapper scrollbar">
-        <table>
-            <thead>
-            <tr class="trade-row">
-                <th>Symbol</th>
-                <th>Company</th>
-                <th>Insider</th>
-                <th>Position</th>
-                <th>Type</th>
-                <th>Price</th>
-                <th>Shares</th>
-                <th>Total</th>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody id="trades"></tbody>
-        </table>
-    </div>
-
 </div>
 
 <default-footer></default-footer>
 </body>
-
-<style>
-    .trade-row {
-        grid-template-columns: 1fr repeat(3, 2fr) repeat(5, 1.5fr);
-    }
-
-    .insider {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .insider-tail {
-        color: #bbb;
-        font-style: italic;
-        cursor: pointer;
-    }
-</style>
-
-<script>
-    $(document).ready(() => {
-        handleFilters();
-        fetchTrades($("#trades tbody"), getCheckedTypes());
-    });
-
-    function handleFilters() {
-        // reload trades from the server whenever a checkbox is checked
-        $('.filters :checkbox').change(() => fetchTrades($("#trades tbody")));
-    }
-
-    function getCheckedTypes() {
-        return $('input[type=checkbox]:checked').map(function () {
-            return $(this).attr('name');
-        }).get();
-    }
-</script>
 
 </html>

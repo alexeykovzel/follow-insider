@@ -28,3 +28,8 @@ export function formatDate(val) {
 export function formatMoney(val) {
     return val.toFixed(1) + "$";
 }
+
+export function getLastUrlSegment() {
+    let segments = location.href.split("?")[0].split("/");
+    return segments.pop() || segments.pop();
+}

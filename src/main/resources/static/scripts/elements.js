@@ -12,7 +12,7 @@ customElements.define('default-header', class extends HTMLElement {
                 <div class="search autocomplete">
                     <label for="search"></label>
                     <input id="search" type="text" placeholder="Type a company or insider">
-                    <object class="center" type="image/svg+xml" data="/images/search.svg"></object>
+                    <object class="center" type="image/svg+xml" data="/images/icons/search.svg"></object>
                 </div>
                 <button class="nav-btn">
                     <input id="nav-box" class="nav-box" type="checkbox"/>
@@ -46,9 +46,9 @@ customElements.define('default-footer', class extends HTMLElement {
         // set footer in place of a custom element 
         $(this).html(`
             <ul class="nav-links">
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/faq">FAQ</a></li>
-                <li><a href="/faq">Contact</a></li>
+                <li onclick="location.assign('/')"><p>Dashboard</p></li>
+                <li onclick="location.assign('/faq')"><p>FAQ</p></li>
+                <li onclick="location.assign('/contact')"><p>Contact</p></li>
             </ul>
             <div class="social">
                 <a href="https://facebook.com/" class="fa fa-facebook"></a>
