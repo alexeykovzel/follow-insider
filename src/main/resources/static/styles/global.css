@@ -154,7 +154,7 @@ default-header {
     z-index: 99;
 }
 
-default-header div {
+default-header>div {
     display: flex;
     align-items: center;
     width: 100%;
@@ -271,6 +271,8 @@ default-header h2 {
 
 /* search bar */
 .search {
+    display: block;
+    position: relative;
     font-size: var(--header-font);
     flex-grow: 1;
 }
@@ -299,33 +301,28 @@ default-header h2 {
 
 /* autocomplete */
 .autocomplete {
-    display: inline-block;
-    position: relative;
-    z-index: 99;
-}
-
-.autocomplete-items {
-    overflow: hidden;
-    border-radius: 20px;
     position: absolute;
-    box-shadow: var(--shadow-1);
-    max-width: fit-content;
-    min-width: calc(100% + 20px);
-    margin-top: 5px;
+    overflow: hidden;
     font-size: var(--header-font);
-    font-weight: normal;
+    box-shadow: var(--shadow-1);
+    width: calc(100% + 20px);
+    border-radius: 20px;
+    margin-top: 5px;
+    z-index: 99;
     right: 0;
     left: 0;
 }
 
-.autocomplete-items div {
+.autocomplete p {
+    display: block;
+    width: 100%;
     padding: 15px 30px;
     background-color: white;
     color: var(--blue-4);
     cursor: pointer;
 }
 
-.autocomplete-items div:hover {
+.autocomplete p:hover {
     background-color: #eee;
 }
 

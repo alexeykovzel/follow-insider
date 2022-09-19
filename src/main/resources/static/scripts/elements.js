@@ -5,13 +5,14 @@ customElements.define('default-header', class extends HTMLElement {
     constructor() {
         super();
 
-        // set header in place of a custom element 
-        $(this).html(`
+        // set header in place of a custom element
+        let header = $(this);
+        header.html(`
             <div>
                 <h2 onclick="location.assign('/')">FI</h2>
-                <div class="search autocomplete">
-                    <label for="search"></label>
-                    <input id="search" type="text" placeholder="Type a company or insider">
+                <div id="search" class="search">
+                    <label for="search-input"></label>
+                    <input id="search-input" type="text" placeholder="Type a company or insider">
                     <object class="center" type="image/svg+xml" data="/images/icons/search.svg"></object>
                 </div>
                 <button class="nav-btn">
@@ -27,19 +28,20 @@ customElements.define('default-header', class extends HTMLElement {
         `);
 
         // configure the navigation menu for mobile
-        $('.nav-btn').on('click', function () {
+        header.find(".nav-btn").on("click", function () {
             let box = $('.nav-box');
-            let checked = box.is(':checked');
-            $('.header-menu').css('max-height', checked ? 0 : 240);
-            box.prop('checked', !checked);
+            let checked = box.is(":checked");
+            $('.header-menu').css("max-height", checked ? 0 : 240);
+            box.prop("checked", !checked);
         })
 
         // show search hints while typing
-        Search.addTestHints($("#search"));
+        let testHints = ["New York", "A very very very very long hint", "Neta1", "Neta2"];
+        Search.setHints(header.find("#search"), testHints);
     }
 });
 
-customElements.define('default-footer', class extends HTMLElement {
+customElements.define("default-footer", class extends HTMLElement {
     constructor() {
         super();
 

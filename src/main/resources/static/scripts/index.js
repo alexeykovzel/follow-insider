@@ -1,18 +1,6 @@
 import {Table} from "./elements.js";
 import * as Trades from "./trades.js";
 
-/*
-                <th>Symbol</th>
-                <th>Company</th>
-                <th>Insider</th>
-                <th>Position</th>
-                <th>Type</th>
-                <th>Price</th>
-                <th>Shares</th>
-                <th>Total</th>
-                <th>Date</th>
- */
-
 $(document).ready(() =>  {
     handleFilters();
     let tradesTable = new Table("trades",

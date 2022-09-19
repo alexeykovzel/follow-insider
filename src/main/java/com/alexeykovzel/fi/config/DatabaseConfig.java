@@ -31,7 +31,6 @@ public class DatabaseConfig {
         executor.scheduleAtFixedRate(() -> form4Service.updateRecentFilings(0, 40), 0, 30, TimeUnit.SECONDS);
 
 //        executor.scheduleAtFixedRate(() -> {
-//            companyService.updateCompanies();
 //            tradeService.updateTradeRating();
 //            insiderService.updateInsiderRating();
 //            companyService.updateCompanyRating();

@@ -3,10 +3,13 @@ package com.alexeykovzel.fi.features;
 import com.alexeykovzel.fi.features.company.CompanyRepository;
 import com.alexeykovzel.fi.features.insider.InsiderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 @RestController
 @RequestMapping("/search")
@@ -15,16 +18,17 @@ public class SearchController {
     private final CompanyRepository companyRepository;
     private final InsiderRepository insiderRepository;
 
-    @PostMapping
-    public void sendQuery(@RequestParam("q") String query) {
-        System.out.println("Query received: " + query);
+    @GetMapping
+    public ModelAndView sendQuery(@RequestParam("q") String query) {
+        String symbol = companyRepository.findSymbolByName(query);
+        if (symbol == null) {
+            // TODO: Try to find the closest match.
+        }
+        return new ModelAndView("redirect:/stocks/" + symbol);
     }
 
     @GetMapping("/hints")
     public Collection<String> getSearchHints() {
-        Collection<String> hints = new HashSet<>();
-        hints.addAll(companyRepository.findAllNames());
-        hints.addAll(insiderRepository.findAllNames());
-        return hints;
+        return companyRepository.findAllNames();
     }
 }

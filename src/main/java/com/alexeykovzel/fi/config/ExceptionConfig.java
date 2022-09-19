@@ -12,8 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
-    protected ResponseEntity<Object> handleNotFound(Exception e, WebRequest request) {
-        return handleExceptionInternal(e, e.getLocalizedMessage(),
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    protected ResponseEntity<Object> handleAnyError(Exception e, WebRequest request) {
+        return handleExceptionInternal(e, e.getLocalizedMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }

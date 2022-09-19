@@ -45,8 +45,8 @@ $(document).ready(() => {
 
     // insert stock data
     let symbol = Utils.getLastUrlSegment();
-    // let stock = fetchStock(symbol);
-    let stock = mockStock()
+    // let stock = mockStock()
+    let stock = fetchStock(symbol);
     fillSidePanel(stock);
 
     // configure dashboard info blocks

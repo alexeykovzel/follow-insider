@@ -9,14 +9,11 @@ import java.util.Collection;
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, String> {
 
-    @Query("SELECT c.cik FROM Company c")
-    Collection<String> getStoredCompanies();
-
-    @Query("SELECT c FROM Company c WHERE NOT EXISTS (SELECT 1 FROM StockRecord r WHERE c = r.company)")
-    Collection<Company> findWithoutStockRecords();
-
     @Query(value = "SELECT CONCAT(c.name, ' (', c.symbol, ')') FROM companies c WHERE c.symbol != ''", nativeQuery = true)
     Collection<String> findAllNames();
 
     Company findBySymbol(String symbol);
+
+    @Query("SELECT c.symbol FROM Company c WHERE c.name = :name")
+    String findSymbolByName(String name);
 }
