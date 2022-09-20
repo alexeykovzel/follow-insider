@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.insider;
 
-import com.alexeykovzel.fi.features.company.Company;
+import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.form4.Form4;
 import lombok.*;
 
@@ -14,20 +14,19 @@ import java.util.Collection;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude = {"company", "form4s", "positions"})
-@ToString(exclude = {"company", "form4s"})
+@EqualsAndHashCode(exclude = {"stock", "form4s", "positions"})
+@ToString(exclude = {"stock", "form4s"})
 public class Insider {
 
     @Id
-    @Column(name = "cik")
     private String cik;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_cik")
-    private Company company;
+    @JoinColumn(name = "stock_cik")
+    private Stock stock;
 
     @ManyToMany(mappedBy = "insiders")
     private Collection<Form4> form4s;

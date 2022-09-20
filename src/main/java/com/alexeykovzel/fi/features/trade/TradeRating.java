@@ -24,9 +24,9 @@ public class TradeRating {
     @JoinColumn(name = "trade_id")
     private Trade trade;
 
-    @Column(name = "efficiency", columnDefinition = "Decimal(5,4)")
+    @Column(columnDefinition = "Decimal(5,4)")
     private Double efficiency;
 
-    @Column(name = "weight", columnDefinition = "Decimal(5,4)")
+    @Column(columnDefinition = "Decimal(5,4)")
     private Double weight;
 }

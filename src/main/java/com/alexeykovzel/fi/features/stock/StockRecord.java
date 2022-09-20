@@ -1,6 +1,5 @@
 package com.alexeykovzel.fi.features.stock;
 
-import com.alexeykovzel.fi.features.company.Company;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,8 +12,8 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude = {"company"})
-@ToString(exclude = {"company"})
+@EqualsAndHashCode(exclude = {"stock"})
+@ToString(exclude = {"stock"})
 public class StockRecord {
 
     @Id
@@ -22,15 +21,15 @@ public class StockRecord {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_cik")
-    private Company company;
+    @JoinColumn(name = "stock_cik")
+    private Stock stock;
 
-    @Column(name = "dividends", columnDefinition = "Decimal(10, 4)")
+    @Column(columnDefinition = "Decimal(10, 4)")
     private Double dividends;
 
-    @Column(name = "price", columnDefinition = "Decimal(10, 4)")
+    @Column(columnDefinition = "Decimal(10, 4)")
     private Double price;
 
-    @Column(name = "date")
+    @Column(nullable = false)
     private Date date;
 }

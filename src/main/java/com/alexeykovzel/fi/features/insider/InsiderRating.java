@@ -24,6 +24,6 @@ public class InsiderRating {
     @JoinColumn(name = "insider_cik")
     private Insider insider;
 
-    @Column(name = "efficiency", columnDefinition = "Decimal(5,4)")
+    @Column(columnDefinition = "Decimal(5,4)")
     private Double efficiency;
 }

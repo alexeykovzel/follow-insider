@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/trades")
 @RequiredArgsConstructor
-public class TradesController {
+public class TradeController {
     private final TradeRepository tradeRepository;
 
     @GetMapping

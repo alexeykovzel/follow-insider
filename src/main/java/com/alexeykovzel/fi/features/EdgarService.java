@@ -2,7 +2,6 @@ package com.alexeykovzel.fi.features;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.val;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 public abstract class EdgarService {
     protected static final String SEC_URL = "https://www.sec.gov";
-    protected static final String COMPANIES_URL = SEC_URL + "/files/company_tickers_exchange.json";
+    protected static final String STOCKS_URL = SEC_URL + "/files/company_tickers_exchange.json";
     protected static final String FULL_INDEX_URL = SEC_URL + "/Archives/edgar/full-index/%d/QTR%d/master.idx";
     protected static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
     protected static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar?action=getcurrent&type=4&company=&dateb=&owner=only&start=%d&count=%d&output=atom";

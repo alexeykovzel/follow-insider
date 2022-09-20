@@ -12,10 +12,10 @@ public interface TradeView {
     @Value("#{@viewBean.getType(target)}")
     String getType();
 
-    @Value("#{target.form4.company.name}")
+    @Value("#{target.form4.stock.name}")
     String getCompany();
 
-    @Value("#{target.form4.company.symbol}")
+    @Value("#{target.form4.stock.symbol}")
     String getSymbol();
 
     @Value("#{target.form4.insiders}")

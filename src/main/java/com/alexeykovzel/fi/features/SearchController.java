@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features;
 
-import com.alexeykovzel.fi.features.company.CompanyRepository;
+import com.alexeykovzel.fi.features.stock.StockRepository;
 import com.alexeykovzel.fi.features.insider.InsiderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +15,12 @@ import java.util.Collection;
 @RequestMapping("/search")
 @RequiredArgsConstructor
 public class SearchController {
-    private final CompanyRepository companyRepository;
+    private final StockRepository stockRepository;
     private final InsiderRepository insiderRepository;
 
     @GetMapping
     public ModelAndView sendQuery(@RequestParam("q") String query) {
-        String symbol = companyRepository.findSymbolByName(query);
+        String symbol = stockRepository.findSymbolByName(query);
         if (symbol == null) {
             // TODO: Try to find the closest match.
         }
@@ -29,6 +29,6 @@ public class SearchController {
 
     @GetMapping("/hints")
     public Collection<String> getSearchHints() {
-        return companyRepository.findAllNames();
+        return stockRepository.findAllNames();
     }
 }

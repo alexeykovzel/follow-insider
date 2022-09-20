@@ -1,9 +1,9 @@
 package com.alexeykovzel.fi.features.form4;
 
-import com.alexeykovzel.fi.features.company.CompanyRepository;
+import com.alexeykovzel.fi.features.stock.StockRepository;
 import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.EdgarService;
-import com.alexeykovzel.fi.features.company.Company;
+import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.utils.DateUtils;
 import com.alexeykovzel.fi.utils.ProgressBar;
@@ -25,18 +25,18 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class Form4Service extends EdgarService {
-    private final CompanyRepository companyRepository;
+    private final StockRepository stockRepository;
     private final Form4Repository form4Repository;
 
     public void updateFilings(String... symbols) {
         for (String symbol : symbols) {
-            updateFilings(companyRepository.findBySymbol(symbol));
+            updateFilings(stockRepository.findBySymbol(symbol));
         }
     }
 
-    public void updateFilings(Company company) {
-        String message = String.format("Updating %s filings...", company.getSymbol());
-        updateFilings(getForm4Filings(company), message);
+    public void updateFilings(Stock stock) {
+        String message = String.format("Updating %s filings...", stock.getSymbol());
+        updateFilings(getForm4Filings(stock), message);
     }
 
     public void updateFilings(int year, int quarter) {
@@ -72,14 +72,14 @@ public class Form4Service extends EdgarService {
                 if (existingFilings.contains(filing.getAccessionNo())) return;
                 // otherwise, request filing data
                 JsonNode root = getFilingData(filing.getUrl());
-                Company company = getOrSaveCompany(root);
+                Stock stock = getOrSaveStock(root);
                 // update reporting insiders
                 Collection<Insider> insiders = parser.getReportingInsiders(root);
-                insiders.forEach(insider -> insider.setCompany(company));
+                insiders.forEach(insider -> insider.setStock(stock));
                 // save form 4 data (incl. transactions)
                 Collection<Trade> trades = parser.getTransactions(root);
                 trades.forEach(transaction -> transaction.setForm4(filing));
-                filing.setCompany(company);
+                filing.setStock(stock);
                 filing.setInsiders(insiders);
                 filing.setTrades(trades);
                 form4Repository.save(filing);
@@ -91,15 +91,15 @@ public class Form4Service extends EdgarService {
         });
     }
 
-    private Company getOrSaveCompany(JsonNode root) {
+    private Stock getOrSaveStock(JsonNode root) {
         Form4Parser parser = new Form4Parser();
         String cik = parser.getIssuerCik(root);
-        if (companyRepository.existsById(cik)) {
-            return companyRepository.getReferenceById(cik);
+        if (stockRepository.existsById(cik)) {
+            return stockRepository.getReferenceById(cik);
         } else {
-            Company company = parser.getFilingIssuer(root);
-            companyRepository.save(company);
-            return company;
+            Stock stock = parser.getFilingIssuer(root);
+            stockRepository.save(stock);
+            return stock;
         }
     }
 
@@ -130,11 +130,11 @@ public class Form4Service extends EdgarService {
         return form4s;
     }
 
-    private Collection<Form4> getForm4Filings(Company company) {
+    private Collection<Form4> getForm4Filings(Stock stock) {
         Collection<Form4> form4s = new HashSet<>();
         try {
             // define nodes for accessing filing data
-            JsonNode root = getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + company.getCik()));
+            JsonNode root = getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + stock.getCik()));
             JsonNode recent = root.get("filings").get("recent");
             JsonNode accessions = recent.get("accessionNumber");
             JsonNode forms = recent.get("form");
@@ -146,7 +146,7 @@ public class Form4Service extends EdgarService {
                 // retrieve filing data and add it to the list
                 Date date = DateUtils.parseEdgar(dates.get(i).asText());
                 String accessionNo = accessions.get(i).asText();
-                String url = String.format(FORM4_URL, company.getCik(), accessionNo);
+                String url = String.format(FORM4_URL, stock.getCik(), accessionNo);
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {

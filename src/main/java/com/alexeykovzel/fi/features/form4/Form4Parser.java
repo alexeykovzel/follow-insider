@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.form4;
 
-import com.alexeykovzel.fi.features.company.Company;
+import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.utils.DateUtils;
@@ -16,8 +16,8 @@ public class Form4Parser {
         return root.get("issuer").get("issuerCik").asText();
     }
 
-    public Company getFilingIssuer(JsonNode root) {
-        return Company.builder()
+    public Stock getFilingIssuer(JsonNode root) {
+        return Stock.builder()
                 .name(root.get("issuer").get("issuerName").asText())
                 .cik(getIssuerCik(root))
                 .build();

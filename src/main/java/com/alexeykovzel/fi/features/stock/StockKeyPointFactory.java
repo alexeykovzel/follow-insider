@@ -1,28 +1,26 @@
-package com.alexeykovzel.fi.features;
+package com.alexeykovzel.fi.features.stock;
 
-import java.util.List;
+public class StockKeyPointFactory {
 
-public class KeyPointFactory {
-
-    public List<String> getKeyPoints(String stock) {
-        return List.of(
+    public String[] getKeyPoints(Stock stock) {
+        return new String[]{
                 getActivityChange(stock),
                 getRecentBigBuy(stock),
                 getAvgInsiderReturn(stock)
-        );
+        };
     }
 
-    private String getActivityChange(String stock) {
+    private String getActivityChange(Stock stock) {
         // e.g. lowest/highest activity in 5 years.
         return "";
     }
 
-    private String getRecentBigBuy(String stock) {
+    private String getRecentBigBuy(Stock stock) {
         // e.g. John Smith bought shares for $5.0M 2 days ago.
         return "";
     }
 
-    private String getAvgInsiderReturn(String stock) {
+    private String getAvgInsiderReturn(Stock stock) {
         // e.g. Average insider return: 25% per year.
         return "";
     }

@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.form4;
 
-import com.alexeykovzel.fi.features.company.Company;
+import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.trade.Trade;
 import lombok.*;
@@ -15,12 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"trades", "insiders", "company"})
-@ToString(exclude = {"trades", "insiders", "company"})
+@EqualsAndHashCode(exclude = {"trades", "insiders", "stock"})
+@ToString(exclude = {"trades", "insiders", "stock"})
 public class Form4 {
 
     @Id
-    @Column(name = "accession_no")
     private String accessionNo;
 
     @OneToMany(mappedBy = "form4", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -35,13 +34,13 @@ public class Form4 {
     private Collection<Insider> insiders;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_cik")
-    private Company company;
+    @JoinColumn(name = "stock_cik")
+    private Stock stock;
 
     @Column(name = "filing_date")
     private Date date;
 
-    @Column(name = "url")
+    @Column
     private String url;
 
     public Form4(String accessionNo, Date date, String url) {

@@ -1,12 +1,12 @@
-package com.alexeykovzel.fi.features.stock;
+package com.alexeykovzel.fi.features.stock.api;
 
-import com.alexeykovzel.fi.features.company.Company;
+import com.alexeykovzel.fi.features.stock.Stock;
+import com.alexeykovzel.fi.features.stock.StockRecord;
 import com.alexeykovzel.fi.utils.DateUtils;
 import com.alexeykovzel.fi.utils.YamlPropertyFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +32,11 @@ public class AlphaVantageAPI {
     @Value("${rapid.api.host}")
     private String rapidApiHost;
 
-    public Collection<StockRecord> getStockRecords(Company company) {
+    public Collection<StockRecord> getStockRecords(Stock stock) {
         Collection<StockRecord> records = new HashSet<>();
 
         // retrieve time series for a given symbol
-        JsonNode timeSeries = getTimeSeriesBySymbol(company.getSymbol());
+        JsonNode timeSeries = getTimeSeriesBySymbol(stock.getSymbol());
         if (timeSeries == null) return records;
 
         // save stock price and dividends for each date
@@ -48,7 +48,7 @@ public class AlphaVantageAPI {
                     .date(DateUtils.parseEdgar(date))
                     .price(stats.get("5. adjusted close").asDouble())
                     .dividends(stats.get("7. dividend amount").asDouble())
-                    .company(company)
+                    .stock(stock)
                     .build());
         }
         return records;

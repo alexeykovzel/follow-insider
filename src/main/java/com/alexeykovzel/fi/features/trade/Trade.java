@@ -28,24 +28,24 @@ public class Trade {
     @OneToOne(mappedBy = "trade")
     private TradeRating rating;
 
-    @Column(name = "security_title")
+    @Column
     private String securityTitle;
 
-    @Column(name = "share_price", columnDefinition = "Decimal(10, 4)")
+    @Column(columnDefinition = "Decimal(10, 4)")
     private Double sharePrice;
 
-    @Column(name = "share_count")
+    @Column
     private Double shareCount;
 
-    @Column(name = "left_shares")
+    @Column
     private Double leftShares;
 
-    @Column(name = "is_direct")
+    @Column
     private Boolean isDirect;
 
-    @Column(name = "code")
+    @Column(nullable = false)
     private String code;
 
-    @Column(name = "date")
+    @Column(nullable = false)
     private Date date;
 }
