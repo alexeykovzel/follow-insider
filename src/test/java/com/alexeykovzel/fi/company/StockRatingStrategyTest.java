@@ -1,7 +1,7 @@
 package com.alexeykovzel.fi.company;
 
 import com.alexeykovzel.fi.features.stock.Stock;
-import com.alexeykovzel.fi.features.stock.StockService;
+import com.alexeykovzel.fi.features.stock.StockRatingStrategy;
 import com.alexeykovzel.fi.features.trade.TradeRating;
 import com.alexeykovzel.fi.features.trade.TradeRatingRepository;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class StockServiceTest {
+public class StockRatingStrategyTest {
 
     @Mock
     private TradeRepository tradeRepository;
@@ -29,14 +29,14 @@ public class StockServiceTest {
     private TradeRatingRepository tradeRatingRepository;
 
     @InjectMocks
-    private StockService stockService;
+    private StockRatingStrategy ratingStrategy;
 
     @Test
     public void givenStock_whenCalculateTrend_thenSuccess() {
         when(tradeRepository.findPurchaseCountByCik(any())).thenReturn(30);
         when(tradeRepository.findMinDateByCik(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
         when(tradeRepository.findPurchaseCountByCik(any(), any(), any())).thenReturn(20, 4, 12);
-        double trend = stockService.calculateTrend(new Stock());
+        double trend = ratingStrategy.calculateTrend(new Stock());
         assertThat(trend).isEqualTo(0.44);
     }
 
@@ -45,7 +45,7 @@ public class StockServiceTest {
         TradeRating r1 = TradeRating.builder().efficiency(0.8).weight(0.4).build();
         TradeRating r2 = TradeRating.builder().efficiency(0.3).weight(0.6).build();
         when(tradeRatingRepository.findByStockCik(any())).thenReturn(List.of(r1, r2));
-        double efficiency = stockService.calculateEfficiency(new Stock());
+        double efficiency = ratingStrategy.calculateEfficiency(new Stock());
         assertThat(efficiency).isEqualTo(0.5);
     }
 }

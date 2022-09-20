@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/stocks")
@@ -17,26 +17,22 @@ public class StockController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{symbol}")
-    public StockView getStock(@PathVariable String symbol) {
-        return getStockView(symbol);
+    public StockView getStockBySymbol(@PathVariable String symbol) {
+        return getStockView(stockRepository.findBySymbol(symbol))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid stock symbol: " + symbol));
     }
 
-    public StockView getStockView(String symbol) {
-        StockRating rating = stockRatingRepository.findBySymbol(symbol);
-        Stock stock = stockRepository.findBySymbol(symbol);
-        // verify that such stock and its rating exist
-        if (rating == null || stock == null) {
-            throw new IllegalArgumentException("Invalid stock symbol");
-        }
-        // then map its attributes to the view object
-        String[] keyPoints = new StockKeyPointFactory().getKeyPoints(stock);
-        Date lastActive = tradeRepository.findMaxDateByCik(stock.getCik());
+    public Optional<StockView> getStockView(Stock stock) {
+        if (stock == null) return Optional.empty();
+        String cik = stock.getCik();
         StockView view = modelMapper.map(stock, StockView.class);
-        view.setKeyPoints(keyPoints);
-        view.setLastActive(lastActive);
-        view.setTrend(rating.getTrend());
-        view.setEfficiency(rating.getEfficiency());
-        view.setOverall(rating.getOverall());
-        return view;
+        view.setKeyPoints(new StockKeyPointFactory().getKeyPoints(stock));
+        view.setLastActive(tradeRepository.findMaxDateByCik(cik));
+        stockRatingRepository.findById(cik).ifPresent(rating -> {
+            view.setTrend(rating.getTrend());
+            view.setEfficiency(rating.getEfficiency());
+            view.setOverall(rating.getOverall());
+        });
+        return Optional.of(view);
     }
 }

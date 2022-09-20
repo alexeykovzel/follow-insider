@@ -23,7 +23,7 @@ public class DatabaseConfig {
     @PostConstruct
     public void init() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(stockService::updateStocks, 0, 1, TimeUnit.DAYS);
+        executor.scheduleAtFixedRate(stockService::updateStocksRemotely, 0, 1, TimeUnit.DAYS);
         executor.scheduleAtFixedRate(() -> form4Service.updateRecentFilings(0, 40), 0, 30, TimeUnit.SECONDS);
 
 //        executor.scheduleAtFixedRate(() -> {
