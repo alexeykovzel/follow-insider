@@ -1,13 +1,12 @@
 package com.alexeykovzel.fi.features.stock;
 
 import com.alexeykovzel.fi.features.insider.Insider;
-import com.alexeykovzel.fi.features.form4.Form4;
+import com.alexeykovzel.fi.features.trade.form4.Form4;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Date;
 
 @Entity
 @Table(name = "stocks")

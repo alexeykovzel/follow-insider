@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.trade;
 
-import com.alexeykovzel.fi.features.form4.Form4;
+import com.alexeykovzel.fi.features.trade.form4.Form4;
 import lombok.*;
 
 import javax.persistence.*;

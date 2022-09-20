@@ -1,7 +1,7 @@
 package com.alexeykovzel.fi.config;
 
 import com.alexeykovzel.fi.features.stock.StockService;
-import com.alexeykovzel.fi.features.form4.Form4Service;
+import com.alexeykovzel.fi.features.trade.form4.Form4Service;
 import com.alexeykovzel.fi.features.insider.InsiderService;
 import com.alexeykovzel.fi.features.trade.TradeService;
 import lombok.RequiredArgsConstructor;

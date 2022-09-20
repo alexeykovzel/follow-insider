@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.features.form4;
+package com.alexeykovzel.fi.features.trade.form4;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -6,11 +6,12 @@ import com.alexeykovzel.fi.features.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class StockRatingStrategy {
     private final TradeRatingRepository tradeRatingRepository;

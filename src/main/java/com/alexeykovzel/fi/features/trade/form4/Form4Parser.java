@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.features.form4;
+package com.alexeykovzel.fi.features.trade.form4;
 
 import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.insider.Insider;

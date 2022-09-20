@@ -14,4 +14,6 @@ public class StockView {
     private double efficiency;
     private double trend;
     private double overall;
+    // TODO: Complete this step.
+//    private InsiderView insiderViews;
 }

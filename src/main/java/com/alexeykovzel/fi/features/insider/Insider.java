@@ -1,7 +1,7 @@
 package com.alexeykovzel.fi.features.insider;
 
 import com.alexeykovzel.fi.features.stock.Stock;
-import com.alexeykovzel.fi.features.form4.Form4;
+import com.alexeykovzel.fi.features.trade.form4.Form4;
 import lombok.*;
 
 import javax.persistence.*;

@@ -5,15 +5,15 @@ import {initScore} from "./rating.js";
 import * as Utils from "./utils.js";
 
 class Stock {
-    constructor(company, symbol, insiders, lastActive, description, keyPoints, efficiency, liquidity, overall) {
-        this.company = company;
+    constructor(name, symbol, description, insiders, keyPoints, lastActive, efficiency, trend, overall) {
+        this.company = name;
         this.symbol = symbol;
-        this.insiders = insiders;
-        this.lastActive = lastActive;
         this.description = description;
+        this.insiders = insiders;
         this.keyPoints = keyPoints;
+        this.lastActive = lastActive;
         this.efficiency = efficiency;
-        this.liquidity = liquidity;
+        this.trend = trend;
         this.overall = overall;
     }
 }
@@ -28,6 +28,28 @@ class Insider {
 }
 
 $(document).ready(() => {
+    // toggle side panel if its arrow is clicked
+    $("#panel-arrow").on("click", () => toggleSidePanel());
+    // get stock symbol from the url
+    let symbol = Utils.getLastUrlSegment();
+    // fetch and fill its data into the page
+    fetchStock(symbol);
+});
+
+function fetchStock(symbol) {
+    $.ajax({
+        type: "GET",
+        url: location.origin + "/rest/stocks/" + symbol,
+        success: (data) => {
+            let stock = Object.assign(data, new Stock());
+            initStock(stock);
+        },
+        error: (error) => console.log("[ERROR] " + error.responseText),
+    });
+}
+
+function initStock(stock) {
+    fillSidePanel(stock);
 
     // define table with insider trades
     let tradesTable = new Table("trades",
@@ -40,14 +62,6 @@ $(document).ready(() => {
         ["Name", "Position", "Shares Total", "Last Active"],
         [1, 2, 1, 1]
     );
-
-    // TODO: Fetch data from the server.
-
-    // insert stock data
-    let symbol = Utils.getLastUrlSegment();
-    // let stock = mockStock()
-    let stock = fetchStock(symbol);
-    fillSidePanel(stock);
 
     // configure dashboard info blocks
     let keyPointsVal = stock.keyPoints.map(point => "<p>- " + point + "</p>").join("");
@@ -74,10 +88,7 @@ $(document).ready(() => {
             tradesTable.init();
         })
     ]);
-
-    // toggle side panel if arrow is clicked
-    $("#panel-arrow").on("click", () => toggleSidePanel());
-});
+}
 
 function addInsidersToTable(table, insiders) {
     table.addAll(insiders.map(insider => `<tr>
@@ -86,18 +97,6 @@ function addInsidersToTable(table, insiders) {
         <td>${Utils.formatNumber(insider.sharesTotal)}</td>
         <td>${insider.lastActive}</td>
     </tr>`));
-}
-
-function fetchStock(symbol) {
-    $.ajax({
-        type: "GET",
-        url: location.origin + "stocks/" + symbol,
-        success: (data) => {
-            let stock = Object.assign(data, new Stock());
-            fillSidePanel(stock);
-        },
-        error: (error) => console.log('[ERROR] ' + error.responseText),
-    });
 }
 
 function fillSidePanel(stock) {

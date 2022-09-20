@@ -9,17 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/trades")
+@RequestMapping("/rest/trades")
 @RequiredArgsConstructor
 public class TradeController {
-    private final TradeRepository tradeRepository;
+    private final TradeService tradeService;
 
     @GetMapping
     public Collection<TradeView> getRecentTrades(@RequestParam("type") List<String> type) {
-        List<String> codes = type.stream().map(TradeType::codeOfValue).collect(Collectors.toList());
-        return tradeRepository.findTop100ByCodeInOrderByDateDesc(codes);
+        return tradeService.getRecentTradesByType(type);
     }
 }
