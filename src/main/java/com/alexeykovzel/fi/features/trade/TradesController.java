@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rest/trades")
+@RequestMapping("/trades")
 @RequiredArgsConstructor
 public class TradesController {
     private final TradeService tradeService;

@@ -8,10 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,7 +95,11 @@ public class StockService extends EdgarService {
         return stocks;
     }
 
-    public Optional<StockView> getStockViewBySymbol(String symbol) {
+    public boolean existsBySymbol(String symbol) {
+        return stockRepository.existsBySymbol(symbol.toUpperCase());
+    }
+
+    public Optional<StockView> getBySymbol(String symbol) {
         Stock stock = stockRepository.findBySymbol(symbol.toUpperCase());
         return getStockView(stock);
     }

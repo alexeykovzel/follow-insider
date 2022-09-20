@@ -39,7 +39,7 @@ $(document).ready(() => {
 function fetchStock(symbol) {
     $.ajax({
         type: "GET",
-        url: location.origin + "/rest/stocks/" + symbol,
+        url: `${location.origin}/stocks/${symbol}/xml`,
         success: (data) => {
             let stock = Object.assign(new Stock(), data);
             initStock(stock);

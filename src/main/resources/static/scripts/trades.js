@@ -37,7 +37,7 @@ export function fetchTrades(table, types) {
     // send request to retrieve trades from the server
     $.ajax({
         type: 'GET',
-        url: location.origin + "/rest/trades?type=" + types.join(','),
+        url: location.origin + "/trades?type=" + types.join(','),
         // if success, add trades to the table
         success: (data) => {
             let trades = data.map(val => Object.assign(val, new Trades()));
