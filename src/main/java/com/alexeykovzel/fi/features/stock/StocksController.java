@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest/stocks")
 @RequiredArgsConstructor
-public class StockController {
+public class StocksController {
     private final StockService stockService;
 
     @GetMapping("/{symbol}")

@@ -69,7 +69,7 @@ export class Table {
         this.fractions = fractions;
     }
 
-    init() {
+    initGrid() {
         if (this.fractions === null) {
             // set the same fraction for each column
             this.fractions = Array(this.columns.length).fill(1);
@@ -131,7 +131,7 @@ export class Dashboard {
         this.blocks = blocks;
     }
 
-    update() {
+    align() {
         this.blocks.forEach(block => block.align());
     }
 

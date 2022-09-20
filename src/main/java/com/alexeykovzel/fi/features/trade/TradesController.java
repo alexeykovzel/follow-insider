@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/trades")
 @RequiredArgsConstructor
-public class TradeController {
+public class TradesController {
     private final TradeService tradeService;
 
     @GetMapping

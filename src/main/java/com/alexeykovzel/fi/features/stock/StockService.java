@@ -102,6 +102,7 @@ public class StockService extends EdgarService {
         return getStockView(stock);
     }
 
+    // Stock { name, symbol, description, keyPoints, insiders, lastActive, efficiency, trend, overall }
     public Optional<StockView> getStockView(Stock stock) {
         if (stock == null) return Optional.empty();
         String cik = stock.getCik();

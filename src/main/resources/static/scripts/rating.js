@@ -18,6 +18,7 @@ export function initScore(boxes, score) {
 
 function getBoxPathByScore(score) {
     let rating = ratings.find(r => (score >= r.from) && (score <= r.to));
+    if (rating == null) return getDefaultBoxPath();
     return getBoxPathByName(rating.box);
 }
 

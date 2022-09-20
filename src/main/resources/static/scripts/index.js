@@ -9,7 +9,7 @@ $(document).ready(() =>  {
     );
     $(".content-wrapper").append(tradesTable.html);
     Trades.addTradesToTable(tradesTable, Trades.mockTrades(20), true)
-    tradesTable.init();
+    tradesTable.initGrid();
 });
 
 function handleFilters() {

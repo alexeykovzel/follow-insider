@@ -1,16 +1,16 @@
 import {Dashboard, InfoBlock, Table, LineGraph} from './elements.js';
-import {mockTrades, addTradesToTable} from './trades.js';
 import {Tab, initTabs} from "./tabs.js";
+import {fetchTrades} from './trades.js';
 import {initScore} from "./rating.js";
 import * as Utils from "./utils.js";
 
 class Stock {
-    constructor(name, symbol, description, insiders, keyPoints, lastActive, efficiency, trend, overall) {
+    constructor(name, symbol, description, keyPoints, insiders, lastActive, efficiency, trend, overall) {
         this.company = name;
         this.symbol = symbol;
         this.description = description;
-        this.insiders = insiders;
         this.keyPoints = keyPoints;
+        this.insiders = insiders;
         this.lastActive = lastActive;
         this.efficiency = efficiency;
         this.trend = trend;
@@ -41,7 +41,7 @@ function fetchStock(symbol) {
         type: "GET",
         url: location.origin + "/rest/stocks/" + symbol,
         success: (data) => {
-            let stock = Object.assign(data, new Stock());
+            let stock = Object.assign(new Stock(), data);
             initStock(stock);
         },
         error: (error) => console.log("[ERROR] " + error.responseText),
@@ -51,41 +51,49 @@ function fetchStock(symbol) {
 function initStock(stock) {
     fillSidePanel(stock);
 
+    // build dashboard element
+    let lineGraph0 = new LineGraph("graph0", "Average Value per Buy");
+    let dashboard = new Dashboard([lineGraph0]);
+
+    // add key points (if exist)
+    let keyPoints = stock.keyPoints.filter(p => p);
+    if (keyPoints.length > 0) {
+        let keyPointsVal = keyPoints.map(point => "<p>- " + point + "</p>").join("");
+        let keyPointsBlock = new InfoBlock("key-points", "Key Points", keyPointsVal);
+        dashboard.blocks.push(keyPointsBlock);
+    }
+    // add description (if exists)
+    if (stock.description) {
+        let descriptionBlock = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");
+        dashboard.blocks.push(descriptionBlock);
+    }
+    // define table with insider information
+    let insidersTable = new Table("insiders",
+        ["Name", "Position", "Shares Total", "Last Active"],
+        [1, 2, 1, 1]
+    );
     // define table with insider trades
     let tradesTable = new Table("trades",
         ["Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
         [1.2, 1.2, 1, 1, 1, 1, 1]
     );
 
-    // define table with insider information
-    let insidersTable = new Table("insiders",
-        ["Name", "Position", "Shares Total", "Last Active"],
-        [1, 2, 1, 1]
-    );
-
-    // configure dashboard info blocks
-    let keyPointsVal = stock.keyPoints.map(point => "<p>- " + point + "</p>").join("");
-    let keyPoints = new InfoBlock("key-points", "Key Points", keyPointsVal);
-    let description = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");
-    let lineGraph0 = new LineGraph("graph0", "Average Value per Buy");
-    let dashboard = new Dashboard([lineGraph0, keyPoints, description]);
-
     initTabs([
         new Tab("Dashboard", dashboard.html, () => {
             // render graphs with input data
             lineGraph0.draw(["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May"], [7, 8, 8, 9, 16], 1);
-            // set block height in the grid (depends on block content)
-            $(window).resize(() => dashboard.update());
-            dashboard.update();
+            // align heights of the info blocks
+            $(window).resize(() => dashboard.align());
+            dashboard.align();
         }),
         new Tab("Insiders", insidersTable.html, () => {
             addInsidersToTable(insidersTable, stock.insiders);
-            insidersTable.init();
+            insidersTable.initGrid();
         }),
         new Tab("Trades", tradesTable.html, () => {
-            // fetchTrades($("#trades tbody"), ["Buy"]);
-            addTradesToTable(tradesTable, mockTrades(20), false)
-            tradesTable.init();
+            // addTradesToTable(tradesTable, mockTrades(20), false)
+            fetchTrades(tradesTable, ["Buy"]);
+            tradesTable.initGrid();
         })
     ]);
 }
@@ -101,12 +109,12 @@ function addInsidersToTable(table, insiders) {
 
 function fillSidePanel(stock) {
     if (!$(".s-info").length) return;
-    $("#s-name").text(stock.company + " (" + stock.symbol + ")");
-    $("#last-active").text("Last active: " + stock.lastActive);
+    $("#s-name").text(stock.name + " (" + stock.symbol + ")");
+    $("#last-active").text("Last active: " + (stock.lastActive || "-"));
 
     // init stock rating
     initScore($("#efficiency-score"), stock.efficiency);
-    initScore($("#liquidity-score"), stock.liquidity);
+    initScore($("#trend-score"), stock.trend);
     initScore($("#overall-score"), stock.overall);
 }
 
