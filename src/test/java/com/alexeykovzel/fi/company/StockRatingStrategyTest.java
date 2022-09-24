@@ -1,10 +1,10 @@
 package com.alexeykovzel.fi.company;
 
-import com.alexeykovzel.fi.features.stock.Stock;
-import com.alexeykovzel.fi.features.stock.StockRatingStrategy;
-import com.alexeykovzel.fi.features.trade.TradeRating;
-import com.alexeykovzel.fi.features.trade.TradeRatingRepository;
-import com.alexeykovzel.fi.features.trade.TradeRepository;
+import com.alexeykovzel.fi.core.stock.Stock;
+import com.alexeykovzel.fi.core.stock.StockRatingStrategy;
+import com.alexeykovzel.fi.core.trade.TradeRating;
+import com.alexeykovzel.fi.core.trade.TradeRatingRepository;
+import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +33,9 @@ public class StockRatingStrategyTest {
 
     @Test
     public void givenStock_whenCalculateTrend_thenSuccess() {
-        when(tradeRepository.findPurchaseCountByCik(any())).thenReturn(30);
-        when(tradeRepository.findMinDateByCik(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
-        when(tradeRepository.findPurchaseCountByCik(any(), any(), any())).thenReturn(20, 4, 12);
+        when(tradeRepository.findPurchaseCountByStock(any())).thenReturn(30);
+        when(tradeRepository.findMinDateByStock(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
+        when(tradeRepository.findPurchaseCountByStock(any(), any(), any())).thenReturn(20, 4, 12);
         double trend = ratingStrategy.calculateTrend(new Stock());
         assertThat(trend).isEqualTo(0.44);
     }

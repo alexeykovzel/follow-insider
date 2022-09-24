@@ -17,6 +17,7 @@ public class ProgressBar {
     }
 
     public static <T> void execute(String text, Collection<T> entities, Consumer<T> consumer) {
+        if (entities == null || consumer == null) return;
         ProgressBar bar = new ProgressBar(text, entities.size());
         int i = 0;
         for (T entity : entities) {

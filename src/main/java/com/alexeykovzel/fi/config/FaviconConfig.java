@@ -11,7 +11,7 @@ import java.util.List;
 
 @Configuration
 public class FaviconConfig {
-    private static final String FAVICON_PATH = "static/images/favicon.ico";
+    private static final String FAVICON_PATH = "images/favicon.ico";
 
     @Bean
     public SimpleUrlHandlerMapping customFaviconHandlerMapping() {
