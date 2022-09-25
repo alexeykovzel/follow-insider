@@ -27,5 +27,5 @@ function getDefaultBoxPath() {
 }
 
 function getBoxPathByName(name) {
-    return `/web/images/boxes/${name}.jpg`;
+    return `/images/boxes/${name}.jpg`;
 }

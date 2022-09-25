@@ -134,19 +134,19 @@ public class Form4Service extends EdgarService {
         Collection<Form4> form4s = new HashSet<>();
         try {
             // define nodes for accessing filing data
-            JsonNode root = getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + stock.getCik()));
+            String cik = stock.getCik();
+            JsonNode root = getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + cik));
             JsonNode recent = root.get("filings").get("recent");
             JsonNode accessions = recent.get("accessionNumber");
             JsonNode forms = recent.get("form");
             JsonNode dates = recent.get("filingDate");
-
             for (int i = 0; i < accessions.size(); i++) {
                 // skip non-insider transactions (not of 4-th form)
                 if (!forms.get(i).asText().equals("4")) continue;
                 // retrieve filing data and add it to the list
                 Date date = DateUtils.parseEdgar(dates.get(i).asText());
                 String accessionNo = accessions.get(i).asText();
-                String url = String.format(FORM4_URL, stock.getCik(), accessionNo);
+                String url = String.format(FORM4_URL, trimLeadingZeros(cik), accessionNo);
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {
@@ -158,7 +158,7 @@ public class Form4Service extends EdgarService {
     private Collection<Form4> getForm4Filings(int year, int quarter) {
         Collection<Form4> form4s = new HashSet<>();
         Collection<String> takenFilings = new HashSet<>();
-        try (InputStream in = sendUrlRequest(String.format(FULL_INDEX_URL, year, quarter));
+        try (InputStream in = sendUrlRequest(String.format(FULL_INDEX_URL, year, quarter), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -185,7 +185,7 @@ public class Form4Service extends EdgarService {
 
     private Collection<Form4> getForm4Filings(int daysAgo) {
         Collection<Form4> form4s = new HashSet<>();
-        try (InputStream in = sendUrlRequest(String.format(FORM4_DAYS_AGO_URL, daysAgo));
+        try (InputStream in = sendUrlRequest(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {

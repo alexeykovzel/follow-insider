@@ -13,7 +13,7 @@ customElements.define('default-header', class extends HTMLElement {
                 <div id="search" class="search">
                     <label for="search-input"></label>
                     <input id="search-input" type="text" placeholder="Type a company or insider">
-                    <object class="center" type="image/svg+xml" data="/imagesns/search.svg"></object>
+                    <object class="center" type="image/svg+xml" data="/images/icons/search.svg"></object>
                 </div>
                 <button class="nav-btn">
                     <input id="nav-box" class="nav-box" type="checkbox"/>
@@ -88,6 +88,8 @@ export class Table {
     }
 
     reset() {
+        // set header fractions
+        this.initGrid();
         // delete all rows
         this.ref.find("tbody").empty();
         // add loading animation (if not yet)

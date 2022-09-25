@@ -16,8 +16,8 @@ import java.util.List;
 public class TradesController {
     private final TradeService tradeService;
 
-    @GetMapping
-    public Collection<TradeView> getRecentTrades(@RequestParam("type") List<String> type) {
-        return tradeService.getRecentTradesByType(type);
+    @GetMapping("/recent")
+    public Collection<TradeView> getRecentTrades(@RequestParam("types") List<String> types) {
+        return tradeService.getRecentTradesByTypes(types);
     }
 }

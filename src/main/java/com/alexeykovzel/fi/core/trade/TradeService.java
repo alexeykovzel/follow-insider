@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,20 @@ public class TradeService {
         tradeRatingRepository.saveAll(ratings);
     }
 
-    public Collection<TradeView> getRecentTradesByType(List<String> type) {
-        List<String> codes = type.stream().map(TradeCode::codeOfValue).collect(Collectors.toList());
-        return tradeRepository.findTop100ByCodeInOrderByDateDesc(codes);
+    public Collection<TradeView> getRecentTradesByTypes(List<String> types) {
+        return tradeRepository.findTop100ByCodeInOrderByDateDesc(getCodesByTypes(types));
+    }
+
+    public Collection<TradeView> getTradesByStockSymbol(String symbol, List<String> types) {
+        return tradeRepository.findByStockSymbol(symbol, getCodesByTypes(types));
+    }
+    
+    private List<String> getCodesByTypes(List<String> types) {
+        List<String> codes = new ArrayList<>();
+        for (String type : types) {
+            String code = TradeCode.codeOfType(type);
+            codes.add(code);
+        }
+        return codes;
     }
 }

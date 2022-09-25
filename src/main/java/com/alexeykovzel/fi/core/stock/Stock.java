@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(exclude = {"form4s", "insiders", "records"})
 @ToString(exclude = {"form4s", "insiders", "records"})
-public class Stock implements Persistable<String> {
+public class Stock {
 
     @Id
     private String cik;
@@ -45,14 +45,4 @@ public class Stock implements Persistable<String> {
     @JsonIgnore
     @OneToMany(mappedBy = "stock", cascade = CascadeType.REMOVE)
     private Collection<StockRecord> records;
-
-    @Override
-    public String getId() {
-        return cik;
-    }
-
-    @Override
-    public boolean isNew() {
-        return true;
-    }
 }

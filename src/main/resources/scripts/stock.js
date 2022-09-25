@@ -1,16 +1,15 @@
 import {Dashboard, InfoBlock, Table, LineGraph} from './elements.js';
+import {fetchAllTrades, fetchStockTrades} from './trades.js';
 import {Tab, initTabs} from "./tabs.js";
-import {fetchTrades} from './trades.js';
 import {initScore} from "./rating.js";
 import * as Utils from "./utils.js";
 
 class Stock {
-    constructor(name, symbol, description, keyPoints, insiders, lastActive, efficiency, trend, overall) {
+    constructor(name, symbol, description, keyPoints, lastActive, efficiency, trend, overall) {
         this.company = name;
         this.symbol = symbol;
         this.description = description;
         this.keyPoints = keyPoints;
-        this.insiders = insiders;
         this.lastActive = lastActive;
         this.efficiency = efficiency;
         this.trend = trend;
@@ -19,10 +18,10 @@ class Stock {
 }
 
 class Insider {
-    constructor(name, positions, sharesTotal, lastActive) {
+    constructor(name, positions, totalShares, lastActive) {
         this.name = name;
         this.positions = positions;
-        this.sharesTotal = sharesTotal;
+        this.totalShares = totalShares;
         this.lastActive = lastActive;
     }
 }
@@ -39,10 +38,24 @@ $(document).ready(() => {
 function fetchStock(symbol) {
     $.ajax({
         type: "GET",
-        url: `${location.origin}/stocks/${symbol}/xml`,
+        url: `${location.origin}/stocks/${symbol}/info`,
         success: (data) => {
             let stock = Object.assign(new Stock(), data);
             initStock(stock);
+        },
+        error: (error) => console.log("[ERROR] " + error.responseText),
+    });
+}
+
+function fetchInsiders(table, symbol) {
+    table.reset();
+    $.ajax({
+        type: "GET",
+        url: `${location.origin}/stocks/${symbol}/insiders`,
+        success: (data) => {
+            let insiders = data.map(obj => Object.assign(new Insider(), obj));
+            addInsidersToTable(table, insiders);
+            table.initGrid();
         },
         error: (error) => console.log("[ERROR] " + error.responseText),
     });
@@ -87,13 +100,12 @@ function initStock(stock) {
             dashboard.align();
         }),
         new Tab("Insiders", insidersTable.html, () => {
-            addInsidersToTable(insidersTable, stock.insiders);
-            insidersTable.initGrid();
+            fetchInsiders(insidersTable, stock.symbol)
         }),
         new Tab("Trades", tradesTable.html, () => {
             // addTradesToTable(tradesTable, mockTrades(20), false)
-            fetchTrades(tradesTable, ["Buy"]);
-            tradesTable.initGrid();
+            // tradesTable.initGrid();
+            fetchStockTrades(tradesTable, stock.symbol, ["Buy"]);
         })
     ]);
 }
@@ -101,16 +113,16 @@ function initStock(stock) {
 function addInsidersToTable(table, insiders) {
     table.addAll(insiders.map(insider => `<tr>
         <td>${insider.name}</td>
-        <td>${insider.positions.join(", ")}</td>
-        <td>${Utils.formatNumber(insider.sharesTotal)}</td>
-        <td>${insider.lastActive}</td>
+        <td>${insider.positions}</td>
+        <td>${Utils.formatNumber(insider.totalShares)}</td>
+        <td>${Utils.formatDate(insider.lastActive)}</td>
     </tr>`));
 }
 
 function fillSidePanel(stock) {
     if (!$(".s-info").length) return;
     $("#s-name").text(stock.name + " (" + stock.symbol + ")");
-    $("#last-active").text("Last active: " + (stock.lastActive || "-"));
+    $("#last-active").text("Last active: " + (Utils.formatDate(stock.lastActive) || "-"));
 
     // init stock rating
     initScore($("#efficiency-score"), stock.efficiency);

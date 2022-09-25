@@ -12,6 +12,10 @@ import java.util.List;
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
+    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:types)")
+    Collection<TradeView> findByStockSymbol(String symbol, List<String> codes);
+
+//    @Query("SELECT t FROM Trade t WHERE t.code IN (:codes) ORDER BY t.date DESC TOP 100")
     Collection<TradeView> findTop100ByCodeInOrderByDateDesc(List<String> codes);
 
     @Query("SELECT t FROM Trade t WHERE NOT EXISTS (SELECT 1 FROM TradeRating r WHERE t = r.trade) AND t.code = :code")
@@ -32,6 +36,6 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
     @Query("SELECT MIN(t.date) FROM Trade t WHERE t.form4.stock.cik = :cik")
     Date findMinDateByStock(String cik);
 
-    @Query("SELECT MAX(t.date) FROM Trade t WHERE t.form4.stock = :cik")
+    @Query("SELECT MAX(t.date) FROM Trade t WHERE t.form4.stock.cik = :cik")
     Date findMaxDateByStock(String cik);
 }

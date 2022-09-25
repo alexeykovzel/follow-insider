@@ -32,23 +32,37 @@ let typeColors = {
     'Other': 'var(--other)'
 }
 
-export function fetchTrades(table, types) {
+export function fetchTestStockTrades(table) {
+    addTradesToTable(table, mockTrades(20), false)
+    table.initGrid();
+}
+
+export function fetchStockTrades(table, symbol, types) {
+    return fetchTrades(table, `/stocks/${symbol}/trades`, types)
+}
+
+export function fetchAllTrades(table, types) {
+    return fetchTrades(table, "/trades/recent", types)
+}
+
+function fetchTrades(table, url, types) {
     table.reset();
     // send request to retrieve trades from the server
     $.ajax({
-        type: 'GET',
-        url: location.origin + "/trades?type=" + types.join(','),
+        type: "GET",
+        url: location.origin + url + "?types=" + types.join(','),
         // if success, add trades to the table
         success: (data) => {
-            let trades = data.map(val => Object.assign(val, new Trades()));
+            let trades = data.map(obj => Object.assign(obj, new Trades()));
             addTradesToTable(table, trades, true);
+            table.initGrid();
         },
         // otherwise, print an error message
-        error: (error) => console.log('[ERROR] ' + error.responseText),
+        error: (error) => console.log("[ERROR] " + error.responseText),
     });
 }
 
-export function mockTrades(number) {
+function mockTrades(number) {
     let trades = [];
     for (let i = 0; i < number; i++) {
         let insider = new Insider("Mega Super Fond", ["CEO", "Director"]);
@@ -60,7 +74,7 @@ export function mockTrades(number) {
     return trades;
 }
 
-export function addTradesToTable(table, trades, withCompany) {
+function addTradesToTable(table, trades, withCompany) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
     table.addAll(trades.map(trade => {
         storedTrades[trade.id] = trade;

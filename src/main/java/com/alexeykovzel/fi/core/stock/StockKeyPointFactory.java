@@ -1,5 +1,7 @@
 package com.alexeykovzel.fi.core.stock;
 
+import java.util.Collection;
+
 public class StockKeyPointFactory {
 
     public String[] getKeyPoints(Stock stock) {

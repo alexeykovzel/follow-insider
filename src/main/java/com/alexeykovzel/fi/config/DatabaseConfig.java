@@ -7,6 +7,7 @@ import com.alexeykovzel.fi.core.insider.InsiderService;
 import com.alexeykovzel.fi.core.trade.TradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -32,7 +33,7 @@ public class DatabaseConfig {
     public void init() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(stockService::updateStocksRemotely, 0, 1, TimeUnit.DAYS);
-        executor.scheduleAtFixedRate(() -> form4Service.updateRecentFilings(0, 40), 0, 30, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(() -> form4Service.updateFilings("INTC"), 0, 30, TimeUnit.SECONDS);
 
 //        executor.scheduleAtFixedRate(() -> {
 //            tradeService.updateTradeRating();

@@ -39,7 +39,7 @@ public enum TradeCode {
     public final String value;
     public final String description;
 
-    public static String codeOfValue(String value) {
+    public static String codeOfType(String value) {
         for (TradeCode type : values()) {
             if (type.value.equals(value)) {
                 return type.code;

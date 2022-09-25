@@ -57,7 +57,7 @@ public class InsiderRepositoryTest {
         trades.forEach(trade -> trade.setForm4(form4));
         form4Repository.save(form4);
 
-        List<InsiderView> views = new ArrayList<>(insiderRepository.findViewsByStock(stock.getCik()));
+        List<InsiderView> views = new ArrayList<>(insiderRepository.findViewsByStockSymbol(stock.getCik()));
         assertEquals(1, views.size());
 
         InsiderView view = views.get(0);

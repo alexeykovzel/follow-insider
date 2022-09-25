@@ -85,7 +85,7 @@ public class StockService extends EdgarService {
         try {
             root.get("data").forEach(item -> stocks.add(Stock.builder()
                     .cik(addLeadingZeros(item.get(0).asText()))
-                    .name(normalize(item.get(1).asText()))
+                    .name(formatStockName(item.get(1).asText()))
                     .symbol(item.get(2).asText())
                     .exchange(item.get(3).asText())
                     .build())
@@ -94,19 +94,6 @@ public class StockService extends EdgarService {
             System.out.println("[ERROR] Failed to access stock data: " + e.getMessage());
         }
         return stocks;
-    }
-
-    public boolean existsBySymbol(String symbol) {
-        return stockRepository.existsBySymbol(symbol.toUpperCase());
-    }
-
-    public Optional<StockView> getBySymbol(String symbol) {
-        Stock stock = stockRepository.findBySymbol(symbol.toUpperCase());
-        return getStockView(stock);
-    }
-
-    public List<StockView> getAll() {
-        return null;
     }
 
     public Optional<StockView> getStockView(Stock stock) {
@@ -124,8 +111,6 @@ public class StockService extends EdgarService {
             view.setEfficiency(rating.getEfficiency());
             view.setOverall(rating.getOverall());
         });
-        // set insider and return stock view
-        view.setInsiders(insiderRepository.findViewsByStock(cik));
         return Optional.of(view);
     }
 }

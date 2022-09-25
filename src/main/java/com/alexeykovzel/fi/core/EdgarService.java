@@ -12,18 +12,20 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public abstract class EdgarService {
     protected static final String SEC_URL = "https://www.sec.gov";
+    protected static final String DATA_SEC_URL = "https://data.sec.gov";
     protected static final String STOCKS_URL = SEC_URL + "/files/company_tickers_exchange.json";
     protected static final String FULL_INDEX_URL = SEC_URL + "/Archives/edgar/full-index/%d/QTR%d/master.idx";
     protected static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
     protected static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar?action=getcurrent&type=4&company=&dateb=&owner=only&start=%d&count=%d&output=atom";
     protected static final String FORM4_DAYS_AGO_URL = SEC_URL + "/cgi-bin/current?q1=%d&q3=4";
-    protected static final String SUBMISSIONS_URL = SEC_URL + "/submissions/%s.json";
+    protected static final String SUBMISSIONS_URL = DATA_SEC_URL + "/submissions/%s.json";
 
     private static final int MAX_REQUEST_RETRIES = 3;
     private static final int REQUEST_TIMEOUT = 5000;
@@ -31,33 +33,37 @@ public abstract class EdgarService {
 
     private long lastRequestTime = 0;
 
-    protected String normalize(String val) {
+    protected String formatStockName(String val) {
         val = capitalize(val);
         val = addDots(val);
         return val;
     }
 
-    protected String addLeadingZeros(String value) {
-        return "0".repeat(10 - value.length()) + value;
+    protected String addLeadingZeros(String val) {
+        return "0".repeat(10 - val.length()) + val;
+    }
+
+    protected String trimLeadingZeros(String val) {
+        return val.replaceFirst("^0+(?!$)", "");
     }
 
     protected JsonNode getJsonByUrl(String url) throws IOException {
-        try (InputStream in = sendUrlRequest(url)) {
+        try (InputStream in = sendUrlRequest(url, "application/json")) {
             return (in != null) ? new ObjectMapper().readTree(in) : null;
         }
     }
 
     protected String getTextByUrl(String url) throws IOException {
-        try (InputStream in = sendUrlRequest(url)) {
+        try (InputStream in = sendUrlRequest(url, "text/html")) {
             return (in != null) ? new String(in.readAllBytes(), StandardCharsets.UTF_8) : null;
         }
     }
 
-    protected InputStream sendUrlRequest(String url) {
-        return sendUrlRequest(url, MAX_REQUEST_RETRIES);
+    protected InputStream sendUrlRequest(String url, String contentType) {
+        return sendUrlRequest(url, contentType, MAX_REQUEST_RETRIES);
     }
 
-    private InputStream sendUrlRequest(String url, int attempts) {
+    private InputStream sendUrlRequest(String url, String contentType, int attempts) {
         if (attempts == 0) return null;
         long currentTime = System.currentTimeMillis();
         try {
@@ -66,15 +72,22 @@ public abstract class EdgarService {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                     .timeout(Duration.of(REQUEST_TIMEOUT, ChronoUnit.MILLIS))
-                    .header("User-Agent", "Insidr alexey.kovzel@gmail.com")
+                    .header("User-Agent", "FollowInsider alexey.kovzel@gmail.com")
+                    .header("Content-Type", contentType + ";charset=UTF-8")
                     .header("Accept-Encoding", "gzip")
                     .build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            // redirect to provided URL if status code is 301
+            if (response.statusCode() == 301) {
+                Optional<String> redirectUrl = response.headers().firstValue("location");
+                return redirectUrl.map(s -> sendUrlRequest(s, contentType, attempts)).orElse(null);
+            }
+            // else decode response body as input stream
             String encoding = response.headers().firstValue("Content-Encoding").orElse("");
             return decodeInputStream(response.body(), encoding);
         } catch (IOException | InterruptedException e) {
             System.out.println("[ERROR] " + e.getMessage() + ": " + attempts + " attempts left");
-            return sendUrlRequest(url, attempts - 1);
+            return sendUrlRequest(url, contentType, attempts - 1);
         } finally {
             lastRequestTime = currentTime;
         }
