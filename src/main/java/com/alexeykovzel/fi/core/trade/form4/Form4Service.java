@@ -106,7 +106,8 @@ public class Form4Service extends EdgarService {
     public Collection<Form4> getRecentForm4Filings(int from, int to) {
         Collection<Form4> form4s = new HashSet<>();
         try {
-            String feed = getTextByUrl(String.format(FORM4_RECENT_URL, from, to));
+            String feedUrl = String.format(FORM4_RECENT_URL, from, to);
+            String feed = getTextByUrl(feedUrl);
             feed = feed.substring(feed.indexOf("\n") + 1);
             for (JsonNode entry : new XmlMapper().readTree(feed).get("entry")) {
                 // skip if filing is not of form 4
@@ -125,7 +126,7 @@ public class Form4Service extends EdgarService {
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {
-            System.out.println("[ERROR] Failed to access filings: " + e.getMessage());
+            System.out.printf("[ERROR] Getting recent %d-%d filings: %s\n", from, to, e.getMessage());
         }
         return form4s;
     }
@@ -150,7 +151,7 @@ public class Form4Service extends EdgarService {
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {
-            System.out.println("[ERROR] Failed to access filings: " + e.getMessage());
+            System.out.printf("[ERROR] Getting filings of %s stock: %s\n", stock.getSymbol(), e.getMessage());
         }
         return form4s;
     }
@@ -158,7 +159,7 @@ public class Form4Service extends EdgarService {
     private Collection<Form4> getForm4Filings(int year, int quarter) {
         Collection<Form4> form4s = new HashSet<>();
         Collection<String> takenFilings = new HashSet<>();
-        try (InputStream in = sendUrlRequest(String.format(FULL_INDEX_URL, year, quarter), "text/html");
+        try (InputStream in = sendHttpRequest(String.format(FULL_INDEX_URL, year, quarter), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -178,14 +179,14 @@ public class Form4Service extends EdgarService {
                 takenFilings.add(accessionNo);
             }
         } catch (IOException e) {
-            System.out.println("[ERROR] Failed to access filings: " + e.getMessage());
+            System.out.printf("[ERROR] Getting filings of %d year %d quarter: %s\n", year, quarter, e.getMessage());
         }
         return form4s;
     }
 
     private Collection<Form4> getForm4Filings(int daysAgo) {
         Collection<Form4> form4s = new HashSet<>();
-        try (InputStream in = sendUrlRequest(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
+        try (InputStream in = sendHttpRequest(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -205,7 +206,7 @@ public class Form4Service extends EdgarService {
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {
-            System.out.println("[ERROR] Failed to access filings: " + e.getMessage());
+            System.out.printf("[ERROR] Getting filings %d days ago: %s\n", daysAgo, e.getMessage());
         }
         return form4s;
     }

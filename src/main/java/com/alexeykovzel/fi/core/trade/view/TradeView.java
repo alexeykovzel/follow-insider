@@ -11,7 +11,7 @@ import java.util.Date;
 @Projection(name = "trade", types = {Trade.class})
 public interface TradeView {
 
-    @Value("#{@target.id}")
+    @Value("#{target.id}")
     int getId();
 
     @Value("#{@tradeViewBean.getType(target)}")

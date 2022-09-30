@@ -2,7 +2,7 @@ import * as Utils from "./utils.js";
 
 let storedTrades = {};
 
-class Trades {
+class Trade {
     constructor(id, symbol, company, insiders, type, sharePrice, shareCount, leftShares, date) {
         this.id = id;
         this.symbol = symbol;
@@ -38,14 +38,14 @@ export function fetchTestStockTrades(table) {
 }
 
 export function fetchStockTrades(table, symbol, types) {
-    return fetchTrades(table, `/stocks/${symbol}/trades`, types)
+    return fetchTrades(table, `/stocks/${symbol}/trades`, types, false)
 }
 
 export function fetchAllTrades(table, types) {
-    return fetchTrades(table, "/trades/recent", types)
+    return fetchTrades(table, "/trades/recent", types, true)
 }
 
-function fetchTrades(table, url, types) {
+function fetchTrades(table, url, types, withStock) {
     table.reset();
     // send request to retrieve trades from the server
     $.ajax({
@@ -53,8 +53,8 @@ function fetchTrades(table, url, types) {
         url: location.origin + url + "?types=" + types.join(','),
         // if success, add trades to the table
         success: (data) => {
-            let trades = data.map(obj => Object.assign(obj, new Trades()));
-            addTradesToTable(table, trades, true);
+            let trades = data.map(obj => Object.assign(new Trade(), obj));
+            addTradesToTable(table, trades, withStock);
             table.initGrid();
         },
         // otherwise, print an error message
@@ -67,14 +67,14 @@ function mockTrades(number) {
     for (let i = 0; i < number; i++) {
         let insider = new Insider("Mega Super Fond", ["CEO", "Director"]);
         let insiders = Array(5).fill(insider);
-        let trade = new Trades(i, "INTC", "Intel Corporation", insiders, "Buy",
+        let trade = new Trade(i, "INTC", "Intel Corporation", insiders, "Buy",
             20, 100_000, 200_000, "2022/01/01");
         trades.push(trade);
     }
     return trades;
 }
 
-function addTradesToTable(table, trades, withCompany) {
+function addTradesToTable(table, trades, withStock) {
     let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
     table.addAll(trades.map(trade => {
         storedTrades[trade.id] = trade;
@@ -101,8 +101,8 @@ function addTradesToTable(table, trades, withCompany) {
         // build table row element
         let tradeRow = $(`
             <tr id="trade-${trade.id}"">
-                ${withCompany ? `<td onclick="location.assign('${stockRef}')" class="link">${trade.symbol}</td>` : ""}
-                ${withCompany ? `<td> ${trade.company}</td>` : ""}
+                ${withStock ? `<td onclick="location.assign('${stockRef}')" class="link">${trade.symbol}</td>` : ""}
+                ${withStock ? `<td> ${trade.company}</td>` : ""}
                 <td class="insider-cell">${insiderVal}</td>
                 <td>${positionVal}</td>
                 <td style="${colorStyle}">${trade.type}</td>

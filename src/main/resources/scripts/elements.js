@@ -62,11 +62,49 @@ customElements.define("default-footer", class extends HTMLElement {
     }
 });
 
+customElements.define("trade-filters", class extends HTMLElement {
+    constructor() {
+        super();
+
+        $(this).html(`
+            <div class="filters">
+                <div class="checkboxes">
+                    <div>
+                        <input type="checkbox" id="buy" name="Buy" checked>
+                        <label style="color: var(--buy)" for="buy">Buy</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="sell" name="Sell">
+                        <label style="color: var(--sell)" for="sell">Sell</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="grant" name="Grant">
+                        <label style="color: var(--grant)" for="grant">Grant</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="options" name="Options">
+                        <label style="color: var(--options)" for="options">Options</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="taxes" name="Taxes">
+                        <label style="color: var(--taxes)" for="taxes">Taxes</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="other" name="Other">
+                        <label style="color: var(--other)" for="other">Other</label>
+                    </div>
+                </div>
+            </div>
+        `);
+    }
+});
+
 export class Table {
-    constructor(id, columns, fractions) {
+    constructor(id, columns, fractions, filters) {
         this.id = id;
         this.columns = columns;
         this.fractions = fractions;
+        this.filters = filters;
     }
 
     initGrid() {
@@ -113,7 +151,7 @@ export class Table {
     }
 
     get html() {
-        return `
+        let tableHtml = `
             <div id="${this.id}" class="table-wrapper scrollbar">
                 <table>
                     <thead>
@@ -125,6 +163,8 @@ export class Table {
                 </table>
             </div>
         `;
+        let filtersHtml = (this.filters != null) ? this.filters : "";
+        return filtersHtml + tableHtml
     }
 }
 

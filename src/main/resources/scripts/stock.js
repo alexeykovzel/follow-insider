@@ -1,5 +1,5 @@
 import {Dashboard, InfoBlock, Table, LineGraph} from './elements.js';
-import {fetchAllTrades, fetchStockTrades} from './trades.js';
+import {fetchStockTrades} from './trades.js';
 import {Tab, initTabs} from "./tabs.js";
 import {initScore} from "./rating.js";
 import * as Utils from "./utils.js";
@@ -88,7 +88,8 @@ function initStock(stock) {
     // define table with insider trades
     let tradesTable = new Table("trades",
         ["Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
-        [1.2, 1.2, 1, 1, 1, 1, 1]
+        [1.2, 1.2, 1, 1, 1, 1, 1],
+        "<trade-filters></trade-filters>"
     );
 
     initTabs([

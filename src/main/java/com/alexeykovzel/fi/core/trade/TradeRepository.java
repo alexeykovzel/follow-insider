@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
-    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:types)")
+    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes)")
     Collection<TradeView> findByStockSymbol(String symbol, List<String> codes);
 
 //    @Query("SELECT t FROM Trade t WHERE t.code IN (:codes) ORDER BY t.date DESC TOP 100")

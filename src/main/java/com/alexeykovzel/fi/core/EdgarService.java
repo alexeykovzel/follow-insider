@@ -18,18 +18,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public abstract class EdgarService {
+
+    // Links to EDGAR resources
     protected static final String SEC_URL = "https://www.sec.gov";
     protected static final String DATA_SEC_URL = "https://data.sec.gov";
+    protected static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
     protected static final String STOCKS_URL = SEC_URL + "/files/company_tickers_exchange.json";
     protected static final String FULL_INDEX_URL = SEC_URL + "/Archives/edgar/full-index/%d/QTR%d/master.idx";
-    protected static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
-    protected static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar?action=getcurrent&type=4&company=&dateb=&owner=only&start=%d&count=%d&output=atom";
-    protected static final String FORM4_DAYS_AGO_URL = SEC_URL + "/cgi-bin/current?q1=%d&q3=4";
     protected static final String SUBMISSIONS_URL = DATA_SEC_URL + "/submissions/%s.json";
+    protected static final String FORM4_DAYS_AGO_URL = SEC_URL + "/cgi-bin/current?q1=%d&q3=4";
+    protected static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar" +
+            "?action=getcurrent&type=4&company=&dateb=&owner=only&start=%d&count=%d&output=atom";
 
+    // EDGAR API Configuration
+    private static final String USER_AGENT_EMAIL = "alexey.kovzel@gmail.com";
+    private static final String USER_AGENT_NAME = "FollowInsider";
+    private static final String DEFAULT_ENCODING = "gzip";
+    private static final String DEFAULT_CHARSET = "UTF-8";
     private static final int MAX_REQUEST_RETRIES = 3;
     private static final int REQUEST_TIMEOUT = 5000;
-    private static final int REQUEST_DELAY = 100;
+    private static final int REQUEST_DELAY = 120;
 
     private long lastRequestTime = 0;
 
@@ -48,49 +56,66 @@ public abstract class EdgarService {
     }
 
     protected JsonNode getJsonByUrl(String url) throws IOException {
-        try (InputStream in = sendUrlRequest(url, "application/json")) {
-            return (in != null) ? new ObjectMapper().readTree(in) : null;
+        try (InputStream in = sendHttpRequest(url, "application/json")) {
+            if (in == null) throw new IOException("No Data");
+            return new ObjectMapper().readTree(in);
         }
     }
 
     protected String getTextByUrl(String url) throws IOException {
-        try (InputStream in = sendUrlRequest(url, "text/html")) {
-            return (in != null) ? new String(in.readAllBytes(), StandardCharsets.UTF_8) : null;
+        try (InputStream in = sendHttpRequest(url, "text/html")) {
+            if (in == null) throw new IOException("No Data");
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
-    protected InputStream sendUrlRequest(String url, String contentType) {
-        return sendUrlRequest(url, contentType, MAX_REQUEST_RETRIES);
+    protected InputStream sendHttpRequest(String url, String contentType) {
+        return sendHttpRequest(url, contentType, MAX_REQUEST_RETRIES);
     }
 
-    private InputStream sendUrlRequest(String url, String contentType, int attempts) {
+    private InputStream sendHttpRequest(String url, String contentType, int attempts) {
         if (attempts == 0) return null;
         long currentTime = System.currentTimeMillis();
         try {
             long delay = REQUEST_DELAY - (currentTime - lastRequestTime);
             TimeUnit.MILLISECONDS.sleep(delay);
             HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
-                    .timeout(Duration.of(REQUEST_TIMEOUT, ChronoUnit.MILLIS))
-                    .header("User-Agent", "FollowInsider alexey.kovzel@gmail.com")
-                    .header("Content-Type", contentType + ";charset=UTF-8")
-                    .header("Accept-Encoding", "gzip")
-                    .build();
+            HttpRequest request = buildHttpRequest(url, contentType);
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-            // redirect to provided URL if status code is 301
-            if (response.statusCode() == 301) {
-                Optional<String> redirectUrl = response.headers().firstValue("location");
-                return redirectUrl.map(s -> sendUrlRequest(s, contentType, attempts)).orElse(null);
+            int statusCode = response.statusCode();
+
+            switch (statusCode) {
+                case 200:
+                    // decode response body as input stream
+                    String encoding = response.headers().firstValue("Content-Encoding").orElse("");
+                    return decodeInputStream(response.body(), encoding);
+                case 301:
+                    // handle redirection to provided URL
+                    Optional<String> redirectUrl = response.headers().firstValue("location");
+                    return redirectUrl.map(s -> sendHttpRequest(s, contentType, attempts)).orElse(null);
+                case 429:
+                    System.out.println("[ERROR] EDGAR: Too Many Requests");
+                    return null;
+                default:
+                    System.out.println("[WARN] Unusual EDGAR response: " + statusCode);
+                    return null;
             }
-            // else decode response body as input stream
-            String encoding = response.headers().firstValue("Content-Encoding").orElse("");
-            return decodeInputStream(response.body(), encoding);
         } catch (IOException | InterruptedException e) {
-            System.out.println("[ERROR] " + e.getMessage() + ": " + attempts + " attempts left");
-            return sendUrlRequest(url, contentType, attempts - 1);
+            System.out.printf("[ERROR] %s: %d attempts left\n", e.getMessage(), attempts);
+            return sendHttpRequest(url, contentType, attempts - 1);
         } finally {
             lastRequestTime = currentTime;
         }
+    }
+
+    private HttpRequest buildHttpRequest(String url, String contentType) {
+        return HttpRequest.newBuilder(URI.create(url))
+                .timeout(Duration.of(REQUEST_TIMEOUT, ChronoUnit.MILLIS))
+                .header("User-Agent", USER_AGENT_NAME + " " + USER_AGENT_EMAIL)
+                .header("Content-Type", contentType + ";charset=" + DEFAULT_CHARSET)
+                .header("Accept-Encoding", DEFAULT_ENCODING)
+                .header("Host", "www.sec.gov")
+                .build();
     }
 
     private InputStream decodeInputStream(InputStream inputStream, String encoding) throws IOException {
