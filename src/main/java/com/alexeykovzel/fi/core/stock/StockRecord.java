@@ -18,17 +18,17 @@ public class StockRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_cik")
     private Stock stock;
 
     @Column(columnDefinition = "Decimal(10, 4)")
-    private Double dividends;
+    private double dividends;
 
     @Column(columnDefinition = "Decimal(10, 4)")
-    private Double price;
+    private double price;
 
     @Column(nullable = false)
     private Date date;

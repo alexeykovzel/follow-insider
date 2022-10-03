@@ -5,6 +5,7 @@ import com.alexeykovzel.fi.api.AlphaVantageAPI;
 import com.alexeykovzel.fi.core.insider.InsiderRepository;
 import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.ProgressBar;
+import com.alexeykovzel.fi.utils.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class StockService extends EdgarService {
         Collection<Stock> stocks = new HashSet<>();
         try {
             root.get("data").forEach(item -> stocks.add(Stock.builder()
-                    .cik(addLeadingZeros(item.get(0).asText()))
+                    .cik(StringUtils.addLeadingZeros(item.get(0).asText()))
                     .name(formatStockName(item.get(1).asText()))
                     .symbol(item.get(2).asText())
                     .exchange(item.get(3).asText())
@@ -104,7 +105,7 @@ public class StockService extends EdgarService {
         // set key points as brief sentences with main info about the stock
         view.setKeyPoints(new StockKeyPointFactory().getKeyPoints(stock));
         // set last active date as the date of the last transaction
-        view.setLastActive(tradeRepository.findMaxDateByStock(cik));
+        view.setLastActive(tradeRepository.findMaxDateByCik(cik));
         // set stock rating (if exists)
         stockRatingRepository.findById(cik).ifPresent(rating -> {
             view.setTrend(rating.getTrend());
@@ -112,5 +113,11 @@ public class StockService extends EdgarService {
             view.setOverall(rating.getOverall());
         });
         return Optional.of(view);
+    }
+
+    private String formatStockName(String val) {
+        val = StringUtils.toCamelCase(val);
+        val = StringUtils.addDots(val);
+        return val;
     }
 }

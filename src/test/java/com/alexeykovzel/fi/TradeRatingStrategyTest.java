@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.trade;
+package com.alexeykovzel.fi;
 
 import com.alexeykovzel.fi.core.trade.Trade;
 import com.alexeykovzel.fi.core.trade.TradeRatingStrategy;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TradeServiceTest {
+class TradeRatingStrategyTest {
 
     @Mock
     private StockRecordRepository stockRecordRepository;
@@ -32,7 +32,7 @@ class TradeServiceTest {
     private TradeRatingStrategy ratingStrategy;
 
     @Test
-    public void givenTransaction_whenCalculateEfficiency_thenSuccess() {
+    public void givenTrade_thenCalculateEfficiency() {
         Date currentDate = new Date();
         Trade trade = mock(Trade.class);
         when(trade.getDate()).thenReturn(currentDate);
@@ -46,11 +46,11 @@ class TradeServiceTest {
     }
 
     @Test
-    public void givenTransaction_whenCalculateWeight_thenSuccess() {
+    public void givenTrade_thenCalculateWeight() {
         Trade trade = mock(Trade.class);
         when(trade.getLeftShares()).thenReturn(10000.0);
         when(trade.getShareCount()).thenReturn(1000.0);
-        when(tradeRepository.findAveragePurchasedShares()).thenReturn(6400.0);
+        when(tradeRepository.findAvgBoughtShares()).thenReturn(6400.0);
         double weight = ratingStrategy.calculateWeight(trade);
         assertThat(weight).isCloseTo(0.0295, within(0.001));
     }

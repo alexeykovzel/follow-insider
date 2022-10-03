@@ -29,7 +29,7 @@ public class TradeRatingStrategy {
     public double calculateWeight(Trade trade) {
         double quantity = trade.getShareCount();
         double leftShares = trade.getLeftShares();
-        double averageQuantity = tradeRepository.findAveragePurchasedShares();
+        double averageQuantity = tradeRepository.findAvgBoughtShares();
         double qScore = Math.pow(QSCORE_BASE, averageQuantity / quantity);
         return qScore * QSCORE_WEIGHT + (quantity / leftShares) * (1 - QSCORE_WEIGHT);
     }

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class Form4Parser {
+
     public String getIssuerCik(JsonNode root) {
         return root.get("issuer").get("issuerCik").asText();
     }
@@ -23,20 +24,20 @@ public class Form4Parser {
                 .build();
     }
 
-    public Collection<Trade> getTransactions(JsonNode root) {
+    public Collection<Trade> getTrades(JsonNode root) {
         Collection<Trade> trades = new HashSet<>();
         for (boolean isDerivative : new boolean[]{true, false}) {
             String tableTag = isDerivative ? "derivativeTable" : "nonDerivativeTable";
-            String transactionsTag = isDerivative ? "derivativeTransaction" : "nonDerivativeTransaction";
-            JsonNode table = root.has(tableTag) ? root.get(tableTag).get(transactionsTag) : null;
-            if (table != null) handleArrayNode(table, (row) -> trades.add(getTransaction(row)));
+            String tradesTag = isDerivative ? "derivativeTransaction" : "nonDerivativeTransaction";
+            JsonNode table = root.has(tableTag) ? root.get(tableTag).get(tradesTag) : null;
+            if (table != null) handleAnyNode(table, (row) -> trades.add(getTrade(row)));
         }
         return trades;
     }
 
     public Collection<Insider> getReportingInsiders(JsonNode root) {
         Collection<Insider> insiders = new HashSet<>();
-        handleArrayNode(root.get("reportingOwner"), (owner) -> insiders.add(Insider.builder()
+        handleAnyNode(root.get("reportingOwner"), (owner) -> insiders.add(Insider.builder()
                 .cik(owner.get("reportingOwnerId").get("rptOwnerCik").asText())
                 .name(owner.get("reportingOwnerId").get("rptOwnerName").asText())
                 .positions(getInsiderPositions(owner.get("reportingOwnerRelationship")))
@@ -44,7 +45,7 @@ public class Form4Parser {
         return insiders;
     }
 
-    private Trade getTransaction(JsonNode root) {
+    private Trade getTrade(JsonNode root) {
         JsonNode amounts = root.get("transactionAmounts");
         JsonNode shares = amounts.get("transactionShares");
         JsonNode postAmounts = root.get("postTransactionAmounts");
@@ -53,7 +54,7 @@ public class Form4Parser {
         JsonNode exercisePrice = root.get("conversionOrExercisePrice");
         JsonNode ownership = root.get("ownershipNature").get("directOrIndirectOwnership");
 
-        // TODO: Handle share count vs total value.
+        // TODO: Handle "share count vs total value" issue.
         shares = (shares == null) ? amounts.get("transactionTotalValue") : shares;
         owned = (owned == null) ? postAmounts.get("valueOwnedFollowingTransaction") : owned;
         price = (price == null && exercisePrice != null) ? exercisePrice.get("value") : price;
@@ -71,7 +72,6 @@ public class Form4Parser {
 
     private Set<String> getInsiderPositions(JsonNode root) {
         Set<String> positions = new HashSet<>();
-//        if (hasOne(root.get("isOther"))) positions.add("Other");
         if (hasOne(root.get("isDirector"))) positions.add("Director");
         if (hasOne(root.get("isTenPercentOwner"))) positions.add("10% Owner");
         if (hasOne(root.get("isOfficer"))) {
@@ -87,7 +87,7 @@ public class Form4Parser {
         return (node != null) && (node.asInt() == 1);
     }
 
-    private void handleArrayNode(JsonNode node, Consumer<JsonNode> consumer) {
+    private void handleAnyNode(JsonNode node, Consumer<JsonNode> consumer) {
         if (node.isArray()) {
             for (JsonNode arrayNode : node) {
                 consumer.accept(arrayNode);

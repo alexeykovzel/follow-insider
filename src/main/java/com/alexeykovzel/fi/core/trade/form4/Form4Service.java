@@ -1,12 +1,15 @@
 package com.alexeykovzel.fi.core.trade.form4;
 
+import com.alexeykovzel.fi.core.insider.InsiderRepository;
 import com.alexeykovzel.fi.core.stock.StockRepository;
 import com.alexeykovzel.fi.core.insider.Insider;
 import com.alexeykovzel.fi.core.EdgarService;
 import com.alexeykovzel.fi.core.stock.Stock;
 import com.alexeykovzel.fi.core.trade.Trade;
+import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import com.alexeykovzel.fi.utils.ProgressBar;
+import com.alexeykovzel.fi.utils.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 public class Form4Service extends EdgarService {
     private final StockRepository stockRepository;
     private final Form4Repository form4Repository;
+    private final InsiderRepository insiderRepository;
+    private final TradeRepository tradeRepository;
 
     public void updateFilings(String... symbols) {
         for (String symbol : symbols) {
@@ -63,44 +68,44 @@ public class Form4Service extends EdgarService {
     }
 
     @Transactional
-    public void updateFilings(Collection<Form4> filings, String message) {
+    public void updateFilings(Collection<Form4> form4s, String message) {
         Collection<String> existingFilings = form4Repository.findAllAccessionNumbers();
-        Form4Parser parser = new Form4Parser();
-        ProgressBar.execute(message, filings, filing -> {
+        Form4Parser form4Parser = new Form4Parser();
+        ProgressBar.execute(message, form4s, form4 -> {
             try {
                 // skip if such filing already exists
-                if (existingFilings.contains(filing.getAccessionNo())) return;
+                if (existingFilings.contains(form4.getAccessionNo())) return;
                 // otherwise, request filing data
-                JsonNode root = getFilingData(filing.getUrl());
-                Stock stock = getOrSaveStock(root);
+                JsonNode root = getFilingData(form4.getUrl());
+                Stock stock = getAndSaveStock(root);
                 // update reporting insiders
-                Collection<Insider> insiders = parser.getReportingInsiders(root);
+                Collection<Insider> insiders = form4Parser.getReportingInsiders(root);
                 insiders.forEach(insider -> insider.setStock(stock));
-                // save form 4 data (incl. transactions)
-                Collection<Trade> trades = parser.getTransactions(root);
-                trades.forEach(transaction -> transaction.setForm4(filing));
-                filing.setStock(stock);
-                filing.setInsiders(insiders);
-                filing.setTrades(trades);
-                form4Repository.save(filing);
+                // save form 4 data (incl. trades)
+                Collection<Trade> trades = form4Parser.getTrades(root);
+                trades.forEach(trade -> trade.setForm4(form4));
+                form4.setStock(stock);
+                form4.setInsiders(insiders);
+                form4.setTrades(trades);
+                form4Repository.save(form4);
             } catch (IOException e) {
                 System.out.println("[ERROR] Failed to update filing: " + e.getMessage());
             } catch (NullPointerException e) {
-                System.out.println("[ERROR] Invalid filing: " + filing.getUrl() + "\n");
+                System.out.println("[ERROR] Invalid filing: " + form4.getUrl() + "\n");
             }
         });
     }
 
-    private Stock getOrSaveStock(JsonNode root) {
-        Form4Parser parser = new Form4Parser();
-        String cik = parser.getIssuerCik(root);
-        if (stockRepository.existsById(cik)) {
-            return stockRepository.getReferenceById(cik);
-        } else {
-            Stock stock = parser.getFilingIssuer(root);
+    private Stock getAndSaveStock(JsonNode root) {
+        Form4Parser form4Parser = new Form4Parser();
+        String cik = form4Parser.getIssuerCik(root);
+        // save stock if it wasn't found
+        if (!stockRepository.existsById(cik)) {
+            Stock stock = form4Parser.getFilingIssuer(root);
             stockRepository.save(stock);
-            return stock;
         }
+        // return reference to the stock
+        return stockRepository.getReferenceById(cik);
     }
 
     public Collection<Form4> getRecentForm4Filings(int from, int to) {
@@ -142,12 +147,12 @@ public class Form4Service extends EdgarService {
             JsonNode forms = recent.get("form");
             JsonNode dates = recent.get("filingDate");
             for (int i = 0; i < accessions.size(); i++) {
-                // skip non-insider transactions (not of 4-th form)
+                // skip non-insider trades (not of 4-th form)
                 if (!forms.get(i).asText().equals("4")) continue;
                 // retrieve filing data and add it to the list
                 Date date = DateUtils.parseEdgar(dates.get(i).asText());
                 String accessionNo = accessions.get(i).asText();
-                String url = String.format(FORM4_URL, trimLeadingZeros(cik), accessionNo);
+                String url = String.format(FORM4_URL, StringUtils.trimLeadingZeros(cik), accessionNo);
                 form4s.add(new Form4(accessionNo, date, url));
             }
         } catch (IOException e) {
@@ -159,7 +164,7 @@ public class Form4Service extends EdgarService {
     private Collection<Form4> getForm4Filings(int year, int quarter) {
         Collection<Form4> form4s = new HashSet<>();
         Collection<String> takenFilings = new HashSet<>();
-        try (InputStream in = sendHttpRequest(String.format(FULL_INDEX_URL, year, quarter), "text/html");
+        try (InputStream in = getInputStreamByUrl(String.format(FULL_INDEX_URL, year, quarter), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -186,7 +191,7 @@ public class Form4Service extends EdgarService {
 
     private Collection<Form4> getForm4Filings(int daysAgo) {
         Collection<Form4> form4s = new HashSet<>();
-        try (InputStream in = sendHttpRequest(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
+        try (InputStream in = getInputStreamByUrl(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -218,7 +223,7 @@ public class Form4Service extends EdgarService {
         return new XmlMapper().readTree(data.getBytes());
     }
 
-    // TODO: Handle filing amendments. ("4/A" code)
+    // TODO: Handle filing amendments ("4/A" code).
     private boolean isNotForm4(String code) {
         return !code.equals("4");
     }

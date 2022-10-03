@@ -18,8 +18,8 @@ import java.util.Date;
 public class Trade {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accession_no")
@@ -32,16 +32,16 @@ public class Trade {
     private String securityTitle;
 
     @Column(columnDefinition = "Decimal(10, 4)")
-    private Double sharePrice;
+    private double sharePrice;
 
     @Column(columnDefinition = "float")
-    private Double shareCount;
+    private double shareCount;
 
     @Column(columnDefinition = "float")
-    private Double leftShares;
+    private double leftShares;
 
     @Column
-    private Boolean isDirect;
+    private boolean isDirect;
 
     @Column(nullable = false)
     private String code;

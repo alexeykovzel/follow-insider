@@ -25,5 +25,5 @@ public class InsiderRating {
     private Insider insider;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double efficiency;
+    private double efficiency;
 }

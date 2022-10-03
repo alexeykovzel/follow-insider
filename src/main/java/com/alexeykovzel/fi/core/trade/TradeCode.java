@@ -2,6 +2,9 @@ package com.alexeykovzel.fi.core.trade;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 public enum TradeCode {
 

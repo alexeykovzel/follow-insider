@@ -17,7 +17,7 @@ public class StockRatingStrategy {
     private final TradeRepository tradeRepository;
 
     // weights for different number of months after the transaction
-    private static final Map<Integer, Double> TREND_WEIGHTS = Map.of(
+    public static final Map<Integer, Double> TREND_WEIGHTS = Map.of(
             1, 0.6,
             2, 0.3,
             3, 0.1
@@ -49,16 +49,16 @@ public class StockRatingStrategy {
      */
     public double calculateTrend(Stock stock) {
         String cik = stock.getCik();
-        Date minDate = tradeRepository.findMinDateByStock(cik);
+        Date minDate = tradeRepository.findMinDateByCik(cik);
         if (minDate == null) return 0;
         Date currentDate = new Date();
         double months = DateUtils.monthsBetween(minDate, currentDate);
-        double average = tradeRepository.findPurchaseCountByStock(cik) / months;
+        double average = tradeRepository.findBuyCountByStock(cik) / months;
         double totalTrend = 0;
 
         for (int i = 1; i <= Math.min(months, TREND_WEIGHTS.size()); i++) {
             Date pastDate = DateUtils.shiftMonths(currentDate, -i);
-            int count = tradeRepository.findPurchaseCountByStock(cik, pastDate, currentDate);
+            int count = tradeRepository.findBuyCountByStock(cik, pastDate, currentDate);
             double trend = Math.min(1, (count - average) / average);
             totalTrend += trend * TREND_WEIGHTS.get(i);
         }

@@ -25,11 +25,11 @@ public class StockRating {
     private Stock stock;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double trend;
+    private double trend;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double efficiency;
+    private double efficiency;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double overall;
+    private double overall;
 }

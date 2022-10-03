@@ -48,9 +48,10 @@ export function fetchAllTrades(table, types) {
 function fetchTrades(table, url, types, withStock) {
     table.reset();
     // send request to retrieve trades from the server
+    let typesParam = types ? types.join(',') : "";
     $.ajax({
         type: "GET",
-        url: location.origin + url + "?types=" + types.join(','),
+        url: location.origin + url + "?types=" + typesParam,
         // if success, add trades to the table
         success: (data) => {
             let trades = data.map(obj => Object.assign(new Trade(), obj));
@@ -96,7 +97,7 @@ function addTradesToTable(table, trades, withStock) {
         let dateVal = Utils.formatDate(trade.date);
 
         // reference to the stock page
-        let stockRef = '/stocks/' + trade.symbol.toLowerCase();
+        let stockRef = '/stocks/' + (trade.symbol || "").toLowerCase();
 
         // build table row element
         let tradeRow = $(`

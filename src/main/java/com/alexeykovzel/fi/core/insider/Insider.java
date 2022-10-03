@@ -17,7 +17,7 @@ import java.util.Collection;
 @Builder
 @EqualsAndHashCode(exclude = {"stock", "form4s", "positions"})
 @ToString(exclude = {"stock", "form4s"})
-public class Insider implements Persistable<String> {
+public class Insider {
 
     @Id
     private String cik;
@@ -38,14 +38,4 @@ public class Insider implements Persistable<String> {
             joinColumns = @JoinColumn(name = "insider_cik", referencedColumnName = "cik")
     )
     private Collection<String> positions;
-
-    @Override
-    public String getId() {
-        return cik;
-    }
-
-    @Override
-    public boolean isNew() {
-        return true;
-    }
 }

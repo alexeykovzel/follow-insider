@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -33,47 +32,33 @@ public abstract class EdgarService {
     // EDGAR API Configuration
     private static final String USER_AGENT_EMAIL = "alexey.kovzel@gmail.com";
     private static final String USER_AGENT_NAME = "FollowInsider";
-    private static final String DEFAULT_ENCODING = "gzip";
-    private static final String DEFAULT_CHARSET = "UTF-8";
+    private static final String CONTENT_ENCODING = "gzip";
+    private static final String CONTENT_CHARSET = "UTF-8";
     private static final int MAX_REQUEST_RETRIES = 3;
     private static final int REQUEST_TIMEOUT = 5000;
     private static final int REQUEST_DELAY = 120;
 
     private long lastRequestTime = 0;
 
-    protected String formatStockName(String val) {
-        val = capitalize(val);
-        val = addDots(val);
-        return val;
-    }
-
-    protected String addLeadingZeros(String val) {
-        return "0".repeat(10 - val.length()) + val;
-    }
-
-    protected String trimLeadingZeros(String val) {
-        return val.replaceFirst("^0+(?!$)", "");
-    }
-
     protected JsonNode getJsonByUrl(String url) throws IOException {
-        try (InputStream in = sendHttpRequest(url, "application/json")) {
+        try (InputStream in = getInputStreamByUrl(url, "application/json")) {
             if (in == null) throw new IOException("No Data");
             return new ObjectMapper().readTree(in);
         }
     }
 
     protected String getTextByUrl(String url) throws IOException {
-        try (InputStream in = sendHttpRequest(url, "text/html")) {
+        try (InputStream in = getInputStreamByUrl(url, "text/html")) {
             if (in == null) throw new IOException("No Data");
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
-    protected InputStream sendHttpRequest(String url, String contentType) {
-        return sendHttpRequest(url, contentType, MAX_REQUEST_RETRIES);
+    protected InputStream getInputStreamByUrl(String url, String contentType) {
+        return getInputStreamByUrl(url, contentType, MAX_REQUEST_RETRIES);
     }
 
-    private InputStream sendHttpRequest(String url, String contentType, int attempts) {
+    private InputStream getInputStreamByUrl(String url, String contentType, int attempts) {
         if (attempts == 0) return null;
         long currentTime = System.currentTimeMillis();
         try {
@@ -83,7 +68,7 @@ public abstract class EdgarService {
             HttpRequest request = buildHttpRequest(url, contentType);
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int statusCode = response.statusCode();
-
+            // handle response status code
             switch (statusCode) {
                 case 200:
                     // decode response body as input stream
@@ -92,8 +77,9 @@ public abstract class EdgarService {
                 case 301:
                     // handle redirection to provided URL
                     Optional<String> redirectUrl = response.headers().firstValue("location");
-                    return redirectUrl.map(s -> sendHttpRequest(s, contentType, attempts)).orElse(null);
+                    return redirectUrl.map(s -> getInputStreamByUrl(s, contentType, attempts)).orElse(null);
                 case 429:
+                    // handle "too many requests" error
                     System.out.println("[ERROR] EDGAR: Too Many Requests");
                     return null;
                 default:
@@ -102,7 +88,7 @@ public abstract class EdgarService {
             }
         } catch (IOException | InterruptedException e) {
             System.out.printf("[ERROR] %s: %d attempts left\n", e.getMessage(), attempts);
-            return sendHttpRequest(url, contentType, attempts - 1);
+            return getInputStreamByUrl(url, contentType, attempts - 1);
         } finally {
             lastRequestTime = currentTime;
         }
@@ -112,9 +98,8 @@ public abstract class EdgarService {
         return HttpRequest.newBuilder(URI.create(url))
                 .timeout(Duration.of(REQUEST_TIMEOUT, ChronoUnit.MILLIS))
                 .header("User-Agent", USER_AGENT_NAME + " " + USER_AGENT_EMAIL)
-                .header("Content-Type", contentType + ";charset=" + DEFAULT_CHARSET)
-                .header("Accept-Encoding", DEFAULT_ENCODING)
-                .header("Host", "www.sec.gov")
+                .header("Content-Type", contentType + ";charset=" + CONTENT_CHARSET)
+                .header("Accept-Encoding", CONTENT_ENCODING)
                 .build();
     }
 
@@ -127,30 +112,5 @@ public abstract class EdgarService {
             default:
                 throw new UnsupportedOperationException("Unexpected Content-Encoding: " + encoding);
         }
-    }
-
-    private String capitalize(String val) {
-        Set<Character> reservedChars = Set.of(' ', '.');
-        char[] chars = val.toLowerCase().toCharArray();
-        char[] capitalizedVal = new char[chars.length];
-        char prevChar = ' ';
-        for (int i = 0; i < chars.length; i++) {
-            capitalizedVal[i] = reservedChars.contains(prevChar)
-                    ? Character.toUpperCase(chars[i]) : chars[i];
-            prevChar = chars[i];
-        }
-        return String.valueOf(capitalizedVal);
-    }
-
-    private String addDots(String val) {
-        Set<String> dottedWords = Set.of("Corp", "Inc", "Ltd", "Co");
-        String[] words = val.split(" ");
-        for (int i = 0; i < words.length; i++) {
-            String word = words[i];
-            if (dottedWords.contains(word)) {
-                words[i] = word + ".";
-            }
-        }
-        return String.join(" ", words);
     }
 }

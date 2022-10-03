@@ -3,13 +3,14 @@ package com.alexeykovzel.fi.core.trade;
 import com.alexeykovzel.fi.core.trade.view.TradeView;
 import com.alexeykovzel.fi.utils.ProgressBar;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class TradeService {
     @Transactional
     public void updateTradeRating() {
         Collection<TradeRating> ratings = new HashSet<>();
-        ProgressBar.execute("Updating trade rating...", tradeRepository.findByCodeWhereNoRating("P"), trade ->
+        ProgressBar.execute("Updating trade rating...", tradeRepository.findByCodeWithNoRating("P"), trade ->
                 ratings.add(TradeRating.builder()
                         .efficiency(ratingStrategy.calculateEfficiency(trade))
                         .weight(ratingStrategy.calculateWeight(trade))
@@ -31,19 +32,19 @@ public class TradeService {
     }
 
     public Collection<TradeView> getRecentTradesByTypes(List<String> types) {
-        return tradeRepository.findTop100ByCodeInOrderByDateDesc(getCodesByTypes(types));
+        Pageable paging = PageRequest.of(0, 100, Sort.by("date").descending());
+        if (types == null || types.isEmpty()) return tradeRepository.findRecentTrades(paging).getContent();
+        return tradeRepository.findRecentTrades(getCodesByTypes(types), paging).getContent();
     }
 
     public Collection<TradeView> getTradesByStockSymbol(String symbol, List<String> types) {
+        if (types == null || types.isEmpty()) return tradeRepository.findByStockSymbol(symbol);
         return tradeRepository.findByStockSymbol(symbol, getCodesByTypes(types));
     }
-    
+
     private List<String> getCodesByTypes(List<String> types) {
-        List<String> codes = new ArrayList<>();
-        for (String type : types) {
-            String code = TradeCode.codeOfType(type);
-            codes.add(code);
-        }
-        return codes;
+        return types.stream()
+                .map(TradeCode::codeOfType)
+                .collect(Collectors.toList());
     }
 }

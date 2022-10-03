@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.insider;
+package com.alexeykovzel.fi;
 
 import com.alexeykovzel.fi.core.insider.Insider;
 import com.alexeykovzel.fi.core.insider.InsiderRepository;
@@ -36,6 +36,7 @@ public class InsiderRepositoryTest {
     @Test
     @Transactional
     public void findInsiderViews() {
+        // TODO: Fix test.
         Date currentDate = new Date();
 
         // create stock

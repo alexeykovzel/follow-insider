@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.company;
+package com.alexeykovzel.fi;
 
 import com.alexeykovzel.fi.core.stock.Stock;
 import com.alexeykovzel.fi.core.stock.StockRatingStrategy;
@@ -32,16 +32,17 @@ public class StockRatingStrategyTest {
     private StockRatingStrategy ratingStrategy;
 
     @Test
-    public void givenStock_whenCalculateTrend_thenSuccess() {
-        when(tradeRepository.findPurchaseCountByStock(any())).thenReturn(30);
-        when(tradeRepository.findMinDateByStock(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
-        when(tradeRepository.findPurchaseCountByStock(any(), any(), any())).thenReturn(20, 4, 12);
+    public void givenStock_thenCalculateTrend() {
+        // TODO: Fix test.
+        when(tradeRepository.findBuyCountByStock(any())).thenReturn(30);
+        when(tradeRepository.findMinDateByCik(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
+        when(tradeRepository.findBuyCountByStock(any(), any(), any())).thenReturn(20, 4, 12);
         double trend = ratingStrategy.calculateTrend(new Stock());
         assertThat(trend).isEqualTo(0.44);
     }
 
     @Test
-    public void givenStock_whenCalculateEfficiency_thenSuccess() {
+    public void givenStock_thenCalculateEfficiency() {
         TradeRating r1 = TradeRating.builder().efficiency(0.8).weight(0.4).build();
         TradeRating r2 = TradeRating.builder().efficiency(0.3).weight(0.6).build();
         when(tradeRatingRepository.findByStockCik(any())).thenReturn(List.of(r1, r2));

@@ -17,7 +17,7 @@ public class TradeRating {
 
     @Id
     @Column(name = "trade_id")
-    private Long id;
+    private long id;
 
     @MapsId
     @OneToOne
@@ -25,8 +25,8 @@ public class TradeRating {
     private Trade trade;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double efficiency;
+    private double efficiency;
 
     @Column(columnDefinition = "Decimal(5,4)")
-    private Double weight;
+    private double weight;
 }
