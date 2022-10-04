@@ -6,7 +6,7 @@ import * as Utils from "./utils.js";
 
 class Stock {
     constructor(name, symbol, description, keyPoints, lastActive, efficiency, trend, overall) {
-        this.company = name;
+        this.name = name;
         this.symbol = symbol;
         this.description = description;
         this.keyPoints = keyPoints;
@@ -43,7 +43,11 @@ function fetchStock(symbol) {
             let stock = Object.assign(new Stock(), data);
             initStock(stock);
         },
-        error: (error) => console.log("[ERROR] " + error.responseText),
+        error: (error) => {
+            console.log("[ERROR] " + error.responseText);
+            // TODO: Remove before prod.
+            initStock(mockStock());
+        },
     });
 }
 
@@ -63,10 +67,7 @@ function fetchInsiders(table, symbol) {
 
 function initStock(stock) {
     fillSidePanel(stock);
-
-    // build dashboard element
-    let lineGraph0 = new LineGraph("graph0", "Average Value per Buy");
-    let dashboard = new Dashboard([lineGraph0]);
+    let dashboard = new Dashboard();
 
     // add key points (if exist)
     let keyPoints = stock.keyPoints.filter(p => p);
@@ -91,13 +92,27 @@ function initStock(stock) {
         [1.2, 1.2, 1, 1, 1, 1, 1],
         "<trade-filters></trade-filters>"
     );
+    // add line graph
+    let lineGraph = new LineGraph("linegraph0", "Shares per Transaction", ["Date", "Shares"]);
+    dashboard.blocks.push(lineGraph);
 
     initTabs([
         new Tab("Dashboard", dashboard.html, () => {
             // render graphs with input data
-            lineGraph0.draw(["1 Jan", "1 Feb", "1 Mar", "1 Apr", "1 May"], [7, 8, 8, 9, 16], 1);
-            // align heights of the info blocks
-            $(window).resize(() => dashboard.align());
+            lineGraph.init(() => {
+                fetchTradePoints(stock.symbol, "5M", (points) => {
+                    lineGraph.draw(points)
+                    dashboard.align();
+                });
+                // for testing
+                // lineGraph.draw(mockTradePoints());
+                // dashboard.align();
+            });
+            // align dashboard blocks
+            $(window).resize(() => {
+                lineGraph.resize();
+                dashboard.align();
+            });
             dashboard.align();
         }),
         new Tab("Insiders", insidersTable.html, () => {
@@ -109,6 +124,23 @@ function initStock(stock) {
             fetchStockTrades(tradesTable, stock.symbol, ["Buy"]);
         })
     ]);
+}
+
+function fetchTradePoints(symbol, range, draw) {
+    $.ajax({
+        type: "GET",
+        url: `${location.origin}/stocks/${symbol}/trade-points?range=${range}`,
+        success: (data) => {
+            console.log(JSON.stringify(data));
+            let points = [];
+            data.forEach(obj => {
+                let point = [Utils.formatDate(obj["date"]), obj["shareCount"]];
+                points.push(point);
+            });
+            draw(points);
+        },
+        error: (error) => console.log("[ERROR] " + error.responseText),
+    })
 }
 
 function addInsidersToTable(table, insiders) {
@@ -135,19 +167,28 @@ function mockStock() {
     let description = "Intel is best known for developing the microprocessors found in most of the world's " +
         "personal computers. The multinational technology company is also the world's largest manufacturer by " +
         "revenue of semiconductor chips, a product used in most of the world's electronic devices.";
-    let insiders = [
+
+    let keyPoints = [
+        "lowest activity in 5 years",
+        "2 days ago, Steven Jobs bought shares for $2.0M",
+        "Average insider return: 25% per year"
+    ];
+
+    return new Stock("Intel Corporation", "INTC", description, keyPoints,
+        "3 Aug, 2022", 4, 6, 9);
+}
+
+function mockInsiders() {
+    return [
         new Insider("Steve Jobs0", ["CEO"], 2000, "23 Aug, 2022"),
         new Insider("Steve Jobs1", ["10% Owner", "CTO"], 2312322, "24 Aug, 2022"),
         new Insider("Steve Jobs2", ["10% Owner", "Chief Technical Officer"], 3298326382, "20 Aug, 2022"),
         new Insider("Steve Jobs3", ["10% Owner"], 2, "01 Jan, 2001"),
     ];
-    let keyPoints = [
-        "lowest activity in 5 years",
-        "Steven Jobs bought shares for $2.0M 2 days go",
-        "Average insider return: 25% per year"
-    ];
-    return new Stock("Intel Corporation", "INTC", insiders,
-        "3 Aug, 2022", description, keyPoints, 4, 6, 9);
+}
+
+function mockTradePoints() {
+    return [[10, 20], [15, 25], [20, 20], [25, 50], [30, 20], [32, 20], [35, 25], [50, 5]];
 }
 
 function toggleSidePanel() {

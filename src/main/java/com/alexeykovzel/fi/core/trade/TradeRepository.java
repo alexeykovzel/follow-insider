@@ -1,5 +1,6 @@
 package com.alexeykovzel.fi.core.trade;
 
+import com.alexeykovzel.fi.core.trade.view.TradePoint;
 import com.alexeykovzel.fi.core.trade.view.TradeView;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -9,34 +10,27 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
-    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes)")
-    Collection<TradeView> findByStockSymbol(String symbol, List<String> codes);
-
-    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol")
-    Collection<TradeView> findByStockSymbol(String symbol);
+    @Query(value = "SELECT t FROM Trade t WHERE t.code IN (:codes)")
+    Slice<TradeView> findRecent(Collection<String> codes, Pageable paging);
 
     @Query(value = "SELECT t FROM Trade t")
-    Slice<TradeView> findRecentTrades(Pageable paging);
-
-    @Query(value = "SELECT t FROM Trade t WHERE t.code IN (:codes)")
-    Slice<TradeView> findRecentTrades(List<String> codes, Pageable paging);
+    Slice<TradeView> findRecent(Pageable paging);
 
     @Query("SELECT t FROM Trade t WHERE NOT EXISTS (SELECT 1 FROM TradeRating r WHERE t = r.trade) AND t.code = :code")
-    Collection<Trade> findByCodeWithNoRating(String code);
+    Collection<Trade> findNotRated(String code);
 
-    @Query("SELECT COUNT(t) FROM Trade t WHERE t.date >= :d1 AND t.date <= :d2 AND t.code = 'P' AND t.form4.stock.cik = :cik")
-    int findBuyCountByStock(String cik, Date d1, Date d2);
+    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes) AND t.date > :from")
+    Collection<TradePoint> findPointsBySymbol(String symbol, Collection<String> codes, Date from);
 
-    @Query("SELECT COUNT(t) FROM Trade t WHERE t.form4.stock.cik = :cik AND t.code = 'P'")
-    int findBuyCountByStock(String cik);
+    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes)")
+    Collection<TradeView> findBySymbol(String symbol, Collection<String> codes);
 
-    @Query("SELECT AVG(t.shareCount) FROM Trade t WHERE t.code = 'P'")
-    double findAvgBoughtShares();
+    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol")
+    Collection<TradeView> findBySymbol(String symbol);
 
     @Query("SELECT c.symbol FROM Trade t, Stock c WHERE t.id = :id AND c=t.form4.stock")
     String findSymbolById(Long id);
@@ -46,4 +40,13 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     @Query("SELECT MAX(t.date) FROM Trade t WHERE t.form4.stock.cik = :cik")
     Date findMaxDateByCik(String cik);
+
+    @Query("SELECT COUNT(t) FROM Trade t WHERE t.form4.stock.cik = :cik AND t.code = 'P' AND t.date >= :d1 AND t.date <= :d2")
+    int findBuyCountByCik(String cik, Date d1, Date d2);
+
+    @Query("SELECT COUNT(t) FROM Trade t WHERE t.form4.stock.cik = :cik AND t.code = 'P'")
+    int findBuyCountByCik(String cik);
+
+    @Query("SELECT AVG(t.shareCount) FROM Trade t WHERE t.code = 'P'")
+    double findAvgBoughtShares();
 }

@@ -34,9 +34,9 @@ public class StockRatingStrategyTest {
     @Test
     public void givenStock_thenCalculateTrend() {
         // TODO: Fix test.
-        when(tradeRepository.findBuyCountByStock(any())).thenReturn(30);
+        when(tradeRepository.findBuyCountByCik(any())).thenReturn(30);
         when(tradeRepository.findMinDateByCik(any())).thenReturn(DateUtils.shiftMonths(new Date(), -3));
-        when(tradeRepository.findBuyCountByStock(any(), any(), any())).thenReturn(20, 4, 12);
+        when(tradeRepository.findBuyCountByCik(any(), any(), any())).thenReturn(20, 4, 12);
         double trend = ratingStrategy.calculateTrend(new Stock());
         assertThat(trend).isEqualTo(0.44);
     }

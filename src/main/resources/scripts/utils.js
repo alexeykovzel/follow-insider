@@ -20,9 +20,9 @@ export function merge(arr) {
     return [].concat.apply([], arr);
 }
 
-export function formatDate(val) {
-    let options = {month: 'short', day: 'numeric', year: 'numeric'};
-    return new Date(val).toLocaleDateString('en-US', options);
+export function formatDate(val, options) {
+    options = options || {month: "short", day: "numeric", year: "numeric"};
+    return new Date(val).toLocaleDateString("en-US", options);
 }
 
 export function formatMoney(val) {

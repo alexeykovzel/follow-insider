@@ -32,6 +32,21 @@ public class DateUtils {
         return new Date(date.getTime() + timeUnit.toMillis(duration));
     }
 
+    public static Date shiftRange(Date date, String range) {
+        range = range.toUpperCase();
+        if ("MAX".equals(range)) return new Date(Long.MIN_VALUE);
+        try {
+            int lastIdx = range.length() - 1;
+            int duration = -Integer.parseInt(range.substring(0, lastIdx));
+            String metric = range.substring(lastIdx);
+            if ("D".equals(metric)) return shiftDays(date, duration);
+            if ("M".equals(metric)) return shiftMonths(date, duration);
+            if ("Y".equals(metric)) return shiftYears(date, duration);
+        } catch (NumberFormatException ignored) {
+        }
+        throw new IllegalArgumentException("Invalid range: " + range);
+    }
+
     public static int yearsBetween(Date d1, Date d2) {
         return monthsBetween(d1, d2) / 12;
     }

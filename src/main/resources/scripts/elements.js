@@ -170,7 +170,7 @@ export class Table {
 
 export class Dashboard {
     constructor(blocks) {
-        this.blocks = blocks;
+        this.blocks = blocks || [];
     }
 
     align() {
@@ -211,64 +211,32 @@ export class InfoBlock {
 }
 
 export class LineGraph extends InfoBlock {
-    constructor(id, name) {
-        super(id, name, `<canvas id="${id}" class="line-chart"></canvas>`);
-        this.id = id;
-        this.name = name;
+    constructor(id, name, labels) {
+        super(id, name, `<div id="${id}" class="line-chart"></div>`);
+        this.labels = labels;
     }
 
-    draw(labels, data, spread) {
-        let hue = Math.random() * 360;
-        let lightColor = `hsl(${hue}, 100%, 45%)`;
-        let darkColor = `hsl(${hue}, 100%, 20%)`;
-        new Chart(this.id, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    fill: false,
-                    lineTension: 0.3,
-                    backgroundColor: darkColor,
-                    borderColor: lightColor,
-                    data: data
-                }]
+    init(onLoad) {
+        google.charts.load('current', {packages: ['corechart']});
+        google.charts.setOnLoadCallback(() => onLoad());
+    }
+
+    draw(points) {
+        this.points = points;
+        let data = google.visualization.arrayToDataTable([this.labels, ...points]);
+        let chart = new google.visualization.LineChart(document.getElementById(this.id));
+        chart.draw(data, {
+            legend: "none",
+            curveType: 'function',
+            vAxis: {gridlines: {count: 4}},
+            chartArea: {
+                width: "85%",
+                height: "80%",
             },
-            options: {
-                legend: {display: false},
-                maintainAspectRatio: false,
-                responsive: true,
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            min: Math.min(...data) - spread,
-                            max: Math.max(...data) + spread,
-                        }
-                    }],
-                },
-                hover: {
-                    intersect: false
-                },
-                tooltips: {
-                    intersect: false,
-                    callbacks: {
-                        title: function(item, ctx) {
-                            return ctx['labels'][item[0]['index']];
-                        },
-                        label: function(item, ctx) {
-                            let data = ctx['datasets'][0]['data'][item['index']];
-                            return Utils.formatMoney(data);
-                        },
-                    },
-                    displayColors: false,
-                    backgroundColor: "white",
-                    titleFontColor: darkColor,
-                    titleFontSize: 14,
-                    bodyFontColor: lightColor,
-                    bodyFontSize: 12,
-                    borderColor: darkColor,
-                    borderWidth: 0.2,
-                }
-            }
         });
+    }
+
+    resize() {
+        this.draw(this.points);
     }
 }

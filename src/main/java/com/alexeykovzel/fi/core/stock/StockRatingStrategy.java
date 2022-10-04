@@ -53,12 +53,12 @@ public class StockRatingStrategy {
         if (minDate == null) return 0;
         Date currentDate = new Date();
         double months = DateUtils.monthsBetween(minDate, currentDate);
-        double average = tradeRepository.findBuyCountByStock(cik) / months;
+        double average = tradeRepository.findBuyCountByCik(cik) / months;
         double totalTrend = 0;
 
         for (int i = 1; i <= Math.min(months, TREND_WEIGHTS.size()); i++) {
             Date pastDate = DateUtils.shiftMonths(currentDate, -i);
-            int count = tradeRepository.findBuyCountByStock(cik, pastDate, currentDate);
+            int count = tradeRepository.findBuyCountByCik(cik, pastDate, currentDate);
             double trend = Math.min(1, (count - average) / average);
             totalTrend += trend * TREND_WEIGHTS.get(i);
         }

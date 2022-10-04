@@ -1,9 +1,11 @@
 package com.alexeykovzel.fi.core.trade;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.expression.spel.ast.TypeCode;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public enum TradeCode {
@@ -58,5 +60,19 @@ public enum TradeCode {
             }
         }
         return null;
+    }
+
+    public static Collection<String> getByTypes(Collection<String> types) {
+        return types.stream()
+                .map(TradeCode::codeOfType)
+                .collect(Collectors.toList());
+    }
+
+    public static Collection<String> getAll() {
+        Collection<String> codes = new ArrayList<>();
+        for (TradeCode code : values()) {
+            codes.add(code.code);
+        }
+        return codes;
     }
 }

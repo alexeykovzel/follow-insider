@@ -3,25 +3,25 @@ package com.alexeykovzel.fi.core.stock;
 import com.alexeykovzel.fi.core.ModelHandler;
 import com.alexeykovzel.fi.core.insider.InsiderRepository;
 import com.alexeykovzel.fi.core.insider.InsiderView;
+import com.alexeykovzel.fi.core.trade.TradeCode;
 import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.core.trade.TradeService;
+import com.alexeykovzel.fi.core.trade.view.TradePoint;
 import com.alexeykovzel.fi.core.trade.view.TradeView;
+import com.alexeykovzel.fi.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @RestController
 @RequestMapping("/stocks")
 @RequiredArgsConstructor
 public class StocksController {
     private final InsiderRepository insiderRepository;
+    private final TradeRepository tradeRepository;
     private final StockRepository stockRepository;
     private final TradeService tradeService;
     private final StockService stockService;
@@ -53,11 +53,20 @@ public class StocksController {
     @GetMapping("/{symbol}/trades")
     public Collection<TradeView> getStockTrades(@PathVariable String symbol,
                                                 @RequestParam("types") List<String> types) {
-        return tradeService.getTradesByStockSymbol(symbol, types);
+        if (types == null || types.isEmpty()) return tradeRepository.findBySymbol(symbol);
+        return tradeRepository.findBySymbol(symbol, TradeCode.getByTypes(types));
     }
 
     @GetMapping("/{symbol}/insiders")
     public Collection<InsiderView> getStockInsiders(@PathVariable String symbol) {
         return insiderRepository.findViewsByStockSymbol(symbol);
+    }
+
+    @GetMapping("/{symbol}/trade-points")
+    public Collection<TradePoint> getTradeGraph(@PathVariable("symbol") String symbol,
+                                                @RequestParam("range") String range) {
+        Collection<String> codes = TradeCode.getAll();
+        Date from = DateUtils.shiftRange(new Date(), range);
+        return tradeRepository.findPointsBySymbol(symbol, codes, from);
     }
 }
