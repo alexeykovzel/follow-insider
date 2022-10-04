@@ -93,16 +93,19 @@ function initStock(stock) {
         "<trade-filters></trade-filters>"
     );
     // add line graph
-    let lineGraph = new LineGraph("linegraph0", "Shares per Transaction", ["Date", "Shares"]);
+    let lineGraph = new LineGraph("linegraph0", "Shares per Buy", ["Date", "Shares"]);
     dashboard.blocks.push(lineGraph);
 
     initTabs([
         new Tab("Dashboard", dashboard.html, () => {
             // render graphs with input data
             lineGraph.init(() => {
-                fetchTradePoints(stock.symbol, "5M", (points) => {
-                    lineGraph.draw(points)
-                    dashboard.align();
+                fetchTradePoints(stock.symbol, "2Y", ["Buy"], (points) => {
+                    console.log("Drawing points: " + points.length)
+                    if (points.length > 0) {
+                        lineGraph.draw(points)
+                        dashboard.align();
+                    }
                 });
                 // for testing
                 // lineGraph.draw(mockTradePoints());
@@ -126,15 +129,14 @@ function initStock(stock) {
     ]);
 }
 
-function fetchTradePoints(symbol, range, draw) {
+function fetchTradePoints(symbol, range, types, draw) {
     $.ajax({
         type: "GET",
-        url: `${location.origin}/stocks/${symbol}/trade-points?range=${range}`,
+        url: `${location.origin}/stocks/${symbol}/trade-points?range=${range}&types=${types.join(",")}`,
         success: (data) => {
-            console.log(JSON.stringify(data));
             let points = [];
             data.forEach(obj => {
-                let point = [Utils.formatDate(obj["date"]), obj["shareCount"]];
+                let point = [new Date(obj["date"]), obj["shareCount"]];
                 points.push(point);
             });
             draw(points);
@@ -188,7 +190,11 @@ function mockInsiders() {
 }
 
 function mockTradePoints() {
-    return [[10, 20], [15, 25], [20, 20], [25, 50], [30, 20], [32, 20], [35, 25], [50, 5]];
+    let points = [];
+    for (let i = 0; i < 30; i++) {
+        points.push([new Date(2022, 10, i), Math.pow(i + 2, 2)]);
+    }
+    return points;
 }
 
 function toggleSidePanel() {

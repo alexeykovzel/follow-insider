@@ -211,9 +211,10 @@ export class InfoBlock {
 }
 
 export class LineGraph extends InfoBlock {
-    constructor(id, name, labels) {
+    constructor(id, name, labels, hFormat) {
         super(id, name, `<div id="${id}" class="line-chart"></div>`);
         this.labels = labels;
+        this.hFormat = hFormat;
     }
 
     init(onLoad) {
@@ -222,13 +223,44 @@ export class LineGraph extends InfoBlock {
     }
 
     draw(points) {
+        if (!points) return;
+
+        // sort data points by the 1-st element
+        points = points.sort((a, b) => a[0] > b[0] ? 1 : -1);
+
         this.points = points;
         let data = google.visualization.arrayToDataTable([this.labels, ...points]);
         let chart = new google.visualization.LineChart(document.getElementById(this.id));
+
+        let lightColor = "#CBC3E3"
+        let darkColor = "#5D3FD3";
+
         chart.draw(data, {
             legend: "none",
-            curveType: 'function',
-            vAxis: {gridlines: {count: 4}},
+            curveType: "function",
+            colors: [darkColor],
+            pointSize: 5,
+            lineWidth: 0,
+            vAxis: {
+                format: "short",
+                gridlines: {
+                    color: "#ccc",
+                    count: 5
+                }
+            },
+            hAxis: {
+                format: this.hFormat || "MMM d",
+                gridlines: {
+                    color: "#ccc",
+                    count: 5,
+                }
+            },
+            crosshair: {
+                color: lightColor,
+                trigger: "focus",
+                orientation: "vertical"
+            },
+            focusTarget: "category",
             chartArea: {
                 width: "85%",
                 height: "80%",

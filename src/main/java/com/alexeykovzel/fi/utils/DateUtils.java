@@ -34,7 +34,7 @@ public class DateUtils {
 
     public static Date shiftRange(Date date, String range) {
         range = range.toUpperCase();
-        if ("MAX".equals(range)) return new Date(Long.MIN_VALUE);
+        if ("MAX".equals(range)) return new Date(0);
         try {
             int lastIdx = range.length() - 1;
             int duration = -Integer.parseInt(range.substring(0, lastIdx));
