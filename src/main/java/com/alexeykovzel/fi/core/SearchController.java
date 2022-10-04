@@ -20,10 +20,14 @@ public class SearchController {
 
     @GetMapping
     public ModelAndView sendQuery(@RequestParam("q") String query) {
-        String symbol = stockRepository.findSymbolByName(query);
-        if (symbol == null) {
-            // TODO: Try to find the closest match.
-        }
+        // TODO: Try to find the closest match.
+
+        // temporary solution, please don't judge
+        int abbrIdx = query.indexOf("(");
+        String symbol = (abbrIdx != -1)
+                ? query.substring(abbrIdx + 1, query.indexOf(")")).toLowerCase()
+                : "unidentified";
+
         return new ModelAndView("redirect:/stocks/" + symbol);
     }
 

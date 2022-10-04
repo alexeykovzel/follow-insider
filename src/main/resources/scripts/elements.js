@@ -1,5 +1,4 @@
 import * as Search from "./search.js";
-import * as Utils from "./utils.js";
 
 customElements.define('default-header', class extends HTMLElement {
     constructor() {
@@ -12,7 +11,7 @@ customElements.define('default-header', class extends HTMLElement {
                 <h2 onclick="location.assign('/')">FI</h2>
                 <div id="search" class="search">
                     <label for="search-input"></label>
-                    <input id="search-input" type="text" placeholder="Type a company or insider">
+                    <input id="search-input" type="text" placeholder="Search a company or insider">
                     <object class="center" type="image/svg+xml" data="/images/icons/search.svg"></object>
                 </div>
                 <button class="nav-btn">
@@ -36,8 +35,12 @@ customElements.define('default-header', class extends HTMLElement {
         })
 
         // show search hints while typing
-        let testHints = ["New York", "A very very very very long hint", "Neta1", "Neta2"];
-        Search.setHints(header.find("#search"), testHints);
+        Search.fetchHints(header.find("#search"));
+
+        // -------- FOR TESTING ----------
+        // let testHints = ["New York", "A very very very very long hint", "Neta1", "Neta2"];
+        // Search.setHints(header.find("#search"), testHints);
+        // -------------------------------
     }
 });
 
@@ -96,6 +99,37 @@ customElements.define("trade-filters", class extends HTMLElement {
                 </div>
             </div>
         `);
+    }
+});
+
+class TimeRange {
+    constructor(id, val, checked) {
+        this.id = id;
+        this.val = val;
+        this.checked = checked || false;
+    }
+}
+
+customElements.define("time-ranges", class extends HTMLElement {
+    constructor() {
+        super();
+        let ranges = [
+            new TimeRange("1m", "1M"),
+            new TimeRange("3m", "3M"),
+            new TimeRange("6m", "6M"),
+            new TimeRange("1y", "1Y"),
+            new TimeRange("3y", "3Y"),
+            new TimeRange("5y", "5Y"),
+            new TimeRange("10y", "10Y"),
+            new TimeRange("max", "MAX", true)
+        ];
+
+        $(this).html(ranges.map(range => `
+            <div>
+                <input type="checkbox" id="${range.id}" name="${range.val}" ${range.checked ? "checked" : ""}>
+                <label for="${range.id}">${range.val}</label>
+            </div>
+        `).join(""));
     }
 });
 
@@ -195,26 +229,32 @@ export class InfoBlock {
 
     align() {
         // default span is 10
-        let block = $("#b-" + this.id);
+        let block = $("#" + this.blockId);
         let spans = Math.round(block.height() / 10) + 9;
         block.css("grid-row-end", "span " + spans);
     }
 
     get html() {
         return `
-            <div id="b-${this.id}" class="info-block">
+            <div id="${this.blockId}" class="info-block">
                <h3>${this.name}</h3>
                ${this.content}
             </div>
         `;
     }
+
+    get blockId() {
+        return "b-" + this.id;
+    }
 }
 
-export class LineGraph extends InfoBlock {
-    constructor(id, name, labels, hFormat) {
-        super(id, name, `<div id="${id}" class="line-chart"></div>`);
+export class ScatterChart extends InfoBlock {
+    constructor(id, name, labels) {
+        super(id, name, `
+            <time-ranges class="no-select"></time-ranges>
+            <div id="${id}" class="chart"></div>
+        `);
         this.labels = labels;
-        this.hFormat = hFormat;
     }
 
     init(onLoad) {
@@ -228,31 +268,44 @@ export class LineGraph extends InfoBlock {
         // sort data points by the 1-st element
         points = points.sort((a, b) => a[0] > b[0] ? 1 : -1);
 
+        // calculate time range for label formatting
+        let monthDiff = 0;
+        if (points.length > 1) {
+            let timeDiff = points[points.length - 1][0].getTime() - points[0][0].getTime();
+            monthDiff = timeDiff / 1000 / 3600 / 24 / 30;
+        }
+        // dots' and crosshair colorsX
+        let lightColor = "#CBC3E3"
+        let darkColor = "#5D3FD3";
+
+        // insert invisible point if no data
+        let empty = points.length === 0;
+        if (empty) points.push([new Date(), 0]);
+
         this.points = points;
         let data = google.visualization.arrayToDataTable([this.labels, ...points]);
         let chart = new google.visualization.LineChart(document.getElementById(this.id));
-
-        let lightColor = "#CBC3E3"
-        let darkColor = "#5D3FD3";
 
         chart.draw(data, {
             legend: "none",
             curveType: "function",
             colors: [darkColor],
-            pointSize: 5,
+            pointSize: empty ? 0 : 5,
             lineWidth: 0,
             vAxis: {
                 format: "short",
                 gridlines: {
-                    color: "#ccc",
-                    count: 5
+                    color: "#eee",
+                    minSpacing: 40,
+                },
+                minorGridlines: {
+                    count: 0
                 }
             },
             hAxis: {
-                format: this.hFormat || "MMM d",
+                format: (monthDiff > 3) ? "MMM d, y" : "MMM d",
                 gridlines: {
-                    color: "#ccc",
-                    count: 5,
+                    color: "#eee",
                 }
             },
             crosshair: {
@@ -262,13 +315,14 @@ export class LineGraph extends InfoBlock {
             },
             focusTarget: "category",
             chartArea: {
+                top: 15,
                 width: "85%",
                 height: "80%",
             },
         });
     }
 
-    resize() {
+    reload() {
         this.draw(this.points);
     }
 }

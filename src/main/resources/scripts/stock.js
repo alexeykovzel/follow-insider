@@ -1,4 +1,4 @@
-import {Dashboard, InfoBlock, Table, LineGraph} from './elements.js';
+import {Dashboard, InfoBlock, Table, ScatterChart} from './elements.js';
 import {fetchStockTrades} from './trades.js';
 import {Tab, initTabs} from "./tabs.js";
 import {initScore} from "./rating.js";
@@ -66,7 +66,9 @@ function fetchInsiders(table, symbol) {
 }
 
 function initStock(stock) {
+    document.title = `${stock.name} (${stock.symbol}) - FollowInsider`;
     fillSidePanel(stock);
+
     let dashboard = new Dashboard();
 
     // add key points (if exist)
@@ -81,55 +83,72 @@ function initStock(stock) {
         let descriptionBlock = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");
         dashboard.blocks.push(descriptionBlock);
     }
+    // add scatter graph with insider purchases
+    let graph0 = new ScatterChart("insider-buying", "Insider Buying", ["Date", "Shares"]);
+    dashboard.blocks.push(graph0);
+
     // define table with insider information
     let insidersTable = new Table("insiders",
         ["Name", "Position", "Shares Total", "Last Active"],
         [1, 2, 1, 1]
     );
-    // define table with insider trades
+    // add table with insider trades
     let tradesTable = new Table("trades",
         ["Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
         [1.2, 1.2, 1, 1, 1, 1, 1],
         "<trade-filters></trade-filters>"
     );
-    // add line graph
-    let lineGraph = new LineGraph("linegraph0", "Shares per Buy", ["Date", "Shares"]);
-    dashboard.blocks.push(lineGraph);
 
     initTabs([
         new Tab("Dashboard", dashboard.html, () => {
             // render graphs with input data
-            lineGraph.init(() => {
-                fetchTradePoints(stock.symbol, "2Y", ["Buy"], (points) => {
-                    console.log("Drawing points: " + points.length)
-                    if (points.length > 0) {
-                        lineGraph.draw(points)
-                        dashboard.align();
-                    }
+            graph0.init(() => {
+                handleTimeRanges(() => {
+                    let range = $("#" + graph0.blockId + " :checked").prop("name");
+                    fetchTradePoints(stock.symbol, range, ["Buy"], (points) => graph0.draw(points));
                 });
-                // for testing
+
+                // -------- FOR TESTING ----------
                 // lineGraph.draw(mockTradePoints());
                 // dashboard.align();
+                // -------------------------------
             });
+
             // align dashboard blocks
+            dashboard.align();
             $(window).resize(() => {
-                lineGraph.resize();
+                graph0.reload();
                 dashboard.align();
             });
-            dashboard.align();
         }),
         new Tab("Insiders", insidersTable.html, () => {
             fetchInsiders(insidersTable, stock.symbol)
         }),
         new Tab("Trades", tradesTable.html, () => {
-            // addTradesToTable(tradesTable, mockTrades(20), false)
-            // tradesTable.initGrid();
             fetchStockTrades(tradesTable, stock.symbol, ["Buy"]);
+
+            // -------- FOR TESTING ----------
+            // lineGraph.draw(mockTradePoints());
+            // dashboard.align();
+            // -------------------------------
         })
     ]);
 }
 
-function fetchTradePoints(symbol, range, types, draw) {
+function handleTimeRanges(loadData) {
+    loadData();
+    let checkboxes = $("time-ranges :checkbox");
+    checkboxes.change(function () {
+        if ($("time-ranges :checked").length > 0) {
+            checkboxes.not(this).prop("checked", false);
+            loadData();
+        } else {
+            $(this).prop("checked", true);
+        }
+    });
+}
+
+function fetchTradePoints(symbol, range, types, success) {
     $.ajax({
         type: "GET",
         url: `${location.origin}/stocks/${symbol}/trade-points?range=${range}&types=${types.join(",")}`,
@@ -139,7 +158,7 @@ function fetchTradePoints(symbol, range, types, draw) {
                 let point = [new Date(obj["date"]), obj["shareCount"]];
                 points.push(point);
             });
-            draw(points);
+            success(points);
         },
         error: (error) => console.log("[ERROR] " + error.responseText),
     })

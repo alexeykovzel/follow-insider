@@ -46,16 +46,7 @@ body {
     overflow-x: hidden;
 }
 
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-ul,
-button,
-input,
-label {
+* {
     font-family: 'ABeeZee', sans-serif !important;
     color: var(--blue-4);
     border: none;
@@ -115,6 +106,15 @@ article p {
     top: 0;
 }
 
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version */
+}
+
 .content-wrapper {
     display: flex;
     position: relative;
@@ -154,7 +154,7 @@ default-header {
     z-index: 99;
 }
 
-default-header>div {
+default-header > div {
     display: flex;
     align-items: center;
     width: 100%;
@@ -378,8 +378,9 @@ default-footer {
 }
 
 default-footer a, .fa {
-    color: white;
     text-decoration: none;
+    font-family: "FontAwesome", serif !important;
+    color: white !important;
 }
 
 default-footer ul {

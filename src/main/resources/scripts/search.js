@@ -3,6 +3,7 @@ class SearchBar {
         this.ref = ref;
         this.hints = hints;
         this.focus = -1;
+        this.matches = 0;
     }
 
     get inputRef() {
@@ -13,13 +14,6 @@ class SearchBar {
         return this.ref.find(".autocomplete>*");
     }
 }
-
-$(document).ready(() => {
-    // hide autocompletes if clicked somewhere
-    $(document).on("click", function () {
-        $(".autocomplete").remove();
-    });
-})
 
 export function fetchHints(search) {
     $.ajax({
@@ -42,7 +36,8 @@ function autocomplete(search) {
         input = normalizeInput(input);
         // ignore invalid input
         if (!input) return false;
-        // else show matching hints
+        // load matching hints
+        resetAutocomplete(search);
         showMatchingHints(search, input);
     });
 
@@ -66,6 +61,16 @@ function autocomplete(search) {
             }
         }
     });
+
+    // hide autocompletes if clicked somewhere
+    $(document).on("click", function () {
+        resetAutocomplete(search);
+    });
+}
+
+function resetAutocomplete(search) {
+    search.ref.find(".autocomplete").remove();
+    search.focus = -1;
 }
 
 function normalizeInput(input) {
@@ -73,36 +78,39 @@ function normalizeInput(input) {
 }
 
 function updateActiveHint(search) {
-    let hints = search.hints;
+    let matches = search.matches;
+    if (matches === 0) return false;
+
+    // shift current focus
+    let currentFocus = search.focus;
+    if (currentFocus < 0) search.focus = (matches - 1);
+    search.focus = currentFocus % matches;
+
+    // set autocomplete active
     let ref = search.hintsRef;
-    if (!search.hints) return false;
-    if (search.focus >= hints.length) search.focus = 0;
-    if (search.focus < 0) search.focus = (hints.length - 1);
     ref.removeClass("autocomplete-active");
     ref.eq(search.focus).addClass("autocomplete-active");
 }
 
 function showMatchingHints(search, input) {
-    search.ref.find(".autocomplete").remove();
     let matches = findMatches(search, input);
 
     // check if any matches
-    if (Object.keys(matches).length > 0) {
+    let matchCount = Object.keys(matches).length;
+    if (matchCount > 0) {
 
         // create autocomplete list
         let hints = $(`<div class="autocomplete"></div>`);
         hints.appendTo(search.ref);
 
         // add matches to the autocomplete list
-        for (const [hint, index] of Object.entries(matches)) {
-            let p1 = hint.substring(0, index);
-            let match = hint.substring(index, input.length + index);
-            let p2 = hint.substring(input.length + index, hint.length);
-
-            // highlight the matched part in bold
-            $(`<p>${p1}<b>${match}</b>${p2}</p>`).click(function () {
-                location.assign("/search?q=" + hint);
-            }).appendTo(hints);
+        search.matches = matchCount;
+        for (const [hint, idx] of Object.entries(matches)) {
+            let p1 = hint.substring(0, idx);
+            let match = hint.substring(idx, input.length + idx);
+            let p2 = hint.substring(input.length + idx, hint.length);
+            $(`<p onclick="location.assign('/search?q=${hint}')">${p1}<b>${match}</b>${p2}</p>`)
+                .appendTo(hints);
         }
     }
 }
@@ -110,11 +118,13 @@ function showMatchingHints(search, input) {
 function findMatches(search, input) {
     let hints = search.hints;
     let matches = {};
-    for (let i = 0; i < Math.min(5, hints.length); i++) {
+    let i = 0;
+    while (Object.keys(matches).length < 5 && hints.length > i) {
         let index = hints[i].toLowerCase().indexOf(input);
         if (index !== -1) {
             matches[hints[i]] = index;
         }
+        i++;
     }
     return matches;
 }

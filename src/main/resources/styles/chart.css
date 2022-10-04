@@ -1,13 +1,31 @@
-
-
-.line-chart {
+.chart {
     width: 100%;
-    min-height: 300px;
+    min-height: 350px;
 }
 
-/*@media screen and (max-width: 700px) {*/
-/*    .line-chart {*/
-/*        min-height: 290px;*/
-/*        max-height: 290px;*/
-/*    }*/
-/*}*/
+time-ranges {
+    display: flex;
+    border: 1px solid #eee;
+    padding: 10px 20px;
+    margin: 10px 7.5% 0 7.5%;
+    /*width: min-content;*/
+    font-size: 12px;
+    gap: 15px;
+}
+
+.right-border {
+    position: absolute;
+    height: 240px;
+    width: 1px;
+    background: black;
+    bottom: 0;
+}
+
+time-ranges input {
+    display: none;
+}
+
+input[type=checkbox]:checked + label {
+    color: var(--blue-1);
+    font-weight: bold;
+}
