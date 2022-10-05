@@ -9,7 +9,7 @@
     --blue-3: #192b5c;
     --blue-4: #0A142F;
 
-    /* transaction colors */
+    /* trade colors */
     --buy: #4f8d15;
     --sell: #b71d1d;
     --grant: #9b209b;
@@ -17,7 +17,7 @@
     --taxes: #c2790f;
     --other: #666666;
 
-    /* border-related */
+    /* borders */
     --panel-radius: 20px;
     --small-border: 1px solid #ccc;
     --shadow-0: 0px 1px 4px 1px rgba(0, 0, 0, 0.10);

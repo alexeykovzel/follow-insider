@@ -71,17 +71,18 @@ function initStock(stock) {
 
     let dashboard = new Dashboard();
     let graph0 = new ScatterChart("insider-buying", "Insider Buying", ["Date", "Shares"], () => {
-        // handleTimeRanges(() => {
-        //     let range = $("#" + graph0.blockId + " :checked").prop("name");
-        //     fetchTradePoints(stock.symbol, range, ["Buy"], (points) => graph0.draw(points));
-        // });
-
-        // -------- FOR TESTING ----------
-        graph0.draw(mockTradePoints());
-        dashboard.align();
-        // -------------------------------
+        handleTimeRanges(() => {
+            let range = $("#" + graph0.blockId + " :checked").prop("name");
+            fetchTradePoints(stock.symbol, range, ["Buy"], (points) => graph0.draw(points));
+        });
     });
     dashboard.blocks.push(graph0);
+
+    // for testing
+    let graph1 = new ScatterChart("insider-buying-2", "Insider Buying", ["Date", "Shares"], () => {
+        graph1.draw(mockTradePoints());
+        dashboard.align();
+    });
 
     // add key points (if exist)
     let keyPoints = stock.keyPoints.filter(p => p);
@@ -90,6 +91,7 @@ function initStock(stock) {
         let keyPointsBlock = new InfoBlock("key-points", "Key Points", keyPointsVal);
         dashboard.blocks.push(keyPointsBlock);
     }
+    dashboard.blocks.push(graph1);
     // add description (if exists)
     if (stock.description) {
         let descriptionBlock = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");

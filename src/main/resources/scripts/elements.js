@@ -339,6 +339,10 @@ export class ScatterChart extends InfoBlock {
                     count: 0
                 }
             },
+            series: {
+                // show y-axis labels on the right
+                // 0: {targetAxisIndex: 1},
+            },
             hAxis: {
                 format: (monthDiff > 3) ? "MMM d, y" : "MMM d",
                 gridlines: {
