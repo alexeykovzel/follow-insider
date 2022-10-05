@@ -1,5 +1,25 @@
 import * as Search from "./search.js";
 
+class Loader {
+    constructor(parentId) {
+        this.parentId = parentId;
+        this.id = "l-" + parentId;
+    }
+
+    show() {
+        this.hide();
+        $("#" + this.parentId).append(`
+            <div id="${this.id}" class="center">
+                <div class="lds-facebook"><div></div><div></div><div></div></div>
+            </div>
+        `);
+    }
+
+    hide() {
+        $("#" + this.parentId).find("#" + this.id).remove();
+    }
+}
+
 customElements.define('default-header', class extends HTMLElement {
     constructor() {
         super();
@@ -12,7 +32,7 @@ customElements.define('default-header', class extends HTMLElement {
                 <div id="search" class="search">
                     <label for="search-input"></label>
                     <input id="search-input" type="text" placeholder="Search a company or insider">
-                    <object class="center" type="image/svg+xml" data="/images/icons/search.svg"></object>
+                    <img class="center" src="/images/icons/search.png" alt="Search Icon">
                 </div>
                 <button class="nav-btn">
                     <input id="nav-box" class="nav-box" type="checkbox"/>
@@ -139,6 +159,7 @@ export class Table {
         this.columns = columns;
         this.fractions = fractions;
         this.filters = filters;
+        this.loader = new Loader(this.id + " tbody");
     }
 
     initGrid() {
@@ -152,36 +173,16 @@ export class Table {
     }
 
     addAll(rows) {
-        // remove loading animation
-        $("#loader").remove();
+        this.loader.hide();
         // append rows to the table
         let table = this.ref.find("tbody");
         rows.forEach(row => table.append(row));
     }
 
     reset() {
-        // set header fractions
         this.initGrid();
-        // delete all rows
         this.ref.find("tbody").empty();
-        // add loading animation (if not yet)
-        if (!$("#loader").length) {
-            this.loading();
-        }
-    }
-
-    loading() {
-        // show loading animation in the center
-        this.ref.find("tbody").append(`
-            <div id="loader" class="center">
-                <div class="lds-facebook"><div></div><div></div><div></div></div>
-            </div>
-        `);
-    }
-
-    get ref() {
-        // find table by id
-        return $("#" + this.id);
+        this.loader.show();
     }
 
     get html() {
@@ -200,6 +201,10 @@ export class Table {
         let filtersHtml = (this.filters != null) ? this.filters : "";
         return filtersHtml + tableHtml
     }
+
+    get ref() {
+        return $("#" + this.id);
+    }
 }
 
 export class Dashboard {
@@ -207,8 +212,33 @@ export class Dashboard {
         this.blocks = blocks || [];
     }
 
+    init() {
+        // initialise charts
+        this.charts.forEach(chart => chart.init());
+        // resize graphs on side panel transition
+        let sidepanel = $(".s-panel");
+        sidepanel.on("transitionend webkitTransitionEnd otransitionend", (event) => {
+            if (event.originalEvent.propertyName !== "width") return;
+            this.charts.forEach(chart => chart.reload());
+        });
+        sidepanel.on("transitionstart", (event) => {
+            if (event.originalEvent.propertyName !== "width") return;
+            this.charts.forEach(chart => chart.clear());
+        });
+        // resize info blocks on window resize
+        this.align();
+        $(window).resize(() => {
+            this.charts.forEach(chart => chart.reload());
+            this.align();
+        });
+    }
+
     align() {
         this.blocks.forEach(block => block.align());
+    }
+
+    get charts() {
+        return this.blocks.filter(block => block.isChart);
     }
 
     get html() {
@@ -221,10 +251,11 @@ export class Dashboard {
 }
 
 export class InfoBlock {
-    constructor(id, name, content) {
+    constructor(id, name, content, isChart) {
         this.id = id;
         this.name = name;
         this.content = content;
+        this.isChart = isChart || false;
     }
 
     align() {
@@ -246,26 +277,32 @@ export class InfoBlock {
     get blockId() {
         return "b-" + this.id;
     }
+
+    get ref() {
+        return $("#" + this.id);
+    }
 }
 
 export class ScatterChart extends InfoBlock {
-    constructor(id, name, labels) {
+    constructor(id, name, labels, load) {
         super(id, name, `
             <time-ranges class="no-select"></time-ranges>
             <div id="${id}" class="chart"></div>
-        `);
+        `, true);
         this.labels = labels;
+        this.load = load;
+        this.loader = new Loader(this.id);
     }
 
-    init(onLoad) {
+    init() {
+        this.loader.show();
         google.charts.load('current', {packages: ['corechart']});
-        google.charts.setOnLoadCallback(() => onLoad());
+        google.charts.setOnLoadCallback(() => this.load());
     }
 
     draw(points) {
         if (!points) return;
-
-        // sort data points by the 1-st element
+        // sort data points by date (ascending)
         points = points.sort((a, b) => a[0] > b[0] ? 1 : -1);
 
         // calculate time range for label formatting
@@ -284,9 +321,9 @@ export class ScatterChart extends InfoBlock {
 
         this.points = points;
         let data = google.visualization.arrayToDataTable([this.labels, ...points]);
-        let chart = new google.visualization.LineChart(document.getElementById(this.id));
+        this.chart = new google.visualization.LineChart(document.getElementById(this.id));
 
-        chart.draw(data, {
+        this.chart.draw(data, {
             legend: "none",
             curveType: "function",
             colors: [darkColor],
@@ -320,9 +357,16 @@ export class ScatterChart extends InfoBlock {
                 height: "80%",
             },
         });
+        this.loader.hide();
     }
 
     reload() {
+        this.clear();
         this.draw(this.points);
+    }
+
+    clear() {
+        this.chart.clearChart();
+        this.loader.show();
     }
 }

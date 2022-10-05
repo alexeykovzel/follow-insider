@@ -1,6 +1,7 @@
 .chart {
     width: 100%;
     min-height: 350px;
+    position: relative;
 }
 
 time-ranges {
@@ -11,14 +12,6 @@ time-ranges {
     /*width: min-content;*/
     font-size: 12px;
     gap: 15px;
-}
-
-.right-border {
-    position: absolute;
-    height: 240px;
-    width: 1px;
-    background: black;
-    bottom: 0;
 }
 
 time-ranges input {

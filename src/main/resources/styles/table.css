@@ -100,7 +100,7 @@ tbody tr:hover {
 
 .filters {
     display: flex;
-    margin-left: 20px;
+    margin-bottom: 20px;
     gap: 20px;
 }
 

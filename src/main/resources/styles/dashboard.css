@@ -16,13 +16,11 @@
 }
 
 .info-block h3 {
-    color: var(--blue-2);
-    padding-bottom: 25px;
-    font-size: 18px;
+    padding-bottom: 20px;
 }
 
 .info-block p {
-    line-height: 35px;
+    line-height: 30px;
 }
 
 @media screen and (max-width: 1800px) {

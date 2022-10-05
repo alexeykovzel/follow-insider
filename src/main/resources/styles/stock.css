@@ -84,22 +84,6 @@
     gap: 60px;
 }
 
-.s-info h3 {
-    font-size: 16px;
-}
-
-.s-info h2 {
-    font-size: 18px;
-    line-height: 24px;
-    border-bottom: 2px solid black;
-    margin-bottom: 20px;
-    width: min-content;
-}
-
-.s-info p {
-    font-size: 14px;
-}
-
 .s-row1 {
     display: flex;
     align-items: center;

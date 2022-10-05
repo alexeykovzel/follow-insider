@@ -1,5 +1,5 @@
 import {Dashboard, InfoBlock, Table, ScatterChart} from './elements.js';
-import {fetchStockTrades} from './trades.js';
+import {fetchStockTrades} from "./trades.js";
 import {Tab, initTabs} from "./tabs.js";
 import {initScore} from "./rating.js";
 import * as Utils from "./utils.js";
@@ -70,6 +70,18 @@ function initStock(stock) {
     fillSidePanel(stock);
 
     let dashboard = new Dashboard();
+    let graph0 = new ScatterChart("insider-buying", "Insider Buying", ["Date", "Shares"], () => {
+        // handleTimeRanges(() => {
+        //     let range = $("#" + graph0.blockId + " :checked").prop("name");
+        //     fetchTradePoints(stock.symbol, range, ["Buy"], (points) => graph0.draw(points));
+        // });
+
+        // -------- FOR TESTING ----------
+        graph0.draw(mockTradePoints());
+        dashboard.align();
+        // -------------------------------
+    });
+    dashboard.blocks.push(graph0);
 
     // add key points (if exist)
     let keyPoints = stock.keyPoints.filter(p => p);
@@ -83,16 +95,12 @@ function initStock(stock) {
         let descriptionBlock = new InfoBlock("desc", "Description", "<p>" + stock.description + "</p>");
         dashboard.blocks.push(descriptionBlock);
     }
-    // add scatter graph with insider purchases
-    let graph0 = new ScatterChart("insider-buying", "Insider Buying", ["Date", "Shares"]);
-    dashboard.blocks.push(graph0);
-
-    // define table with insider information
+    // define insider table columns
     let insidersTable = new Table("insiders",
         ["Name", "Position", "Shares Total", "Last Active"],
         [1, 2, 1, 1]
     );
-    // add table with insider trades
+    // define trade columns
     let tradesTable = new Table("trades",
         ["Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
         [1.2, 1.2, 1, 1, 1, 1, 1],
@@ -100,38 +108,9 @@ function initStock(stock) {
     );
 
     initTabs([
-        new Tab("Dashboard", dashboard.html, () => {
-            // render graphs with input data
-            graph0.init(() => {
-                handleTimeRanges(() => {
-                    let range = $("#" + graph0.blockId + " :checked").prop("name");
-                    fetchTradePoints(stock.symbol, range, ["Buy"], (points) => graph0.draw(points));
-                });
-
-                // -------- FOR TESTING ----------
-                // lineGraph.draw(mockTradePoints());
-                // dashboard.align();
-                // -------------------------------
-            });
-
-            // align dashboard blocks
-            dashboard.align();
-            $(window).resize(() => {
-                graph0.reload();
-                dashboard.align();
-            });
-        }),
-        new Tab("Insiders", insidersTable.html, () => {
-            fetchInsiders(insidersTable, stock.symbol)
-        }),
-        new Tab("Trades", tradesTable.html, () => {
-            fetchStockTrades(tradesTable, stock.symbol, ["Buy"]);
-
-            // -------- FOR TESTING ----------
-            // lineGraph.draw(mockTradePoints());
-            // dashboard.align();
-            // -------------------------------
-        })
+        new Tab("Dashboard", dashboard.html, () => dashboard.init()),
+        new Tab("Insiders", insidersTable.html, () => fetchInsiders(insidersTable, stock.symbol)),
+        new Tab("Trades", tradesTable.html, () => fetchStockTrades(tradesTable, stock.symbol, ["Buy"]))
     ]);
 }
 
