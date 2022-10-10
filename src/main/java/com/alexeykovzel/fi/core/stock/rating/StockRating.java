@@ -1,5 +1,6 @@
-package com.alexeykovzel.fi.core.stock;
+package com.alexeykovzel.fi.core.stock.rating;
 
+import com.alexeykovzel.fi.core.stock.Stock;
 import lombok.*;
 
 import javax.persistence.*;

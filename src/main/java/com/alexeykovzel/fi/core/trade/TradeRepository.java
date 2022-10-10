@@ -10,15 +10,22 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
+    @Query("SELECT t FROM Trade t WHERE t.date = (SELECT MAX(t.date) FROM Trade t)")
+    Trade findLastByCik(String cik);
+
     @Query(value = "SELECT t FROM Trade t WHERE t.code IN (:codes)")
-    Slice<TradeView> findRecent(Collection<String> codes, Pageable paging);
+    Slice<TradeView> findRecentViews(Collection<String> codes, Pageable paging);
 
     @Query(value = "SELECT t FROM Trade t")
-    Slice<TradeView> findRecent(Pageable paging);
+    Slice<TradeView> findRecentViews(Pageable paging);
+
+    @Query(value = "SELECT t FROM Trade t WHERE t.date > :from AND t.code = 'P' AND t.form4.stock.cik = :cik")
+    List<Trade> findRecentBuysBuyCik(String cik, Date from);
 
     @Query("SELECT t FROM Trade t WHERE NOT EXISTS (SELECT 1 FROM TradeRating r WHERE t = r.trade) AND t.code = :code")
     Collection<Trade> findNotRated(String code);
@@ -27,10 +34,7 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
     Collection<TradePoint> findPointsBySymbol(String symbol, Collection<String> codes, Date from);
 
     @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes)")
-    Collection<TradeView> findBySymbol(String symbol, Collection<String> codes);
-
-    @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol")
-    Collection<TradeView> findBySymbol(String symbol);
+    Collection<TradeView> findViewBySymbol(String symbol, Collection<String> codes);
 
     @Query("SELECT c.symbol FROM Trade t, Stock c WHERE t.id = :id AND c=t.form4.stock")
     String findSymbolById(Long id);

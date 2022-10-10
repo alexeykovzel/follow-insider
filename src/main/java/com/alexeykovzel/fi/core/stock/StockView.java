@@ -2,15 +2,15 @@ package com.alexeykovzel.fi.core.stock;
 
 import lombok.Data;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class StockView {
     private String name;
     private String symbol;
     private String description;
-    private String[] keyPoints;
+    private List<String> keyPoints;
     private Date lastActive;
     private double efficiency;
     private double trend;

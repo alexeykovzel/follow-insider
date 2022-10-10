@@ -23,7 +23,7 @@ public class TradesController {
     @GetMapping("/recent")
     public Collection<TradeView> getRecentTrades(@RequestParam(value = "types", required = false) List<String> types) {
         Pageable paging = PageRequest.of(0, 100, Sort.by("date").descending());
-        if (types == null || types.isEmpty()) return tradeRepository.findRecent(paging).getContent();
-        return tradeRepository.findRecent(tradeService.getCodesByTypes(types), paging).getContent();
+        if (types == null || types.isEmpty()) return tradeRepository.findRecentViews(paging).getContent();
+        return tradeRepository.findRecentViews(tradeService.getCodesByTypes(types), paging).getContent();
     }
 }

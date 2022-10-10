@@ -1,7 +1,8 @@
-package com.alexeykovzel.fi.core.stock;
+package com.alexeykovzel.fi.core.stock.rating;
 
-import com.alexeykovzel.fi.core.trade.TradeRating;
-import com.alexeykovzel.fi.core.trade.TradeRatingRepository;
+import com.alexeykovzel.fi.core.stock.Stock;
+import com.alexeykovzel.fi.core.trade.rating.TradeRating;
+import com.alexeykovzel.fi.core.trade.rating.TradeRatingRepository;
 import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import lombok.RequiredArgsConstructor;

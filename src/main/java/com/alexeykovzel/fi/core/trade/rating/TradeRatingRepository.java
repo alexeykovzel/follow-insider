@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.core.trade;
+package com.alexeykovzel.fi.core.trade.rating;
 
 import com.alexeykovzel.fi.core.insider.Insider;
 import org.springframework.data.jpa.repository.JpaRepository;

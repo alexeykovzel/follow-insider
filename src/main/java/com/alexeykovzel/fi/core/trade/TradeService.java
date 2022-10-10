@@ -1,5 +1,8 @@
 package com.alexeykovzel.fi.core.trade;
 
+import com.alexeykovzel.fi.core.trade.rating.TradeRating;
+import com.alexeykovzel.fi.core.trade.rating.TradeRatingRepository;
+import com.alexeykovzel.fi.core.trade.rating.TradeRatingStrategy;
 import com.alexeykovzel.fi.utils.ProgressBar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

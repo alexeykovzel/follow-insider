@@ -36,4 +36,11 @@ public class StringUtils {
     public static String trimLeadingZeros(String val) {
         return val.replaceFirst("^0+(?!$)", "");
     }
+
+    public static String formatNumber(double val) {
+        if (val > 1.0e+9) return String.format("%.2fB", val / 1.0e+9);
+        if (val > 1.0e+6) return String.format("%.2fM", val / 1.0e+9);
+        if (val > 1.0e+3) return String.format("%.2fK", val / 1.0e+9);
+        return String.format("%.2f", val);
+    }
 }

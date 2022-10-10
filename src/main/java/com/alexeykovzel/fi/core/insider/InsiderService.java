@@ -1,5 +1,8 @@
 package com.alexeykovzel.fi.core.insider;
 
+import com.alexeykovzel.fi.core.insider.rating.InsiderRating;
+import com.alexeykovzel.fi.core.insider.rating.InsiderRatingRepository;
+import com.alexeykovzel.fi.core.insider.rating.InsiderRatingStrategy;
 import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.ProgressBar;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.alexeykovzel.fi.core.trade;
 
 import com.alexeykovzel.fi.core.trade.form4.Form4;
+import com.alexeykovzel.fi.core.trade.rating.TradeRating;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,4 +49,8 @@ public class Trade {
 
     @Column(nullable = false)
     private Date date;
+
+    public double getTotalValue() {
+        return shareCount * sharePrice;
+    }
 }

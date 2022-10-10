@@ -1,6 +1,8 @@
-package com.alexeykovzel.fi.core.trade;
+package com.alexeykovzel.fi.core.trade.rating;
 
 import com.alexeykovzel.fi.core.stock.StockRecordRepository;
+import com.alexeykovzel.fi.core.trade.Trade;
+import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

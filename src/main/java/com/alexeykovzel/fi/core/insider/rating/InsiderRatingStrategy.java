@@ -1,7 +1,8 @@
-package com.alexeykovzel.fi.core.insider;
+package com.alexeykovzel.fi.core.insider.rating;
 
-import com.alexeykovzel.fi.core.trade.TradeRating;
-import com.alexeykovzel.fi.core.trade.TradeRatingRepository;
+import com.alexeykovzel.fi.core.insider.Insider;
+import com.alexeykovzel.fi.core.trade.rating.TradeRating;
+import com.alexeykovzel.fi.core.trade.rating.TradeRatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

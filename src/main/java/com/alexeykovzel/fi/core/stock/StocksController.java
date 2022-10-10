@@ -53,7 +53,7 @@ public class StocksController {
     @GetMapping("/{symbol}/trades")
     public Collection<TradeView> getStockTrades(@PathVariable String symbol,
                                                 @RequestParam(value = "types", required = false) List<String> types) {
-        return tradeRepository.findBySymbol(symbol, getCodesByTypes(types));
+        return tradeRepository.findViewBySymbol(symbol, getCodesByTypes(types));
     }
 
     @GetMapping("/{symbol}/insiders")

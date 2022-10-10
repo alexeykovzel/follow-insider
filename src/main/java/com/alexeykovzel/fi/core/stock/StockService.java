@@ -2,7 +2,10 @@ package com.alexeykovzel.fi.core.stock;
 
 import com.alexeykovzel.fi.core.EdgarService;
 import com.alexeykovzel.fi.api.AlphaVantageAPI;
-import com.alexeykovzel.fi.core.insider.InsiderRepository;
+import com.alexeykovzel.fi.core.stock.news.StockNewsFactory;
+import com.alexeykovzel.fi.core.stock.rating.StockRating;
+import com.alexeykovzel.fi.core.stock.rating.StockRatingRepository;
+import com.alexeykovzel.fi.core.stock.rating.StockRatingStrategy;
 import com.alexeykovzel.fi.core.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.ProgressBar;
 import com.alexeykovzel.fi.utils.StringUtils;
@@ -23,7 +26,7 @@ public class StockService extends EdgarService {
     private final StockRatingRepository stockRatingRepository;
     private final StockRecordRepository stockRecordRepository;
     private final StockRatingStrategy ratingStrategy;
-    private final InsiderRepository insiderRepository;
+    private final StockNewsFactory stockNewsFactory;
     private final TradeRepository tradeRepository;
     private final StockRepository stockRepository;
     private final AlphaVantageAPI alphaVantageAPI;
@@ -103,7 +106,7 @@ public class StockService extends EdgarService {
         // automatically set name, symbol, description
         StockView view = new ModelMapper().map(stock, StockView.class);
         // set key points as brief sentences with main info about the stock
-        view.setKeyPoints(new StockKeyPointFactory().getKeyPoints(stock));
+        view.setKeyPoints(stockNewsFactory.buildNews(stock, 3));
         // set last active date as the date of the last transaction
         view.setLastActive(tradeRepository.findMaxDateByCik(cik));
         // set stock rating (if exists)

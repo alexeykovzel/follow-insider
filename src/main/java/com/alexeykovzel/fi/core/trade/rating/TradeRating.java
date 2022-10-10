@@ -1,5 +1,6 @@
-package com.alexeykovzel.fi.core.trade;
+package com.alexeykovzel.fi.core.trade.rating;
 
+import com.alexeykovzel.fi.core.trade.Trade;
 import lombok.*;
 
 import javax.persistence.*;

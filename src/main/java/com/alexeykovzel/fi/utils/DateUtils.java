@@ -64,7 +64,7 @@ public class DateUtils {
     }
 
     public static int secondsBetween(Date d1, Date d2) {
-        long timeDifference = d2.getTime() - d1.getTime();
+        long timeDifference = Math.abs(d2.getTime() - d1.getTime());
         long secondTime = TimeUnit.SECONDS.toMillis(1);
         return (int) (timeDifference / secondTime);
     }

@@ -1,5 +1,6 @@
-package com.alexeykovzel.fi.core.insider;
+package com.alexeykovzel.fi.core.insider.rating;
 
+import com.alexeykovzel.fi.core.insider.Insider;
 import lombok.*;
 
 import javax.persistence.*;
