@@ -1,10 +1,10 @@
 package com.alexeykovzel.fi;
 
-import com.alexeykovzel.fi.core.stock.Stock;
-import com.alexeykovzel.fi.core.stock.rating.StockRatingStrategy;
-import com.alexeykovzel.fi.core.trade.rating.TradeRating;
-import com.alexeykovzel.fi.core.trade.rating.TradeRatingRepository;
-import com.alexeykovzel.fi.core.trade.TradeRepository;
+import com.alexeykovzel.fi.features.stock.Stock;
+import com.alexeykovzel.fi.features.stock.rating.StockRatingStrategy;
+import com.alexeykovzel.fi.features.trade.rating.TradeRating;
+import com.alexeykovzel.fi.features.trade.rating.TradeRatingRepository;
+import com.alexeykovzel.fi.features.trade.TradeRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

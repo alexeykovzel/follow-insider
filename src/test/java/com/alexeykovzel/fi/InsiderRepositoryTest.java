@@ -1,14 +1,14 @@
 package com.alexeykovzel.fi;
 
-import com.alexeykovzel.fi.core.insider.Insider;
-import com.alexeykovzel.fi.core.insider.InsiderRepository;
-import com.alexeykovzel.fi.core.insider.InsiderView;
-import com.alexeykovzel.fi.core.stock.Stock;
-import com.alexeykovzel.fi.core.stock.StockRepository;
-import com.alexeykovzel.fi.core.trade.Trade;
-import com.alexeykovzel.fi.core.trade.TradeCode;
-import com.alexeykovzel.fi.core.trade.form4.Form4;
-import com.alexeykovzel.fi.core.trade.form4.Form4Repository;
+import com.alexeykovzel.fi.features.insider.Insider;
+import com.alexeykovzel.fi.features.insider.InsiderRepository;
+import com.alexeykovzel.fi.features.insider.InsiderView;
+import com.alexeykovzel.fi.features.stock.Stock;
+import com.alexeykovzel.fi.features.stock.StockRepository;
+import com.alexeykovzel.fi.features.trade.Trade;
+import com.alexeykovzel.fi.features.trade.TradeCode;
+import com.alexeykovzel.fi.features.trade.form4.Form4;
+import com.alexeykovzel.fi.features.trade.form4.Form4Repository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +44,10 @@ public class InsiderRepositoryTest {
         stockRepository.save(stock);
 
         // create trades
-        Trade t1 = Trade.builder().code(TradeCode.PURCHASE.code).date(DateUtils.shiftDays(currentDate, -2)).leftShares(80.0).build();
-        Trade t2 = Trade.builder().code(TradeCode.PURCHASE.code).date(DateUtils.shiftDays(currentDate, -1)).leftShares(140.0).build();
-        Trade t3 = Trade.builder().code(TradeCode.PURCHASE.code).date(DateUtils.shiftDays(currentDate, -3)).leftShares(120.0).build();
-        Trade t4 = Trade.builder().code(TradeCode.PURCHASE.code).date(DateUtils.shiftDays(currentDate, -4)).leftShares(100.0).build();
+        Trade t1 = Trade.builder().code(TradeCode.PURCHASE).date(DateUtils.shiftDays(currentDate, -2)).leftShares(80.0).build();
+        Trade t2 = Trade.builder().code(TradeCode.PURCHASE).date(DateUtils.shiftDays(currentDate, -1)).leftShares(140.0).build();
+        Trade t3 = Trade.builder().code(TradeCode.PURCHASE).date(DateUtils.shiftDays(currentDate, -3)).leftShares(120.0).build();
+        Trade t4 = Trade.builder().code(TradeCode.PURCHASE).date(DateUtils.shiftDays(currentDate, -4)).leftShares(100.0).build();
         Collection<Trade> trades = Set.of(t1, t2, t3, t4);
 
         // create insider

@@ -1,10 +1,13 @@
 package com.alexeykovzel.fi.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class DateUtils {
     public static final String EDGAR_FORMAT = "yyyy-MM-dd";
 
@@ -44,7 +47,8 @@ public class DateUtils {
             if ("Y".equals(metric)) return shiftYears(date, duration);
         } catch (NumberFormatException ignored) {
         }
-        throw new IllegalArgumentException("Invalid range: " + range);
+        log.error("Invalid range: " + range);
+        return null;
     }
 
     public static int yearsBetween(Date d1, Date d2) {
@@ -77,7 +81,7 @@ public class DateUtils {
         try {
             return new SimpleDateFormat(format).parse(date);
         } catch (ParseException e) {
-            System.out.println("[ERROR] Could not parse date: " + e.getMessage());
+            log.error("Could not parse date: " + e.getMessage());
             return null;
         }
     }

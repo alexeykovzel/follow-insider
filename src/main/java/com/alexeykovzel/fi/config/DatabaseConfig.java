@@ -1,10 +1,14 @@
 package com.alexeykovzel.fi.config;
 
-import com.alexeykovzel.fi.core.insider.InsiderService;
-import com.alexeykovzel.fi.core.stock.StockService;
-import com.alexeykovzel.fi.core.trade.TradeService;
-import com.alexeykovzel.fi.core.trade.form4.Form4Service;
+import com.alexeykovzel.fi.features.insider.InsiderService;
+import com.alexeykovzel.fi.features.stock.StockService;
+import com.alexeykovzel.fi.features.trade.TradeService;
+import com.alexeykovzel.fi.features.trade.form4.Form4Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,25 +24,32 @@ public class DatabaseConfig {
     private final TradeService tradeService;
     private final StockService stockService;
 
-    @PostConstruct
-    public void init() {
+    @Bean
+    @Profile("dev")
+    public void initDev() {
+        stockService.updateStocksLocally();
+        form4Service.updateRecentFilings(0, 20);
+    }
+
+    @Bean
+    @Profile("prod")
+    public void initProd() {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-        // update public stocks every day
-        executor.scheduleAtFixedRate(stockService::updateStocksRemotely, 1, 1, TimeUnit.DAYS);
+        // update public stocks every 3 days
+        executor.scheduleAtFixedRate(stockService::updateStocksRemotely, 0, 3, TimeUnit.DAYS);
 
-        // TODO: Change back to recent filings.
-        // load recent filings every 30 seconds
-        executor.scheduleAtFixedRate(() -> form4Service.updateFilings("INTC"), 0, 30, TimeUnit.SECONDS);
+        // load recent trades every 30 seconds
+        executor.scheduleAtFixedRate(() -> form4Service.updateRecentFilings(0, 40), 0, 30, TimeUnit.SECONDS);
 
         // update stock prices every day
-//        executor.scheduleAtFixedRate(stockService::updateStockRecords, 0, 1, TimeUnit.DAYS);
+        executor.scheduleAtFixedRate(stockService::updateStockRecords, 0, 1, TimeUnit.DAYS);
 
         // update ratings every day
-//        executor.scheduleAtFixedRate(() -> {
-//            tradeService.updateTradeRating();
-//            insiderService.updateInsiderRating();
-//            stockService.updateStockRating();
-//        }, 0, 1, TimeUnit.DAYS);
+        executor.scheduleAtFixedRate(() -> {
+            tradeService.updateTradeRating();
+            insiderService.updateInsiderRating();
+            stockService.updateStockRating();
+        }, 0, 1, TimeUnit.DAYS);
     }
 }

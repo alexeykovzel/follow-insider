@@ -1,9 +1,9 @@
 package com.alexeykovzel.fi;
 
-import com.alexeykovzel.fi.core.trade.Trade;
-import com.alexeykovzel.fi.core.trade.rating.TradeRatingStrategy;
-import com.alexeykovzel.fi.core.trade.TradeRepository;
-import com.alexeykovzel.fi.core.stock.StockRecordRepository;
+import com.alexeykovzel.fi.features.trade.Trade;
+import com.alexeykovzel.fi.features.trade.rating.TradeRatingStrategy;
+import com.alexeykovzel.fi.features.trade.TradeRepository;
+import com.alexeykovzel.fi.features.stock.record.StockRecordRepository;
 import com.alexeykovzel.fi.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -7,6 +7,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 public class WebAppInitializer implements WebApplicationInitializer {
@@ -15,12 +16,12 @@ public class WebAppInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext context) {
 
-        // init application config
+        // initialize application config
         var root = new AnnotationConfigWebApplicationContext();
         root.scan(BASE_PACKAGES_PATH);
         context.addListener(new ContextLoaderListener(root));
 
-        // init dispatcher servlet
+        // initialize dispatcher servlet
         var dispatcher = new DispatcherServlet(new GenericWebApplicationContext());
         var servlet = context.addServlet("mvc", dispatcher);
         servlet.addMapping("/");

@@ -17,7 +17,7 @@ public class FaviconConfig {
     public SimpleUrlHandlerMapping customFaviconHandlerMapping() {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setUrlMap(Collections.singletonMap("/favicon.ico", faviconRequestHandler()));
-        mapping.setOrder(Integer.MIN_VALUE); // set the highest priority
+        mapping.setOrder(Integer.MIN_VALUE);
         return mapping;
     }
 

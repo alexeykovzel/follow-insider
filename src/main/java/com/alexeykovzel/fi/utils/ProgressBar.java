@@ -1,8 +1,11 @@
 package com.alexeykovzel.fi.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collection;
 import java.util.function.Consumer;
 
+@Slf4j
 public class ProgressBar {
     private static final int TEXT_SIZE = 40;
     private static final int BAR_SIZE = 20;
