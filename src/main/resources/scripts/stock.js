@@ -1,7 +1,8 @@
 import {fetchStockTrades} from "/scripts/trades.js";
 import {buildDashboard} from "/scripts/ui/dashboard.js";
-import {Tab, initTabs} from "/scripts/helpers/tabs.js";
+import {initTabs, Tab} from "/scripts/helpers/tabs.js";
 import {initScore} from "/scripts/rating.js";
+import {showError} from "/scripts/ui/popup.js";
 import {Table} from "/scripts/ui/elements.js";
 import * as Utils from "/scripts/helpers/utils.js";
 
@@ -49,7 +50,7 @@ function fetchStock(symbol) {
             initStock(stock);
         })
         .catch((error) => {
-            console.log("[ERROR] " + error.responseText);
+            showError(error);
             // TODO: Remove before prod.
             initStock(mockStock());
         });
@@ -64,11 +65,11 @@ function fetchInsiders(table, symbol) {
             addInsidersToTable(table, insiders);
             table.initGrid();
         })
-        .catch((error) => console.log("[ERROR] " + error.responseText))
+        .catch((error) => showError(error))
 }
 
 function initStock(stock) {
-    document.title = `${stock.name} (${stock.symbol}) - FollowInsider`;
+    document.title = `${stock.name} (${stock.symbol}) | FollowInsider`;
     fillSidePanel(stock);
 
     let dashboard = buildDashboard();
@@ -85,7 +86,7 @@ function initStock(stock) {
         [1.2, 1.2, 1, 1, 1, 1, 1],
         "<trade-filters></trade-filters>"
     );
-    
+
     initTabs([
         new Tab("Dashboard", dashboard.html, () => dashboard.init()),
         new Tab("Insiders", insidersTable.html, () => fetchInsiders(insidersTable, stock.symbol)),

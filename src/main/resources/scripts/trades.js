@@ -1,5 +1,6 @@
 import * as Utils from "/scripts/helpers/utils.js";
 import {TRADE_COLORS} from "/scripts/helpers/constants.js";
+import {showError} from "/scripts/ui/popup.js";
 
 let storedTrades = {};
 
@@ -47,7 +48,7 @@ function fetchTrades(table, url, types, withStock) {
             addTradesToTable(table, trades, withStock);
             table.initGrid();
         })
-        .catch((error) => console.log("[ERROR] " + error.responseText))
+        .catch((error) => showError(error))
 }
 
 function mockTrades(number) {

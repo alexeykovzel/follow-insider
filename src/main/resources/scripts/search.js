@@ -1,3 +1,5 @@
+import {showError} from "/scripts/ui/popup.js";
+
 class SearchBar {
     constructor(ref, hints) {
         this.ref = ref;
@@ -19,7 +21,7 @@ export function fetchHints(search) {
     fetch("./search/hints")
         .then(data => data.json())
         .then(hints => setHints(search, hints))
-        .catch(error => console.log("[ERROR] " + error.responseText));
+        .catch(error => showError(error));
 }
 
 export function setHints(search, hints) {
@@ -38,27 +40,26 @@ function autocomplete(search) {
         resetAutocomplete(search);
         showMatchingHints(search, input);
     };
-
-    ref.onkeydown = function (e) {
+    ref.addEventListener('keydown', function (e) {
         // on "keydown"
-        if (e.keyCode === 40) {
+        if (e.keyCode === '40') {
             search.focus++;
             updateActiveHint(search)
         }
         // on "keyup"
-        if (e.keyCode === 38) {
+        if (e.keyCode === '38') {
             search.focus--;
             updateActiveHint(search)
         }
         // on "enter"
-        if (e.keyCode === 13) {
+        if (e.keyCode === '13') {
             e.preventDefault();
             let hints = search.hintsRef;
             if (search.focus > -1 && hints) {
                 hints[search.focus].click();
             }
         }
-    };
+    });
 
     // hide autocompletes if clicked somewhere
     window.addEventListener("click", () => {

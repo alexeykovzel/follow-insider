@@ -6,7 +6,7 @@ customElements.define("default-header", class extends HTMLElement {
         // set header in place of a custom element
         this.innerHTML = `
             <div>
-                <h2 onclick="location.assign("/")">FI</h2>
+                <h2 onclick="location.assign('/')">FI</h2>
                 <div id="search" class="search">
                     <label for="search-input"></label>
                     <input id="search-input" type="text" placeholder="Search a company or insider">
@@ -18,9 +18,9 @@ customElements.define("default-header", class extends HTMLElement {
                 </button>
             </div>
             <ul class="header-menu nav-links">
-                <li onclick="location.assign("/")"><p>Dashboard</p></li>
-                <li onclick="location.assign("/faq")"><p>FAQ</p></li>
-                <li onclick="location.assign("/contact")"><p>Contact</p></li>
+                <li onclick="location.assign('/')"><p>Dashboard</p></li>
+                <li onclick="location.assign('/faq')"><p>FAQ</p></li>
+                <li onclick="location.assign('/contact')"><p>Contact</p></li>
             </ul>`;
 
         // configure the navigation menu for mobile
@@ -31,7 +31,7 @@ customElements.define("default-header", class extends HTMLElement {
         };
 
         // show search hints while typing
-        Search.fetchHints(this.querySelector("#search"));
+        Search.fetchHints(document.getElementById("search"));
 
         // -------- FOR TESTING ----------
         // let testHints = ["New York", "A very very very very long hint", "Neta1", "Neta2"];
