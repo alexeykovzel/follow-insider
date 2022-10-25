@@ -3,7 +3,7 @@ import * as Search from "/scripts/search.js";
 customElements.define("default-header", class extends HTMLElement {
     constructor() {
         super();
-        // set header in place of a custom element
+        // set header.css in place of a custom element
         this.innerHTML = `
             <div>
                 <h2 onclick="location.assign('/')">FI</h2>
@@ -26,7 +26,7 @@ customElements.define("default-header", class extends HTMLElement {
         // configure the navigation menu for mobile
         this.querySelector(".nav-btn").onclick = function () {
             let box = document.querySelector(".nav-box");
-            document.querySelector(".header-menu").style.maxHeight = box.checked ? "0" : "240px";
+            document.querySelector(".header.css-menu").style.maxHeight = box.checked ? "0" : "240px";
             box.checked = !box.checked;
         };
 
@@ -35,7 +35,7 @@ customElements.define("default-header", class extends HTMLElement {
 
         // -------- FOR TESTING ----------
         // let testHints = ["New York", "A very very very very long hint", "Neta1", "Neta2"];
-        // Search.setHints(header.find("#search"), testHints);
+        // Search.setHints(header.css.find("#search"), testHints);
         // -------------------------------
     }
 });
@@ -46,9 +46,9 @@ customElements.define("default-footer", class extends HTMLElement {
         // set footer in place of a custom element 
         this.innerHTML = `
             <ul class="nav-links">
-                <li onclick="location.assign("/")"><p>Dashboard</p></li>
-                <li onclick="location.assign("/faq")"><p>FAQ</p></li>
-                <li onclick="location.assign("/contact")"><p>Contact</p></li>
+                <li onclick="location.assign('/')"><p>Dashboard</p></li>
+                <li onclick="location.assign('/faq')"><p>FAQ</p></li>
+                <li onclick="location.assign('/contact')"><p>Contact</p></li>
             </ul>
             <div class="social">
                 <a href="https://facebook.com/" class="fa fa-facebook"></a>

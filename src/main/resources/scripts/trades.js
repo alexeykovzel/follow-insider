@@ -1,6 +1,5 @@
-import * as Utils from "/scripts/helpers/utils.js";
 import {TRADE_COLORS} from "/scripts/helpers/constants.js";
-import {showError} from "/scripts/ui/popup.js";
+import * as Utils from "/scripts/helpers/utils.js";
 
 let storedTrades = {};
 
@@ -41,14 +40,14 @@ export function fetchAllTrades(table, types) {
 function fetchTrades(table, url, types, withStock) {
     table.reset();
     let typesParam = types ? types.join(",") : "";
-    fetch(`.${url}?types=${typesParam}`)
-        .then(data => data.json())
-        .then(data => {
-            let trades = data.map(obj => Object.assign(new Trade(), obj));
-            addTradesToTable(table, trades, withStock);
-            table.initGrid();
-        })
-        .catch((error) => showError(error))
+    Utils.fetchJson(location.origin + `${url}?types=${typesParam}`, (data) => {
+        let trades = data.map(obj => Object.assign(new Trade(), obj));
+        if (trades.length === 0) {
+            Utils.showErrorToast("No trades found");
+        }
+        addTradesToTable(table, trades, withStock);
+        table.initGrid();
+    });
 }
 
 function mockTrades(number) {

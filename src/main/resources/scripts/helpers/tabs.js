@@ -12,7 +12,10 @@ export function initTabs(tabs) {
     window.tabs = tabs;
     let htmlTabs = document.getElementById("tabs");
     for (let i = 0; i < tabs.length; i++) {
-        htmlTabs.innerHTML += `<a onclick="loadTab(${i})">${tabs[i].name}</a>`;
+        let tab = document.createElement("a");
+        tab.innerText = tabs[i].name;
+        tab.onclick = () => loadTab(i);
+        htmlTabs.appendChild(tab);
     }
     // load the 1-st tab by default
     loadTab(0);
@@ -21,6 +24,10 @@ export function initTabs(tabs) {
 function loadTab(index) {
     // throw an error if such tab doesn't exist
     if (tabs.length <= index) throw "invalid tab index: " + index;
+
+    // remove any popups
+    let toast = document.querySelector(".toast");
+    if (toast !== null) toast.remove();
 
     // highlight the chosen tab
     let links = document.querySelectorAll("#tabs a");

@@ -1,4 +1,4 @@
-@import "rating.css";
+@import "popup.css";
 
 :root {
     /* main colors */
@@ -335,6 +335,9 @@ default-header h2 {
 
 .autocomplete-active {
     background-color: var(--blue-2) !important;
+}
+
+.autocomplete-active, .autocomplete-active > * {
     color: white !important;
 }
 

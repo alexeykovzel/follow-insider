@@ -1,4 +1,4 @@
-import {showError} from "/scripts/ui/popup.js";
+import * as Utils from "/scripts/helpers/utils.js";
 
 class SearchBar {
     constructor(ref, hints) {
@@ -18,20 +18,19 @@ class SearchBar {
 }
 
 export function fetchHints(search) {
-    fetch("./search/hints")
-        .then(data => data.json())
-        .then(hints => setHints(search, hints))
-        .catch(error => showError(error));
+    Utils.fetchJson(location.origin + "/search/hints", (hints) => {
+        setHints(search, hints);
+    });
 }
 
-export function setHints(search, hints) {
+function setHints(search, hints) {
     autocomplete(new SearchBar(search, hints));
 }
 
 function autocomplete(search) {
     let ref = search.inputRef;
 
-    ref.oninput = function () {
+    ref.addEventListener("input", function () {
         let input = this.value;
         input = normalizeInput(input);
         // ignore invalid input
@@ -39,25 +38,27 @@ function autocomplete(search) {
         // load matching hints
         resetAutocomplete(search);
         showMatchingHints(search, input);
-    };
-    ref.addEventListener('keydown', function (e) {
-        // on "keydown"
-        if (e.keyCode === '40') {
-            search.focus++;
-            updateActiveHint(search)
-        }
-        // on "keyup"
-        if (e.keyCode === '38') {
-            search.focus--;
-            updateActiveHint(search)
-        }
-        // on "enter"
-        if (e.keyCode === '13') {
-            e.preventDefault();
-            let hints = search.hintsRef;
-            if (search.focus > -1 && hints) {
-                hints[search.focus].click();
-            }
+    });
+
+    ref.addEventListener("keydown", function (e) {
+        switch (e.key) {
+            case "Down":
+            case "ArrowDown":
+                search.focus++;
+                updateActiveHint(search);
+                break;
+
+            case "Up":
+            case "ArrowUp":
+                search.focus--;
+                updateActiveHint(search);
+                break;
+
+            case "Enter":
+                let hints = search.hintsRef;
+                if (search.focus > -1 && hints) {
+                    hints[search.focus].click();
+                }
         }
     });
 
@@ -82,14 +83,18 @@ function updateActiveHint(search) {
     if (matches === 0) return false;
 
     // shift current focus
-    let currentFocus = search.focus;
-    if (currentFocus < 0) search.focus = (matches - 1);
-    search.focus = currentFocus % matches;
+    if (search.focus < 0) search.focus = (matches - 1);
+    search.focus = search.focus % matches;
 
     // set autocomplete active
-    let ref = search.hintsRef;
-    ref.classList.remove("autocomplete-active");
-    ref[search.focus].classList.add("autocomplete-active");
+    let hints = search.hintsRef;
+    for (let i = 0; i < hints.length; i++) {
+        if (i === search.focus) {
+            hints[i].classList.add("autocomplete-active");
+        } else {
+            hints[i].classList.remove("autocomplete-active");
+        }
+    }
 }
 
 function showMatchingHints(search, input) {
@@ -100,8 +105,9 @@ function showMatchingHints(search, input) {
     if (matchCount > 0) {
 
         // create autocomplete list
-        search.ref.innerHTML += "<div class='autocomplete'></div>";
-        let hints = document.querySelector(".autocomplete");
+        let hints = document.createElement("div");
+        hints.classList.add("autocomplete");
+        search.ref.appendChild(hints);
 
         // add matches to the autocomplete list
         search.matches = matchCount;
