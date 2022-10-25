@@ -7,21 +7,19 @@ class SearchBar {
     }
 
     get inputRef() {
-        return this.ref.find("input");
+        return this.ref.querySelector("input");
     }
 
     get hintsRef() {
-        return this.ref.find(".autocomplete>*");
+        return this.ref.querySelectorAll(".autocomplete>*");
     }
 }
 
 export function fetchHints(search) {
-    $.ajax({
-        type: "GET",
-        url: location.origin + "/search/hints",
-        success: (hints) => setHints(search, hints),
-        error: (error) => console.log("[ERROR] " + error.responseText),
-    });
+    fetch("./search/hints")
+        .then(data => data.json())
+        .then(hints => setHints(search, hints))
+        .catch(error => console.log("[ERROR] " + error.responseText));
 }
 
 export function setHints(search, hints) {
@@ -31,28 +29,28 @@ export function setHints(search, hints) {
 function autocomplete(search) {
     let ref = search.inputRef;
 
-    ref.on("input", function () {
-        let input = $(this).val();
+    ref.oninput = function () {
+        let input = this.value;
         input = normalizeInput(input);
         // ignore invalid input
         if (!input) return false;
         // load matching hints
         resetAutocomplete(search);
         showMatchingHints(search, input);
-    });
+    };
 
-    ref.keydown(function (e) {
-        // on 'keydown'
+    ref.onkeydown = function (e) {
+        // on "keydown"
         if (e.keyCode === 40) {
             search.focus++;
             updateActiveHint(search)
         }
-        // on 'keyup'
+        // on "keyup"
         if (e.keyCode === 38) {
             search.focus--;
             updateActiveHint(search)
         }
-        // on 'enter'
+        // on "enter"
         if (e.keyCode === 13) {
             e.preventDefault();
             let hints = search.hintsRef;
@@ -60,16 +58,17 @@ function autocomplete(search) {
                 hints[search.focus].click();
             }
         }
-    });
+    };
 
     // hide autocompletes if clicked somewhere
-    $(document).on("click", function () {
+    window.addEventListener("click", () => {
         resetAutocomplete(search);
     });
 }
 
 function resetAutocomplete(search) {
-    search.ref.find(".autocomplete").remove();
+    let autocomplete = search.ref.querySelector(".autocomplete");
+    if (autocomplete !== null) autocomplete.remove();
     search.focus = -1;
 }
 
@@ -88,8 +87,8 @@ function updateActiveHint(search) {
 
     // set autocomplete active
     let ref = search.hintsRef;
-    ref.removeClass("autocomplete-active");
-    ref.eq(search.focus).addClass("autocomplete-active");
+    ref.classList.remove("autocomplete-active");
+    ref[search.focus].classList.add("autocomplete-active");
 }
 
 function showMatchingHints(search, input) {
@@ -100,17 +99,19 @@ function showMatchingHints(search, input) {
     if (matchCount > 0) {
 
         // create autocomplete list
-        let hints = $(`<div class="autocomplete"></div>`);
-        hints.appendTo(search.ref);
+        search.ref.innerHTML += "<div class='autocomplete'></div>";
+        let hints = document.querySelector(".autocomplete");
 
         // add matches to the autocomplete list
         search.matches = matchCount;
-        for (const [hint, idx] of Object.entries(matches)) {
-            let p1 = hint.substring(0, idx);
-            let match = hint.substring(idx, input.length + idx);
-            let p2 = hint.substring(input.length + idx, hint.length);
-            $(`<p onclick="location.assign('/search?q=${hint}')">${p1}<b>${match}</b>${p2}</p>`)
-                .appendTo(hints);
+        for (const [val, idx] of Object.entries(matches)) {
+            let p1 = val.substring(0, idx);
+            let match = val.substring(idx, input.length + idx);
+            let p2 = val.substring(input.length + idx, val.length);
+
+            hints.innerHTML += `
+                <p onclick="location.assign('/search?q=${val}')">${p1}<b>${match}</b>${p2}</p>
+            `;
         }
     }
 }

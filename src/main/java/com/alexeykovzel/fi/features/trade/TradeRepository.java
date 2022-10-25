@@ -16,7 +16,7 @@ import java.util.List;
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     @Query(value = "SELECT t FROM Trade t WHERE t.code IN (:codes)")
-    Slice<TradeView> findRecentViews(Collection<String> codes, Pageable paging);
+    Slice<TradeView> findRecentViews(Collection<TradeCode> codes, Pageable paging);
 
     @Query(value = "SELECT t FROM Trade t")
     Slice<TradeView> findRecentViews(Pageable paging);
@@ -28,10 +28,10 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
     Collection<Trade> findNotRated(String code);
 
     @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes) AND t.date > :from")
-    Collection<TradePoint> findPointsBySymbol(String symbol, Collection<String> codes, Date from);
+    Collection<TradePoint> findPointsBySymbol(String symbol, Collection<TradeCode> codes, Date from);
 
     @Query("SELECT t FROM Trade t WHERE t.form4.stock.symbol = :symbol AND t.code IN (:codes)")
-    Collection<TradeView> findViewBySymbol(String symbol, Collection<String> codes);
+    Collection<TradeView> findViewBySymbol(String symbol, Collection<TradeCode> codes);
 
     @Query("SELECT c.symbol FROM Trade t, Stock c WHERE t.id = :id AND c=t.form4.stock")
     String findSymbolById(Long id);

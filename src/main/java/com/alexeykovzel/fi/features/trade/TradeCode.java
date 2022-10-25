@@ -41,22 +41,14 @@ public enum TradeCode {
     public final String value;
     public final String type;
 
-    public static Collection<String> valuesByTypes(Collection<String> types) {
-        Collection<String> codes = new ArrayList<>();
+    public static Collection<TradeCode> ofTypes(Collection<String> types) {
+        Collection<TradeCode> codes = new ArrayList<>();
         for (String type : types) {
             for (TradeCode code : values()) {
                 if (code.type.equals(type)) {
-                    codes.add(code.value);
+                    codes.add(code);
                 }
             }
-        }
-        return codes;
-    }
-
-    public static Collection<String> allValues() {
-        Collection<String> codes = new ArrayList<>();
-        for (TradeCode code : values()) {
-            codes.add(code.value);
         }
         return codes;
     }

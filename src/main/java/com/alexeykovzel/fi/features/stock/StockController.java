@@ -54,7 +54,7 @@ public class StockController {
     @GetMapping("/{symbol}/trades")
     public Collection<TradeView> getStockTrades(@PathVariable String symbol,
                                                 @RequestParam(value = "types", required = false) List<String> types) {
-        return tradeRepository.findViewBySymbol(symbol, getCodesByTypes(types));
+        return tradeRepository.findViewBySymbol(symbol, TradeCode.ofTypes(types));
     }
 
     @GetMapping("/{symbol}/insiders")
@@ -67,10 +67,6 @@ public class StockController {
                                                 @RequestParam("range") String range,
                                                 @RequestParam(value = "types", required = false) List<String> types) {
         Date from = DateUtils.shiftRange(new Date(), range);
-        return tradeRepository.findPointsBySymbol(symbol, getCodesByTypes(types), from);
-    }
-
-    private Collection<String> getCodesByTypes(List<String> types) {
-        return (types == null || types.isEmpty()) ? TradeCode.allValues() : TradeCode.valuesByTypes(types);
+        return tradeRepository.findPointsBySymbol(symbol, TradeCode.ofTypes(types), from);
     }
 }

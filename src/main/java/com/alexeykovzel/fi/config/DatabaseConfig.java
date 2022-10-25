@@ -27,8 +27,8 @@ public class DatabaseConfig {
     @Bean
     @Profile("dev")
     public void initDev() {
-        stockService.updateStocksLocally();
-        form4Service.updateRecentFilings(0, 20);
+//        stockService.updateStocksLocally();
+//        form4Service.updateRecentFilings(0, 20);
     }
 
     @Bean

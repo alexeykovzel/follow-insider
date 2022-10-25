@@ -1,4 +1,5 @@
-import * as Utils from "./utils.js";
+import * as Utils from "/scripts/helpers/utils.js";
+import {TRADE_COLORS} from "/scripts/helpers/constants.js";
 
 let storedTrades = {};
 
@@ -23,15 +24,6 @@ class Insider {
     }
 }
 
-let typeColors = {
-    'Buy': 'var(--buy)',
-    'Sell': 'var(--sell)',
-    'Grant': 'var(--grant)',
-    'Options': 'var(--options)',
-    'Taxes': 'var(--taxes)',
-    'Other': 'var(--other)'
-}
-
 export function fetchTestStockTrades(table) {
     addTradesToTable(table, mockTrades(20), false)
     table.initGrid();
@@ -47,20 +39,15 @@ export function fetchAllTrades(table, types) {
 
 function fetchTrades(table, url, types, withStock) {
     table.reset();
-    // send request to retrieve trades from the server
-    let typesParam = types ? types.join(',') : "";
-    $.ajax({
-        type: "GET",
-        url: location.origin + url + "?types=" + typesParam,
-        // if success, add trades to the table
-        success: (data) => {
+    let typesParam = types ? types.join(",") : "";
+    fetch(`.${url}?types=${typesParam}`)
+        .then(data => data.json())
+        .then(data => {
             let trades = data.map(obj => Object.assign(new Trade(), obj));
             addTradesToTable(table, trades, withStock);
             table.initGrid();
-        },
-        // otherwise, print an error message
-        error: (error) => console.log("[ERROR] " + error.responseText),
-    });
+        })
+        .catch((error) => console.log("[ERROR] " + error.responseText))
 }
 
 function mockTrades(number) {
@@ -76,33 +63,32 @@ function mockTrades(number) {
 }
 
 function addTradesToTable(table, trades, withStock) {
-    let defaultCell = '<scan style="color: #bbb">Undefined</scan>';
+    let defaultCell = "<scan style='color: #bbb'>Undefined</scan>";
     table.addAll(trades.map(trade => {
         storedTrades[trade.id] = trade;
 
         // get 1-st insider + "others" tail
         let others = trade.insiders.length - 1;
-        let othersTail = (others > 0) ? `, <p class="insider-tail">and ${others} others</p>` : "";
-        let insiderVal = trade.insiders[0].name + othersTail;
+        let insiderVal = trade.insiders[0].name + ((others > 0) ? `<p class="insider-tail" 
+                onclick="showOthers(${trade.id})">, and ${others} others</p>` : "");
 
         // get unique insider positions
         let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
         let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
 
         // get other column values
-        let colorStyle = "color: " + typeColors[trade.type];
+        let colorStyle = "color: " + TRADE_COLORS[trade.type];
         let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";
         let sharesVal = Utils.formatNumber(trade.shareCount);
         let totalVal = Utils.formatNumber(trade.leftShares);
         let dateVal = Utils.formatDate(trade.date);
 
         // reference to the stock page
-        let stockRef = '/stocks/' + (trade.symbol || "").toLowerCase();
+        let stockRef = "/stocks/" + (trade.symbol || "").toLowerCase();
 
-        // build table row element
-        let tradeRow = $(`
-            <tr id="trade-${trade.id}"">
-                ${withStock ? `<td onclick="location.assign('${stockRef}')" class="link">${trade.symbol}</td>` : ""}
+        return `
+            <tr id="trade-${trade.id}">
+                ${withStock ? `<td onclick="location.assign("${stockRef}")" class="link">${trade.symbol}</td>` : ""}
                 ${withStock ? `<td> ${trade.company}</td>` : ""}
                 <td class="insider-cell">${insiderVal}</td>
                 <td>${positionVal}</td>
@@ -111,19 +97,14 @@ function addTradesToTable(table, trades, withStock) {
                 <td>${sharesVal}</td>
                 <td>${totalVal}</td>
                 <td>${dateVal}</td>
-            </tr>
-        `);
-
-        // show all insiders if "and ** others" is clicked
-        tradeRow.find(".insider-tail").on("click", () => showAllInsiders(trade.id));
-        return tradeRow;
+            </tr>`;
     }));
 }
 
-function showAllInsiders(id) {
+function showOthers(id) {
     let insiders = storedTrades[id].insiders;
-    let insiderVal = insiders.map(insider => `<p>${insider.name}</p>`).join('');
-    let cell = $(`#trade-${id} .insider-cell`);
-    cell.css('gap', '15px');
-    cell.html(insiderVal);
+    let insiderVal = insiders.map(insider => `<p>${insider.name}</p>`).join("");
+    let cell = document.querySelector(`#trade-${id} .insider-cell`);
+    cell.style.gap = "15px";
+    cell.innerHTML = insiderVal;
 }

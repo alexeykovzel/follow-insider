@@ -1,8 +1,8 @@
 export function formatNumber(val) {
     val = Math.abs(Number(val));
-    if (val >= 1.0e+9) return (val / 1.0e+9).toFixed(1) + 'B';
-    if (val >= 1.0e+6) return (val / 1.0e+6).toFixed(1) + 'M';
-    if (val >= 1.0e+3) return (val / 1.0e+3).toFixed(1) + 'K';
+    if (val >= 1.0e+9) return (val / 1.0e+9).toFixed(1) + "B";
+    if (val >= 1.0e+6) return (val / 1.0e+6).toFixed(1) + "M";
+    if (val >= 1.0e+3) return (val / 1.0e+3).toFixed(1) + "K";
     return val.toFixed(0);
 }
 

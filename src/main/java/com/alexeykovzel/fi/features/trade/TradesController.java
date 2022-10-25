@@ -24,6 +24,6 @@ public class TradesController {
         Pageable paging = PageRequest.of(0, 100, Sort.by("date").descending());
         return (types == null || types.isEmpty())
                 ? tradeRepository.findRecentViews(paging).getContent()
-                : tradeRepository.findRecentViews(TradeCode.valuesByTypes(types), paging).getContent();
+                : tradeRepository.findRecentViews(TradeCode.ofTypes(types), paging).getContent();
     }
 }

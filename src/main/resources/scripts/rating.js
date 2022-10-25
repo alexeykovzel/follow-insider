@@ -12,7 +12,7 @@ export function initScore(boxes, score) {
 
     for (let i = 0; i < 10; i++) {
         let finalPath = (score > i) ? boxPath : defaultBoxPath;
-        boxes.append(`<img src="${finalPath}" alt="Box Image">`);
+        boxes.forEach(box => box.innerHTML += `<img src="${finalPath}" alt="Box Image">`);
     }
 }
 

@@ -1,23 +1,32 @@
-import {Table} from "./elements.js";
-import {fetchAllTrades} from "./trades.js";
+import {Table} from "/scripts/ui/elements.js";
+import {fetchAllTrades} from "/scripts/trades.js";
 
-$(document).ready(() => {
+function ready(callback) {
+    if (document.readyState !== "loading") callback();
+    else document.addEventListener("DOMContentLoaded", callback);
+}
+
+ready(function () {
+    // add table with insider trades
     let tradesTable = new Table("trades",
         ["Symbol", "Company", "Insider", "Position", "Type", "Price", "Shares", "Total", "Date"],
         [0.5, 1.2, 1.2, 1.2, 1, 1, 1, 1, 1],
-        "<trade-filters></trade-filters>"
-    );
-    $(".content-wrapper").append(tradesTable.html);
-    // reload trades from the server whenever a checkbox is checked
-    $(".filters :checkbox").change(function () {
-        fetchAllTrades(tradesTable, getCheckedTypes());
+        "<trade-filters></trade-filters>");
+
+    let content = document.querySelector(".content-wrapper");
+    content.innerHTML += tradesTable.html;
+
+    // reload trades whenever a checkbox is checked
+    document.querySelectorAll(".filters input[type=checkbox]").forEach(checkbox => {
+        checkbox.addEventListener("change", () => {
+            fetchAllTrades(tradesTable, getCheckedTypes());
+        })
     });
-    // fetch all recent buy trades
+    // fetch recent purchases
     fetchAllTrades(tradesTable, ["Buy"]);
 });
 
 function getCheckedTypes() {
-    return $('input[type=checkbox]:checked').map(function () {
-        return $(this).attr('name');
-    }).get();
+    let checkboxes = document.querySelectorAll("input[type=checkbox]:checked");
+    return checkboxes.map(checkbox => checkbox.getAttribute("name"));
 }
