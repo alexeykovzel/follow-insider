@@ -1,16 +1,25 @@
+# Distribution / packaging
+build/
+
 ### Gradle ###
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
 
 ### IDE ###
-.idea
+.vscode/
+target/
+.idea/
+out/
 *.iws
 *.iml
 *.ipr
-.vscode/
-out/
 
-### Other ###
+### CDK-specific ###
+.cdk.staging/
+cdk.out/
+.aws/
+*.swp
+
+### Credentials ###
 *.properties
 *.yml
-build/
