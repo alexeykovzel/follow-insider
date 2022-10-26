@@ -28,5 +28,5 @@ ready(function () {
 
 function getCheckedTypes() {
     let checkboxes = document.querySelectorAll("input[type=checkbox]:checked");
-    return checkboxes.map(checkbox => checkbox.getAttribute("name"));
+    return [...checkboxes].map(checkbox => checkbox.getAttribute("name"));
 }

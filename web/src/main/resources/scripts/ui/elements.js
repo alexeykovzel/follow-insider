@@ -26,7 +26,7 @@ customElements.define("default-header", class extends HTMLElement {
         // configure the navigation menu for mobile
         this.querySelector(".nav-btn").onclick = function () {
             let box = document.querySelector(".nav-box");
-            document.querySelector(".header.css-menu").style.maxHeight = box.checked ? "0" : "240px";
+            document.querySelector(".header-menu").style.maxHeight = box.checked ? "0" : "240px";
             box.checked = !box.checked;
         };
 
@@ -134,8 +134,8 @@ export class Table {
     }
 
     initGrid() {
+        // set the same fraction for each column
         if (this.fractions === null) {
-            // set the same fraction for each column
             this.fractions = Array(this.columns.length).fill(1);
         }
         // set column fractions for each row
@@ -146,15 +146,17 @@ export class Table {
     }
 
     addAll(rows) {
+        this.body.style.minHeight = "0";
         this.loader.hide();
         // append rows to the table
-        let table = this.ref.querySelector("tbody");
-        rows.forEach(row => table.innerHTML += row);
+        let table = this.body;
+        rows.forEach(row => table.appendChild(row));
     }
 
     reset() {
         this.initGrid();
-        this.ref.querySelector("tbody").innerHTML = "";
+        this.body.style.minHeight = "200px";
+        this.body.innerHTML = "";
         this.loader.show();
     }
 
@@ -174,6 +176,10 @@ export class Table {
 
     get ref() {
         return document.getElementById(this.id);
+    }
+
+    get body() {
+        return this.ref.querySelector("tbody");
     }
 }
 

@@ -4,7 +4,6 @@ import com.alexeykovzel.fi.features.insider.InsiderRepository;
 import com.alexeykovzel.fi.features.insider.InsiderView;
 import com.alexeykovzel.fi.features.trade.TradeCode;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
-import com.alexeykovzel.fi.features.trade.TradeService;
 import com.alexeykovzel.fi.features.trade.view.TradePoint;
 import com.alexeykovzel.fi.features.trade.view.TradeView;
 import com.alexeykovzel.fi.utils.DateUtils;
@@ -14,7 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/stocks")
@@ -23,7 +25,6 @@ public class StockController {
     private final InsiderRepository insiderRepository;
     private final TradeRepository tradeRepository;
     private final StockRepository stockRepository;
-    private final TradeService tradeService;
     private final StockService stockService;
 
     @GetMapping("/all")
@@ -40,15 +41,14 @@ public class StockController {
         if (stockRepository.existsBySymbol(symbol.toUpperCase())) {
             return new ModelAndView("stock");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Could not find a stock with such symbol: " + symbol);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid stock: " + symbol);
     }
 
     @GetMapping("/{symbol}/info")
     public StockView getStockInfo(@PathVariable String symbol) {
         Stock stock = stockRepository.findBySymbol(symbol.toUpperCase());
         return stockService.getStockView(stock).orElseThrow(() ->
-                new IllegalArgumentException("Invalid stock symbol: " + symbol));
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid stock: " + symbol));
     }
 
     @GetMapping("/{symbol}/trades")

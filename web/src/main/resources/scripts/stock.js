@@ -152,12 +152,15 @@ function handleTimeRanges(loadData) {
 }
 
 function addInsidersToTable(table, insiders) {
-    table.addAll(insiders.map(insider => `<tr>
-        <td>${insider.name}</td>
-        <td>${insider.positions}</td>
-        <td>${Utils.formatNumber(insider.totalShares)}</td>
-        <td>${Utils.formatDate(insider.lastActive)}</td>
-    </tr>`));
+    table.addAll(insiders.map(insider => {
+        let row = document.createElement("tr");
+        row.innerHTML += `
+            <td>${insider.name}</td>
+            <td>${insider.positions}</td>
+            <td>${Utils.formatNumber(insider.totalShares)}</td>
+            <td>${Utils.formatDate(insider.lastActive)}</td>`;
+        return row;
+    }));
 }
 
 function fillSidePanel(stock) {

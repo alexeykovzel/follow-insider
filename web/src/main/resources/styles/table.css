@@ -4,12 +4,7 @@
     =================================
 */
 
-.insider-cell {
-    display: flex;
-    flex-direction: column;
-}
-
-.insider-tail {
+.others {
     color: #bbb;
     font-style: italic;
     cursor: pointer;

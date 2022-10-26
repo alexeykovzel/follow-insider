@@ -24,11 +24,6 @@ class Insider {
     }
 }
 
-export function fetchTestStockTrades(table) {
-    addTradesToTable(table, mockTrades(20), false)
-    table.initGrid();
-}
-
 export function fetchStockTrades(table, symbol, types) {
     return fetchTrades(table, `/stocks/${symbol}/trades`, types, false)
 }
@@ -50,6 +45,70 @@ function fetchTrades(table, url, types, withStock) {
     });
 }
 
+function addTradesToTable(table, trades, withStock) {
+    let defaultCell = "<scan style='color: #bbb'>Undefined</scan>";
+    table.addAll(trades.map(trade => {
+        storedTrades[trade.id] = trade;
+        let row = document.createElement("tr");
+        row.id = "trade-" + trade.id;
+
+        // append stock information
+        if (withStock) {
+            let stockRef = "/stocks/" + (trade.symbol || "").toLowerCase();
+            let symbolCell = document.createElement("td");
+            let companyCell = document.createElement("td");
+            companyCell.innerText = trade.company;
+            symbolCell.innerText = trade.symbol;
+            symbolCell.classList.add("link");
+            symbolCell.onclick = () => location.assign(stockRef);
+            row.append(symbolCell, companyCell);
+        }
+
+        // append the 1-st insider
+        let insiderCell = document.createElement("td");
+        insiderCell.classList.add("col");
+        insiderCell.innerText += trade.insiders[0].name;
+        row.appendChild(insiderCell);
+
+        // append others
+        let othersCount = trade.insiders.length - 1;
+        if (othersCount > 0) {
+            let others = document.createElement("p");
+            insiderCell.appendChild(others);
+            others.classList.add("others")
+            others.innerText = `and ${othersCount} others`;
+            others.onclick = () => {
+                others.remove();
+                insiderCell.style.gap = "15px";
+                for (let i = 1; i < trade.insiders.length; i++) {
+                    let p = document.createElement("p");
+                    p.innerText = trade.insiders[i].name;
+                    insiderCell.appendChild(p);
+                }
+            };
+        }
+
+        // add other column values
+        let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
+        let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
+        let colorStyle = "color: " + TRADE_COLORS[trade.type];
+        let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";
+        let sharesVal = Utils.formatNumber(trade.shareCount);
+        let totalVal = Utils.formatNumber(trade.leftShares);
+        let dateVal = Utils.formatDate(trade.date);
+
+        row.insertAdjacentHTML('beforeend', `
+            <td>${positionVal}</td>
+            <td style="${colorStyle}">${trade.type}</td>
+            <td>${priceVal}</td>
+            <td>${sharesVal}</td>
+            <td>${totalVal}</td>
+            <td>${dateVal}</td>`);
+
+        return row;
+    }));
+}
+
 function mockTrades(number) {
     let trades = [];
     for (let i = 0; i < number; i++) {
@@ -60,51 +119,4 @@ function mockTrades(number) {
         trades.push(trade);
     }
     return trades;
-}
-
-function addTradesToTable(table, trades, withStock) {
-    let defaultCell = "<scan style='color: #bbb'>Undefined</scan>";
-    table.addAll(trades.map(trade => {
-        storedTrades[trade.id] = trade;
-
-        // get 1-st insider + "others" tail
-        let others = trade.insiders.length - 1;
-        let insiderVal = trade.insiders[0].name + ((others > 0) ? `<p class="insider-tail" 
-                onclick="showOthers(${trade.id})">, and ${others} others</p>` : "");
-
-        // get unique insider positions
-        let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
-        let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
-
-        // get other column values
-        let colorStyle = "color: " + TRADE_COLORS[trade.type];
-        let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";
-        let sharesVal = Utils.formatNumber(trade.shareCount);
-        let totalVal = Utils.formatNumber(trade.leftShares);
-        let dateVal = Utils.formatDate(trade.date);
-
-        // reference to the stock page
-        let stockRef = "/stocks/" + (trade.symbol || "").toLowerCase();
-
-        return `
-            <tr id="trade-${trade.id}">
-                ${withStock ? `<td onclick="location.assign("${stockRef}")" class="link">${trade.symbol}</td>` : ""}
-                ${withStock ? `<td> ${trade.company}</td>` : ""}
-                <td class="insider-cell">${insiderVal}</td>
-                <td>${positionVal}</td>
-                <td style="${colorStyle}">${trade.type}</td>
-                <td>${priceVal}</td>
-                <td>${sharesVal}</td>
-                <td>${totalVal}</td>
-                <td>${dateVal}</td>
-            </tr>`;
-    }));
-}
-
-function showOthers(id) {
-    let insiders = storedTrades[id].insiders;
-    let insiderVal = insiders.map(insider => `<p>${insider.name}</p>`).join("");
-    let cell = document.querySelector(`#trade-${id} .insider-cell`);
-    cell.style.gap = "15px";
-    cell.innerHTML = insiderVal;
 }
