@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.alexeykovzel.fi'
+version = '0.0.1'
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.46.0'
+    implementation 'software.constructs:constructs:10.1.131'
+}
+
+task runCdk(type: JavaExec) {
+    description = "Run the CDK deployment class"
+    classpath = sourceSets.main.runtimeClasspath
+    main = "com.alexeykovzel.fi.ElasticBeanstalkApp"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

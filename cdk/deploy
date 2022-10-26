@@ -1,0 +1,2 @@
+#!/bin/sh
+cdk deploy
