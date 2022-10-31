@@ -1,7 +1,7 @@
 @import "dashboard.css";
-@import "rating.css";
-@import "chart.css";
-@import "table.css";
+@import "unit/rating.css";
+@import "unit/chart.css";
+@import "unit/table.css";
 
 /* define variables */
 :root {

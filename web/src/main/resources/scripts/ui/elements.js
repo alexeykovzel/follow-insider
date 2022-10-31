@@ -1,4 +1,4 @@
-import * as Search from "/scripts/search.js";
+// import * as Search from "/scripts/search.js";
 
 customElements.define("default-header", class extends HTMLElement {
     constructor() {
