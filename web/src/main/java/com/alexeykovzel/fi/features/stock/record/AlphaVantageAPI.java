@@ -1,8 +1,8 @@
 package com.alexeykovzel.fi.features.stock.record;
 
 import com.alexeykovzel.fi.features.stock.Stock;
-import com.alexeykovzel.fi.utils.DateUtils;
-import com.alexeykovzel.fi.utils.YamlPropertyFactory;
+import com.alexeykovzel.fi.common.DateUtils;
+import com.alexeykovzel.fi.common.YamlFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 
 @Slf4j
 @Service
-@PropertySource(value = "classpath:rapid-api.yml", factory = YamlPropertyFactory.class)
+@PropertySource(value = "classpath:rapid-api.yml", factory = YamlFactory.class)
 public class AlphaVantageAPI {
     private static final String HOST_URL = "https://alpha-vantage.p.rapidapi.com";
     private static final String FUNCTION_URL = HOST_URL + "/query?function=%s&symbol=%s&datatype=%s";

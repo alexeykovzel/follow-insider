@@ -6,7 +6,7 @@ import com.alexeykovzel.fi.features.trade.TradeCode;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
 import com.alexeykovzel.fi.features.trade.view.TradePoint;
 import com.alexeykovzel.fi.features.trade.view.TradeView;
-import com.alexeykovzel.fi.utils.DateUtils;
+import com.alexeykovzel.fi.common.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

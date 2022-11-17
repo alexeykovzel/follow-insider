@@ -1,5 +1,3 @@
-import {Loader} from "/scripts/ui/elements.js";
-
 export class Dashboard {
     constructor(blocks) {
         this.blocks = blocks || [];
@@ -162,5 +160,87 @@ export class ScatterChart extends InfoBlock {
     clear() {
         this.chart.clearChart();
         this.loader.show();
+    }
+}
+
+
+export class Table {
+    constructor(id, columns, fractions, filters) {
+        this.id = id;
+        this.columns = columns;
+        this.fractions = fractions;
+        this.filters = filters;
+        this.loader = new Loader(this.id);
+    }
+
+    initGrid() {
+        // set the same fraction for each column
+        if (this.fractions === null) {
+            this.fractions = Array(this.columns.length).fill(1);
+        }
+        // set column fractions for each row
+        let template = this.fractions.map(val => val + "fr").join(" ");
+        this.ref.querySelectorAll("tr").forEach(row => {
+            row.style.gridTemplateColumns = template;
+        });
+    }
+
+    addAll(rows) {
+        this.body.style.minHeight = "0";
+        this.loader.hide();
+        // append rows to the table
+        let table = this.body;
+        rows.forEach(row => table.appendChild(row));
+    }
+
+    reset() {
+        this.initGrid();
+        this.body.style.minHeight = "200px";
+        this.body.innerHTML = "";
+        this.loader.show();
+    }
+
+    get html() {
+        let headerRow = this.columns.map(col => "<th>" + col + "</th>").join("");
+        let tableHtml = `
+            <div id="${this.id}" class="table-wrapper scrollbar">
+                <table>
+                    <thead><tr>${headerRow}</tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>`;
+
+        let filtersHtml = (this.filters != null) ? this.filters : "";
+        return filtersHtml + tableHtml
+    }
+
+    get ref() {
+        return document.getElementById(this.id);
+    }
+
+    get body() {
+        return this.ref.querySelector("tbody");
+    }
+}
+
+export class Loader {
+    constructor(parentId) {
+        this.parentId = parentId;
+        this.id = "l-" + parentId;
+    }
+
+    show() {
+        this.hide();
+        let parent = document.querySelector(`#${this.parentId} tbody`);
+        if (parent === null) return;
+        parent.innerHTML += `
+            <div id="${this.id}" class="center">
+                <div class="lds-facebook"><div></div><div></div><div></div></div>
+            </div>`;
+    }
+
+    hide() {
+        let loader = document.getElementById(this.id);
+        if (loader !== null) loader.remove();
     }
 }

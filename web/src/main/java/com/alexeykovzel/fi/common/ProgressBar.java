@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.utils;
+package com.alexeykovzel.fi.common;
 
 import lombok.extern.slf4j.Slf4j;
 

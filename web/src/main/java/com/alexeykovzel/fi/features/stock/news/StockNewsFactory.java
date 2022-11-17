@@ -4,8 +4,8 @@ import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
-import com.alexeykovzel.fi.utils.DateUtils;
-import com.alexeykovzel.fi.utils.StringUtils;
+import com.alexeykovzel.fi.common.DateUtils;
+import com.alexeykovzel.fi.common.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

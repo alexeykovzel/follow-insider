@@ -1,8 +1,7 @@
-import {Dashboard, InfoBlock, ScatterChart} from "/scripts/ui/charts.js";
+import {Dashboard, InfoBlock, ScatterChart, Table} from "/scripts/ui/data.js";
 import {fetchStockTrades} from "/scripts/trades.js";
 import {initTabs, Tab} from "/scripts/helpers/tabs.js";
-import {initScore} from "/scripts/rating.js";
-import {Table} from "/scripts/ui/elements.js";
+import {initScore} from "/scripts/helpers/rating.js";
 import * as Utils from "/scripts/helpers/utils.js";
 
 class Stock {

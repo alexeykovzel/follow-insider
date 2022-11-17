@@ -3,7 +3,7 @@ package com.alexeykovzel.fi.features.trade;
 import com.alexeykovzel.fi.features.trade.rating.TradeRating;
 import com.alexeykovzel.fi.features.trade.rating.TradeRatingRepository;
 import com.alexeykovzel.fi.features.trade.rating.TradeRatingStrategy;
-import com.alexeykovzel.fi.utils.ProgressBar;
+import com.alexeykovzel.fi.common.ProgressBar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

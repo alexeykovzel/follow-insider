@@ -17,7 +17,6 @@ export function initTabs(tabs) {
         tab.onclick = () => loadTab(i);
         htmlTabs.appendChild(tab);
     }
-    // load the 1-st tab by default
     loadTab(0);
 }
 

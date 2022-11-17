@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.utils;
+package com.alexeykovzel.fi.common;
 
 import lombok.NonNull;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -9,7 +9,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
 
 import java.util.Properties;
 
-public class YamlPropertyFactory implements PropertySourceFactory {
+public class YamlFactory implements PropertySourceFactory {
 
     @Override
     @SuppressWarnings("ConstantConditions")

@@ -4,8 +4,8 @@ import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.features.trade.TradeCode;
-import com.alexeykovzel.fi.utils.DateUtils;
-import com.alexeykovzel.fi.utils.JsonParser;
+import com.alexeykovzel.fi.common.DateUtils;
+import com.alexeykovzel.fi.common.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Collection;
@@ -31,14 +31,14 @@ public class Form4Parser extends JsonParser {
             String tableTag = isDerivative ? "derivativeTable" : "nonDerivativeTable";
             String tradesTag = isDerivative ? "derivativeTransaction" : "nonDerivativeTransaction";
             JsonNode table = root.has(tableTag) ? root.get(tableTag).get(tradesTag) : null;
-            if (table != null) handleAnyNode(table, (row) -> trades.add(getTrade(row)));
+            if (table != null) acceptNode(table, (row) -> trades.add(getTrade(row)));
         }
         return trades;
     }
 
     public Collection<Insider> getReportingInsiders(JsonNode root) {
         Collection<Insider> insiders = new HashSet<>();
-        handleAnyNode(root.get("reportingOwner"), (owner) -> insiders.add(Insider.builder()
+        acceptNode(root.get("reportingOwner"), (owner) -> insiders.add(Insider.builder()
                 .cik(owner.get("reportingOwnerId").get("rptOwnerCik").asText())
                 .name(owner.get("reportingOwnerId").get("rptOwnerName").asText())
                 .positions(getInsiderPositions(owner.get("reportingOwnerRelationship")))

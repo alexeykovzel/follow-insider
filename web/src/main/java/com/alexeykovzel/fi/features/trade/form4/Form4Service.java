@@ -5,9 +5,9 @@ import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.stock.StockRepository;
 import com.alexeykovzel.fi.features.trade.Trade;
-import com.alexeykovzel.fi.utils.DateUtils;
-import com.alexeykovzel.fi.utils.ProgressBar;
-import com.alexeykovzel.fi.utils.StringUtils;
+import com.alexeykovzel.fi.common.DateUtils;
+import com.alexeykovzel.fi.common.ProgressBar;
+import com.alexeykovzel.fi.common.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
@@ -201,7 +201,7 @@ public class Form4Service extends EdgarService {
                 String code = parts[2].substring(1, parts[2].indexOf("<"));
                 if (isNotForm4(code)) continue;
                 // retrieve and save filing data
-                String href = parts[1].replace("-index.html", "");
+                String href = parts[1].replace("-home.html", "");
                 String accessionNo = href.substring(href.lastIndexOf("/") + 1);
                 if (parts[0].contains("<hr>")) parts[0] = parts[0].split("<hr>")[1];
                 Date date = DateUtils.parse(parts[0].substring(0, parts[0].indexOf(" ")), "MM-dd-yyyy");

@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.utils;
+package com.alexeykovzel.fi.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -10,7 +10,7 @@ public abstract class JsonParser {
         return (node != null) && (node.asInt() == 1);
     }
 
-    public void handleAnyNode(JsonNode node, Consumer<JsonNode> consumer) {
+    public void acceptNode(JsonNode node, Consumer<JsonNode> consumer) {
         if (node.isArray()) {
             for (JsonNode arrayNode : node) {
                 consumer.accept(arrayNode);

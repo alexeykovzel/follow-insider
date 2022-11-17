@@ -5,12 +5,10 @@ import com.alexeykovzel.fi.features.trade.TradeService;
 import com.alexeykovzel.fi.features.trade.form4.Form4Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
