@@ -44,4 +44,8 @@ public class Stock {
     @JsonIgnore
     @OneToMany(mappedBy = "stock", cascade = CascadeType.REMOVE)
     private Collection<StockRecord> records;
+
+    public String getFullName() {
+        return String.format("%s (%s)", name, symbol);
+    }
 }

@@ -1,4 +1,4 @@
-import {Table} from "/scripts/ui/elements.js";
+import {Table} from "/scripts/ui/data.js";
 import {fetchAllTrades} from "/scripts/trades.js";
 
 function ready(callback) {

@@ -1,12 +1,15 @@
 package com.alexeykovzel.fi.features;
 
+import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.stock.StockRepository;
-import com.alexeykovzel.fi.features.insider.InsiderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
@@ -16,23 +19,24 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class SearchController {
     private final StockRepository stockRepository;
-    private final InsiderRepository insiderRepository;
 
     @GetMapping
     public ModelAndView sendQuery(@RequestParam("q") String query) {
-        // TODO: Try to find the closest match.
+        query = query.trim().replaceAll("/[()]/g", "").toLowerCase();
 
-        // temporary solution, please don't judge
-        int abbrIdx = query.indexOf("(");
-        String symbol = (abbrIdx != -1)
-                ? query.substring(abbrIdx + 1, query.indexOf(")")).toLowerCase()
-                : "unidentified";
+        if (query.equals(""))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid query");
 
-        return new ModelAndView("redirect:/stocks/" + symbol);
+        for (Stock stock : stockRepository.findAll()) {
+            if (stock.getFullName().toLowerCase().contains(query))
+                return new ModelAndView("redirect:/stocks/" + stock.getSymbol().toLowerCase());
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find a stock");
     }
 
     @GetMapping("/hints")
     public Collection<String> getSearchHints() {
-        return stockRepository.findAllNames();
+        return stockRepository.findFullNames();
     }
 }
