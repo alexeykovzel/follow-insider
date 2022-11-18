@@ -1,0 +1,257 @@
+default-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: fixed;
+    box-shadow: var(--shadow-1);
+    background-color: var(--blue-4);
+    width: 100%;
+    z-index: 99;
+}
+
+default-header>div {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+default-header h2 {
+    color: var(--blue-2);
+    cursor: pointer;
+    margin-right: auto;
+    font-size: 32px;
+    padding-left: 30px;
+    padding-right: 25px;
+    white-space: nowrap;
+}
+
+/* user menu */
+.user-menu {
+    margin-left: 25px;
+    right: 0;
+}
+
+.user-menu p {
+    display: none;
+    font-weight: bold;
+    color: white;
+}
+
+.avatar {
+    position: relative;
+    cursor: pointer;
+    background-color: var(--blue-2);
+    border-radius: 50%;
+    margin-left: 5px;
+    height: 40px;
+    width: 40px;
+}
+
+.avatar img {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    height: 22px;
+    left: 50%;
+    top: 50%;
+}
+
+/* navigation menu */
+.header-menu {
+    display: flex;
+    overflow: hidden;
+    background-color: var(--blue-2);
+    flex-direction: column;
+    transition: max-height .2s ease-out;
+    max-height: 0;
+}
+
+.header-menu p {
+    padding: 20px 20px;
+}
+
+.nav-links p {
+    display: inline-block;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-links p::after {
+    content: "";
+    display: block;
+    margin: auto;
+    background: white;
+    transition: all 0.3s;
+    height: 3px;
+    width: 0;
+    top: 5px;
+}
+
+.nav-links p:hover::after {
+    width: 100%;
+}
+
+.nav-btn {
+    background-color: inherit;
+    transition: background-color .2s ease-out;
+    height: var(--header-height);
+    width: 60px;
+}
+
+.nav-icon {
+    margin: auto;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    background: white;
+    transition: all .2s ease-out;
+    width: 24px;
+    height: 2px;
+}
+
+.nav-icon:before,
+.nav-icon:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: white;
+    transition: all .2s ease-out;
+    width: 100%;
+    height: 100%;
+}
+
+.nav-icon:before {
+    top: 8px;
+}
+
+.nav-icon:after {
+    top: -8px;
+}
+
+/* menu button */
+.nav-box {
+    display: none;
+}
+
+.nav-box:checked~label .nav-icon {
+    background: transparent;
+}
+
+.nav-box:checked~label .nav-icon:before {
+    transform: rotate(-45deg);
+}
+
+.nav-box:checked~label .nav-icon:after {
+    transform: rotate(45deg);
+}
+
+.nav-box:checked~label:not(.steps) .nav-icon:before,
+.nav-box:checked~label:not(.steps) .nav-icon:after {
+    top: 0;
+}
+
+/* search bar */
+.search {
+    display: block;
+    position: relative;
+    font-size: var(--header-font);
+    flex-grow: 1;
+}
+
+.search input {
+    border-radius: 20px;
+    padding: 12px 10px 12px 50px;
+    font-size: var(--header-font);
+    width: calc(100% - 50px);
+}
+
+.search>img {
+    margin-left: 20px;
+    width: 16px;
+    height: 16px;
+}
+
+.search input:focus {
+    outline: none;
+}
+
+.search input::placeholder {
+    color: #ccc;
+    opacity: 1;
+}
+
+/* search autocomplete */
+.autocomplete {
+    position: absolute;
+    overflow: hidden;
+    font-size: var(--header-font);
+    box-shadow: var(--shadow-1);
+    width: calc(100% + 20px);
+    border-radius: 20px;
+    margin-top: 5px;
+    z-index: 99;
+    right: 0;
+    left: 0;
+}
+
+.autocomplete p {
+    display: block;
+    width: 100%;
+    padding: 15px 30px;
+    background-color: white;
+    color: var(--blue-4);
+    cursor: pointer;
+}
+
+.autocomplete p:hover {
+    background-color: #eee;
+}
+
+.autocomplete-active {
+    background-color: var(--blue-2) !important;
+}
+
+.autocomplete-active,
+.autocomplete-active>* {
+    color: white !important;
+}
+
+@media (min-width: 1200px) {
+    default-header {
+        flex-direction: row;
+    }
+
+    default-header>div {
+        width: 50%;
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        width: min-content;
+        margin-right: 20px;
+        gap: 15px;
+    }
+
+    .user-menu p {
+        display: inline;
+    }
+
+    .header-menu {
+        flex-direction: row;
+        background-color: inherit;
+        max-height: none !important;
+        margin-left: 30px;
+        width: 50%;
+    }
+
+    .search {
+        flex-grow: 0;
+        width: 360px;
+    }
+
+    .nav-btn {
+        display: none;
+    }
+}

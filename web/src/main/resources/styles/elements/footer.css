@@ -1,0 +1,38 @@
+default-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    color: white;
+    background: var(--blue-4);
+    min-height: var(--footer-height);
+    z-index: 99;
+    gap: 25px;
+}
+
+default-footer a,
+.fa {
+    text-decoration: none;
+    font-family: "FontAwesome", serif !important;
+    color: white !important;
+}
+
+default-footer ul {
+    display: flex;
+    gap: 30px;
+}
+
+.social {
+    display: flex;
+    gap: 30px;
+}
+
+.copyright {
+    opacity: 0.6;
+    color: white;
+}
+
+.fa {
+    font-size: 25px;
+}

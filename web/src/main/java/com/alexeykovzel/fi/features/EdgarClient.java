@@ -3,6 +3,7 @@ package com.alexeykovzel.fi.features;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,17 +19,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @Slf4j
-public abstract class EdgarService {
+@Service
+public class EdgarClient {
 
     // Links to EDGAR resources
-    protected static final String SEC_URL = "https://www.sec.gov";
-    protected static final String DATA_SEC_URL = "https://data.sec.gov";
-    protected static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
-    protected static final String STOCKS_URL = SEC_URL + "/files/company_tickers_exchange.json";
-    protected static final String FULL_INDEX_URL = SEC_URL + "/Archives/edgar/full-index/%d/QTR%d/master.idx";
-    protected static final String SUBMISSIONS_URL = DATA_SEC_URL + "/submissions/%s.json";
-    protected static final String FORM4_DAYS_AGO_URL = SEC_URL + "/cgi-bin/current?q1=%d&q3=4";
-    protected static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar" +
+    public static final String SEC_URL = "https://www.sec.gov";
+    public static final String DATA_SEC_URL = "https://data.sec.gov";
+    public static final String FORM4_URL = SEC_URL + "/Archives/edgar/data/%s/%s.txt";
+    public static final String STOCKS_URL = SEC_URL + "/files/company_tickers_exchange.json";
+    public static final String FULL_INDEX_URL = SEC_URL + "/Archives/edgar/full-index/%d/QTR%d/master.idx";
+    public static final String SUBMISSIONS_URL = DATA_SEC_URL + "/submissions/%s.json";
+    public static final String FORM4_DAYS_AGO_URL = SEC_URL + "/cgi-bin/current?q1=%d&q3=4";
+    public static final String FORM4_RECENT_URL = SEC_URL + "/cgi-bin/browse-edgar" +
             "?action=getcurrent&type=4&company=&dateb=&owner=only&start=%d&count=%d&output=atom";
 
     // EDGAR API Configuration
@@ -42,21 +44,21 @@ public abstract class EdgarService {
 
     private long lastRequestTime = 0;
 
-    protected JsonNode getJsonByUrl(String url) throws IOException {
+    public JsonNode getJsonByUrl(String url) throws IOException {
         try (InputStream in = getInputStreamByUrl(url, "application/json")) {
             if (in == null) throw new IOException("No Data");
             return new ObjectMapper().readTree(in);
         }
     }
 
-    protected String getTextByUrl(String url) throws IOException {
+    public String getTextByUrl(String url) throws IOException {
         try (InputStream in = getInputStreamByUrl(url, "text/html")) {
             if (in == null) throw new IOException("No Data");
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
-    protected InputStream getInputStreamByUrl(String url, String contentType) {
+    public synchronized InputStream getInputStreamByUrl(String url, String contentType) {
         return getInputStreamByUrl(url, contentType, MAX_REQUEST_RETRIES);
     }
 

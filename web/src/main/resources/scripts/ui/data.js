@@ -234,7 +234,7 @@ export class Loader {
         let parent = document.querySelector(`#${this.parentId} tbody`);
         if (parent === null) return;
         parent.innerHTML += `
-            <div id="${this.id}" class="center">
+            <div id="${this.id}" class="ctr">
                 <div class="lds-facebook"><div></div><div></div><div></div></div>
             </div>`;
     }

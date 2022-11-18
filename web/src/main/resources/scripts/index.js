@@ -13,7 +13,7 @@ ready(function () {
         [0.5, 1.2, 1.2, 1.2, 1, 1, 1, 1, 1],
         "<trade-filters></trade-filters>");
 
-    let content = document.querySelector(".content-wrapper");
+    let content = document.querySelector(".content");
     content.innerHTML += tradesTable.html;
 
     // reload trades whenever a checkbox is checked

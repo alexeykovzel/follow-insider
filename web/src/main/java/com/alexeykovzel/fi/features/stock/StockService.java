@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.stock;
 
-import com.alexeykovzel.fi.features.EdgarService;
+import com.alexeykovzel.fi.features.EdgarClient;
 import com.alexeykovzel.fi.features.stock.news.StockNewsFactory;
 import com.alexeykovzel.fi.features.stock.rating.StockRating;
 import com.alexeykovzel.fi.features.stock.rating.StockRatingRepository;
@@ -24,14 +24,15 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockService extends EdgarService {
+public class StockService {
     private final StockRatingRepository stockRatingRepository;
     private final StockRecordRepository stockRecordRepository;
     private final StockRatingStrategy ratingStrategy;
     private final StockNewsFactory stockNewsFactory;
     private final TradeRepository tradeRepository;
     private final StockRepository stockRepository;
-    private final AlphaVantageAPI alphaVantageAPI;
+    private final AlphaVantageAPI alphaVantage;
+    private final EdgarClient edgar;
 
     public void updateStocksLocally() {
         updateStocks(getStocksLocally());
@@ -50,7 +51,7 @@ public class StockService extends EdgarService {
     public void updateStockRecords() {
         stockRecordRepository.deleteAll();
         ProgressBar.execute("Updating stock records...", stockRepository.findAll(), stock ->
-                stockRecordRepository.saveAll(alphaVantageAPI.getStockRecords(stock)));
+                stockRecordRepository.saveAll(alphaVantage.getStockRecords(stock)));
     }
 
     @Transactional
@@ -88,7 +89,7 @@ public class StockService extends EdgarService {
 
     private Collection<Stock> getStocksRemotely() {
         try {
-            return getRootStocks(getJsonByUrl(STOCKS_URL));
+            return getRootStocks(edgar.getJsonByUrl(EdgarClient.STOCKS_URL));
         } catch (IOException e) {
             log.error("Invalid stock data (remote): {}", e.getMessage());
             return Collections.emptyList();

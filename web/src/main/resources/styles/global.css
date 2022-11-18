@@ -1,4 +1,6 @@
-@import "unit/popup.css";
+@import "elements/header.css";
+@import "elements/footer.css";
+@import "elements/popup.css";
 
 :root {
     /* main colors */
@@ -54,7 +56,6 @@ body {
     padding: 0;
 }
 
-button,
 li {
     cursor: pointer;
 }
@@ -67,6 +68,14 @@ h1 {
     color: var(--blue-4);
 }
 
+h3 {
+    font-size: 16px;
+}
+
+p {
+    font-size: 14px;
+}
+
 article h2 {
     margin: 30px 0;
     font-size: 26px;
@@ -75,14 +84,6 @@ article h2 {
 article p {
     margin-bottom: 15px;
     color: #aaa;
-}
-
-h3 {
-    font-size: 16px;
-}
-
-p {
-    font-size: 14px;
 }
 
 /**
@@ -102,7 +103,7 @@ p {
     justify-content: center;
 }
 
-.center {
+.ctr {
     display: flex;
     position: absolute;
     width: fit-content;
@@ -111,6 +112,21 @@ p {
     right: 0;
     left: 0;
     top: 0;
+}
+
+.link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: var(--blue-1);
+}
+
+.blue-btn {
+    padding: 10px 25px;
+    border-radius: 10px;
+    background: var(--blue-2);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .no-select {
@@ -122,7 +138,7 @@ p {
     user-select: none; /* Non-prefixed version */
 }
 
-.content-wrapper {
+.content {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -131,283 +147,9 @@ p {
     gap: 30px;
 }
 
-.link {
-    cursor: pointer;
-    text-decoration: underline;
-    color: var(--blue-1);
-}
-
 @media screen and (max-width: 1200px) {
-    .content-wrapper {
+    .content {
         width: auto;
         margin: 100px 6% 50px 6%;
     }
-}
-
-/**
-    =================================
-                 HEADER
-    =================================
-*/
-
-default-header {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: fixed;
-    box-shadow: var(--shadow-1);
-    background-color: var(--blue-4);
-    width: 100%;
-    z-index: 99;
-}
-
-default-header > div {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 25px;
-}
-
-default-header h2 {
-    color: var(--blue-2);
-    cursor: pointer;
-    margin-right: auto;
-    font-size: 32px;
-    padding-left: 30px;
-    white-space: nowrap;
-}
-
-/* navigation menu */
-.header-menu {
-    display: flex;
-    overflow: hidden;
-    background-color: var(--blue-2);
-    flex-direction: column;
-    transition: max-height .2s ease-out;
-    max-height: 0;
-}
-
-.header-menu p {
-    padding: 20px 20px;
-}
-
-.nav-links p {
-    display: inline-block;
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.nav-links p::after {
-    content: "";
-    display: block;
-    margin: auto;
-    background: white;
-    transition: all 0.3s;
-    height: 3px;
-    width: 0;
-    top: 5px;
-}
-
-.nav-links p:hover::after {
-    width: 100%;
-}
-
-.nav-btn {
-    background-color: inherit;
-    transition: background-color .2s ease-out;
-    height: var(--header-height);
-    width: 60px;
-}
-
-.nav-btn:hover {
-    background-color: var(--blue-3);
-}
-
-.nav-icon {
-    margin: auto;
-    display: block;
-    cursor: pointer;
-    position: relative;
-    background: white;
-    transition: all .2s ease-out;
-    width: 18px;
-    height: 2px;
-}
-
-.nav-icon:before,
-.nav-icon:after {
-    content: '';
-    display: block;
-    position: absolute;
-    background: white;
-    transition: all .2s ease-out;
-    width: 100%;
-    height: 100%;
-}
-
-.nav-icon:before {
-    top: 5px;
-}
-
-.nav-icon:after {
-    top: -5px;
-}
-
-/* menu btn */
-.nav-box {
-    display: none;
-}
-
-.nav-box:checked ~ label .nav-icon {
-    background: transparent;
-}
-
-.nav-box:checked ~ label .nav-icon:before {
-    transform: rotate(-45deg);
-}
-
-.nav-box:checked ~ label .nav-icon:after {
-    transform: rotate(45deg);
-}
-
-.nav-box:checked ~ label:not(.steps) .nav-icon:before,
-.nav-box:checked ~ label:not(.steps) .nav-icon:after {
-    top: 0;
-}
-
-/* search bar */
-.search {
-    display: block;
-    position: relative;
-    font-size: var(--header-font);
-    flex-grow: 1;
-}
-
-.search input {
-    border-radius: 20px;
-    padding: 11px 20px 11px 50px;
-    font-size: var(--header-font);
-    width: calc(100% - 50px);
-}
-
-.search > img {
-    margin-left: 20px;
-    width: 16px;
-    height: 16px;
-}
-
-.search input:focus {
-    outline: none;
-}
-
-.search input::placeholder {
-    color: #ccc;
-    opacity: 1;
-}
-
-/* autocomplete */
-.autocomplete {
-    position: absolute;
-    overflow: hidden;
-    font-size: var(--header-font);
-    box-shadow: var(--shadow-1);
-    width: calc(100% + 20px);
-    border-radius: 20px;
-    margin-top: 5px;
-    z-index: 99;
-    right: 0;
-    left: 0;
-}
-
-.autocomplete p {
-    display: block;
-    width: 100%;
-    padding: 15px 30px;
-    background-color: white;
-    color: var(--blue-4);
-    cursor: pointer;
-}
-
-.autocomplete p:hover {
-    background-color: #eee;
-}
-
-.autocomplete-active {
-    background-color: var(--blue-2) !important;
-}
-
-.autocomplete-active, .autocomplete-active > * {
-    color: white !important;
-}
-
-@media (min-width: 1200px) {
-    default-header {
-        flex-direction: row;
-    }
-
-    default-header > div {
-        width: 50%;
-    }
-
-    .header-menu {
-        flex-direction: row;
-        background-color: inherit;
-        max-height: none !important;
-        margin-left: 30px;
-        width: 50%;
-    }
-
-    .search {
-        flex-grow: 0;
-        width: 360px;
-    }
-
-    .nav-btn {
-        display: none;
-    }
-}
-
-/**
-    =================================
-                 FOOTER
-    =================================
-*/
-
-default-footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: auto;
-    color: white;
-    background: var(--blue-4);
-    min-height: var(--footer-height);
-    z-index: 99;
-    gap: 25px;
-}
-
-default-footer a, .fa {
-    text-decoration: none;
-    font-family: "FontAwesome", serif !important;
-    color: white !important;
-}
-
-default-footer ul {
-    display: flex;
-    gap: 30px;
-}
-
-.social {
-    display: flex;
-    gap: 30px;
-}
-
-.copyright {
-    opacity: 0.6;
-    color: white;
-}
-
-.fa {
-    font-size: 25px;
 }

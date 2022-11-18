@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.trade.form4;
 
-import com.alexeykovzel.fi.features.EdgarService;
+import com.alexeykovzel.fi.features.EdgarClient;
 import com.alexeykovzel.fi.features.insider.Insider;
 import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.features.stock.StockRepository;
@@ -24,49 +24,52 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import static com.alexeykovzel.fi.features.EdgarClient.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class Form4Service extends EdgarService {
+public class Form4Service {
     private final StockRepository stockRepository;
     private final Form4Repository form4Repository;
+    private final EdgarClient edgar;
 
-    public void updateFilings(String... symbols) {
+    public void updateForm4s(String... symbols) {
         for (String symbol : symbols) {
-            updateFilings(stockRepository.findBySymbol(symbol));
+            updateForm4s(stockRepository.findBySymbol(symbol));
         }
     }
 
-    public void updateFilings(Stock stock) {
+    public void updateForm4s(Stock stock) {
         String message = String.format("Updating %s filings...", stock.getSymbol());
-        updateFilings(getForm4Filings(stock), message);
+        updateForm4s(getForm4s(stock), message);
     }
 
-    public void updateFilings(int year, int quarter) {
+    public void updateForm4s(int year, int quarter) {
         String message = String.format("Updating Y%d Q%d filings...", year, quarter);
-        updateFilings(getForm4Filings(year, quarter), message);
+        updateForm4s(getForm4s(year, quarter), message);
     }
 
     public void updateRecentFilings(int from, int to) {
         String message = String.format("Updating recent %d-%d filings...", from, to);
-        updateFilings(getRecentForm4Filings(from, to), message);
+        updateForm4s(getRecentForm4Filings(from, to), message);
     }
 
     public void updateFilingsDaysAgo(int days) {
         String message = String.format("Updating %d-day filings...", days);
-        updateFilings(getForm4Filings(days), message);
+        updateForm4s(getForm4s(days), message);
     }
 
     public void updateFilingsSecondsAgo(int seconds) {
         Date lastDate = DateUtils.shiftSeconds(new Date(), -seconds);
         String message = String.format("Updating %d-second filings...", seconds);
-        updateFilings(getForm4Filings(0).stream()
+        updateForm4s(getForm4s(0).stream()
                 .filter(form4 -> form4.getDate().after(lastDate))
                 .collect(Collectors.toSet()), message);
     }
 
     @Transactional
-    public void updateFilings(Collection<Form4> form4s, String message) {
+    public void updateForm4s(Collection<Form4> form4s, String message) {
         Collection<String> existingFilings = form4Repository.findAllAccessionNumbers();
         Form4Parser form4Parser = new Form4Parser();
         ProgressBar.execute(message, form4s, form4 -> {
@@ -74,7 +77,7 @@ public class Form4Service extends EdgarService {
                 // skip if such filing already exists
                 if (existingFilings.contains(form4.getAccessionNo())) return;
                 // otherwise, request filing data
-                JsonNode root = getFilingData(form4.getUrl());
+                JsonNode root = getForm4Data(form4.getUrl());
                 Stock stock = getAndSaveStock(root);
                 // update reporting insiders
                 Collection<Insider> insiders = form4Parser.getReportingInsiders(root);
@@ -109,8 +112,7 @@ public class Form4Service extends EdgarService {
     public Collection<Form4> getRecentForm4Filings(int from, int to) {
         Collection<Form4> form4s = new HashSet<>();
         try {
-            String feedUrl = String.format(FORM4_RECENT_URL, from, to);
-            String feed = getTextByUrl(feedUrl);
+            String feed = edgar.getTextByUrl(String.format(FORM4_RECENT_URL, from, to));
             feed = feed.substring(feed.indexOf("\n") + 1);
             for (JsonNode entry : new XmlMapper().readTree(feed).get("entry")) {
                 // skip if filing is not of form 4
@@ -134,12 +136,12 @@ public class Form4Service extends EdgarService {
         return form4s;
     }
 
-    private Collection<Form4> getForm4Filings(Stock stock) {
+    private Collection<Form4> getForm4s(Stock stock) {
         Collection<Form4> form4s = new HashSet<>();
         try {
             // define nodes for accessing filing data
             String cik = stock.getCik();
-            JsonNode root = getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + cik));
+            JsonNode root = edgar.getJsonByUrl(String.format(SUBMISSIONS_URL, "CIK" + cik));
             JsonNode recent = root.get("filings").get("recent");
             JsonNode accessions = recent.get("accessionNumber");
             JsonNode forms = recent.get("form");
@@ -159,11 +161,11 @@ public class Form4Service extends EdgarService {
         return form4s;
     }
 
-    private Collection<Form4> getForm4Filings(int year, int quarter) {
+    private Collection<Form4> getForm4s(int year, int quarter) {
         Collection<Form4> form4s = new HashSet<>();
         Collection<String> takenFilings = new HashSet<>();
         String url = String.format(FULL_INDEX_URL, year, quarter);
-        try (InputStream in = getInputStreamByUrl(url, "text/html");
+        try (InputStream in = edgar.getInputStreamByUrl(url, "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -188,9 +190,9 @@ public class Form4Service extends EdgarService {
         return form4s;
     }
 
-    private Collection<Form4> getForm4Filings(int daysAgo) {
+    private Collection<Form4> getForm4s(int daysAgo) {
         Collection<Form4> form4s = new HashSet<>();
-        try (InputStream in = getInputStreamByUrl(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
+        try (InputStream in = edgar.getInputStreamByUrl(String.format(FORM4_DAYS_AGO_URL, daysAgo), "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -215,8 +217,8 @@ public class Form4Service extends EdgarService {
         return form4s;
     }
 
-    private JsonNode getFilingData(String url) throws IOException {
-        String source = getTextByUrl(url);
+    private JsonNode getForm4Data(String url) throws IOException {
+        String source = edgar.getTextByUrl(url);
         String data = source.substring(source.indexOf("<XML>") + 1, source.indexOf("</XML>"));
         data = data.substring(data.indexOf("\n") + 1);
         return new XmlMapper().readTree(data.getBytes());

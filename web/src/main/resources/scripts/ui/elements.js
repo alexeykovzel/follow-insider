@@ -1,4 +1,5 @@
 import * as Search from "/scripts/helpers/search.js";
+import * as Account from "/scripts/account.js";
 
 customElements.define("default-header", class extends HTMLElement {
     constructor() {
@@ -10,8 +11,9 @@ customElements.define("default-header", class extends HTMLElement {
                 <div id="search" class="search">
                     <label for="search-input"></label>
                     <input id="search-input" type="text" placeholder="Search a company or insider">
-                    <img class="center" src="/images/icons/search.png" alt="Search Icon">
+                    <img class="ctr" src="/images/icons/search.png" alt="Search Icon">
                 </div>
+                <div class="user-menu blue-btn">Login</div>
                 <button class="nav-btn">
                     <input id="nav-box" class="nav-box" type="checkbox"/>
                     <label for="nav-box"><span class="nav-icon"></span></label>
@@ -29,6 +31,19 @@ customElements.define("default-header", class extends HTMLElement {
             document.querySelector(".header-menu").style.maxHeight = box.checked ? "0" : "240px";
             box.checked = !box.checked;
         };
+
+        // try to login user silently 
+        Account.fetch((user) => {
+            let userMenu = document.querySelector('.user-menu');
+            userMenu.classList.remove('blue-btn');
+            userMenu.innerHTML = `
+                <div class="avatar"><img src="../images/icons/profile.svg" alt="Avatar Icon"></div>
+                <p></p>`;
+            userMenu.querySelector('p').innerText = user.name;
+            if (user.avatar != null) {
+                userMenu.querySelector('img').src = user.avatar;
+            }
+        });
 
         // show search hints while typing
         Search.fetchHints(document.getElementById("search"));
