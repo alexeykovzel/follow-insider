@@ -1,6 +1,5 @@
 package com.alexeykovzel.fi.features.trade;
 
-import com.alexeykovzel.fi.features.trade.view.TradeView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +19,10 @@ public class TradesController {
     private final TradeRepository tradeRepository;
 
     @GetMapping("/recent")
-    public Collection<TradeView> getRecentTrades(@RequestParam(value = "types", required = false) List<String> types) {
-        Pageable paging = PageRequest.of(0, 100, Sort.by("date").descending());
-        return (types == null || types.isEmpty())
-                ? tradeRepository.findRecentViews(paging).getContent()
-                : tradeRepository.findRecentViews(TradeCode.ofTypes(types), paging).getContent();
+    public Collection<Trade.View> getRecentTrades(@RequestParam(value = "types", required = false) List<String> types,
+                                                  @RequestParam(value = "offset", defaultValue = "0") int offset,
+                                                  @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        Pageable paging = PageRequest.of(offset, limit, Sort.by("date").descending());
+        return tradeRepository.findPagingViews(paging, TradeCode.ofTypes(types)).getContent();
     }
 }

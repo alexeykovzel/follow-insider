@@ -24,20 +24,18 @@ dependencies {
 
     /* Website */
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     /* Database */
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.h2database:h2:2.1.214'
 
     /* Other */
-    implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {

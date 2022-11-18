@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 public enum TradeCode {
@@ -42,6 +43,7 @@ public enum TradeCode {
     public final String type;
 
     public static Collection<TradeCode> ofTypes(Collection<String> types) {
+        if (types == null || types.isEmpty()) return List.of(values());
         Collection<TradeCode> codes = new ArrayList<>();
         for (String type : types) {
             for (TradeCode code : values()) {
@@ -60,10 +62,5 @@ public enum TradeCode {
             }
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return value;
     }
 }

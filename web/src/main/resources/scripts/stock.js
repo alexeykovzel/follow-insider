@@ -5,12 +5,18 @@ import {initScore} from "/scripts/helpers/rating.js";
 import * as Utils from "/scripts/helpers/utils.js";
 
 class Stock {
-    constructor(name, symbol, description, keyPoints, lastActive, efficiency, trend, overall) {
+    constructor(name, symbol, description, news, lastActive, rating) {
         this.name = name;
         this.symbol = symbol;
         this.description = description;
-        this.keyPoints = keyPoints;
+        this.news = news;
         this.lastActive = lastActive;
+        this.rating = rating;
+    }
+}
+
+class StockRating {
+    constructor(efficiency, trend, overall) {
         this.efficiency = efficiency;
         this.trend = trend;
         this.overall = overall;
@@ -38,21 +44,16 @@ ready(function () {
     let symbol = Utils.getLastUrlSegment();
     // fetch and fill its data into the page
     fetchStock(symbol);
+    // initStock(mockStock());
 })
 
 function fetchStock(symbol) {
-    initStock(mockStock());
-    // TODO: Fetch data from the server.
-    // Utils.fetchJson(location.origin + `/stocks/${symbol}/info`, (data) => {
-    //     let stock = Object.assign(new Stock(), data);
-    //     initStock(stock);
-    // });
+    Utils.fetchJson(location.origin + `/stocks/${symbol}/info`, (stock) => initStock(stock));
 }
 
 function fetchInsiders(table, symbol) {
     table.reset();
-    Utils.fetchJson(location.origin + `/stocks/${symbol}/insiders`, (data) => {
-        let insiders = data.map(obj => Object.assign(new Insider(), obj));
+    Utils.fetchJson(location.origin + `/stocks/${symbol}/insiders`, (insiders) => {
         if (insiders.length === 0) {
             Utils.showErrorToast("No insiders found");
         }
@@ -63,15 +64,8 @@ function fetchInsiders(table, symbol) {
 
 function fetchTradePoints(symbol, range, types, load) {
     let params = `range=${range}&types=${types.join(",")}`;
-    Utils.fetchJson(location.origin + `/stocks/${symbol}/trade-points?${params}`, (data) => {
-        let points = [];
-        data.forEach(obj => {
-            let date = new Date(obj["date"]);
-            let point = [date, obj["shareCount"]];
-            points.push(point);
-        });
-        load(points);
-    });
+    Utils.fetchJson(location.origin + `/stocks/${symbol}/trades/points?${params}`, (points) =>
+        load(points.map(point => [new Date(point.date), point.shareCount])));
 }
 
 function initStock(stock) {
@@ -111,12 +105,12 @@ export function buildDashboard(stock) {
     });
     dashboard.blocks.push(graph0);
 
-    // add key points (if exist)
-    let keyPoints = stock.keyPoints.filter(p => p);
-    if (keyPoints.length > 0) {
-        let keyPointsVal = keyPoints.map(point => "<p>- " + point + "</p>").join("");
-        let keyPointsBlock = new InfoBlock("key-points", "Key Points", keyPointsVal);
-        dashboard.blocks.push(keyPointsBlock);
+    // add news (if exist)
+    let news = stock.news.filter(p => p);
+    if (news.length > 0) {
+        let newsVal = news.map(point => "<p>- " + point + "</p>").join("");
+        let newsBlock = new InfoBlock("news", "News", newsVal);
+        dashboard.blocks.push(newsBlock);
     }
 
     // for testing
@@ -188,12 +182,12 @@ function mockStock() {
         "personal computers. The multinational technology company is also the world's largest manufacturer by " +
         "revenue of semiconductor chips, a product used in most of the world's electronic devices.";
 
-    let keyPoints = ["lowest activity in 5 years",
+    let news = ["lowest activity in 5 years",
         "2 days ago, Steven Jobs bought shares for $2.0M",
         "Average insider return: 25% per year"];
 
-    return new Stock("Intel Corporation", "INTC", description, keyPoints,
-        "3 Aug, 2022", 4, 6, 9);
+    return new Stock("Intel Corporation", "INTC", description, news,
+        "3 Aug, 2022", new StockRating(4, 6, 9));
 }
 
 function mockInsiders() {

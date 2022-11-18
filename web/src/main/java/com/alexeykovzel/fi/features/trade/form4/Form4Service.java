@@ -162,7 +162,8 @@ public class Form4Service extends EdgarService {
     private Collection<Form4> getForm4Filings(int year, int quarter) {
         Collection<Form4> form4s = new HashSet<>();
         Collection<String> takenFilings = new HashSet<>();
-        try (InputStream in = getInputStreamByUrl(String.format(FULL_INDEX_URL, year, quarter), "text/html");
+        String url = String.format(FULL_INDEX_URL, year, quarter);
+        try (InputStream in = getInputStreamByUrl(url, "text/html");
              BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -177,8 +178,8 @@ public class Form4Service extends EdgarService {
                         .replace(".txt", "");
                 if (takenFilings.contains(accessionNo)) continue;
                 Date date = DateUtils.parseEdgar(args[3]);
-                String url = SEC_URL + "/Archives/" + args[4];
-                form4s.add(new Form4(accessionNo, date, url));
+                String archivesUrl = SEC_URL + "/Archives/" + args[4];
+                form4s.add(new Form4(accessionNo, date, archivesUrl));
                 takenFilings.add(accessionNo);
             }
         } catch (IOException e) {

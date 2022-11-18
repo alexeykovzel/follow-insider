@@ -3,7 +3,7 @@ package com.alexeykovzel.fi;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.features.trade.rating.TradeRatingStrategy;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
-import com.alexeykovzel.fi.features.stock.record.StockRecordRepository;
+import com.alexeykovzel.fi.features.stock.records.StockRecordRepository;
 import com.alexeykovzel.fi.common.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

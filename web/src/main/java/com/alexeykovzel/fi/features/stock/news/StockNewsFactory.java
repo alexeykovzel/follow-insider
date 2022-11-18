@@ -33,7 +33,7 @@ public class StockNewsFactory {
 
     private StockStory exploreActivityChange(Stock stock) {
         // TODO: Find lowest/highest activity.
-        return new StockStory("", StockStory.DEFAULT_HYPE);
+        return new StockStory("{activity change info}", StockStory.DEFAULT_HYPE, new Date());
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class StockNewsFactory {
         int hype = StockStory.DEFAULT_HYPE;
 
         return new StockStory(String.format("%d days ago, %s purchased shares for %s",
-                daysAgo, insidersValue, tradeValue), hype);
+                daysAgo, insidersValue, tradeValue), hype, new Date());
     }
 
     private Trade getTradeOfHighestValue(List<Trade> trades) {
@@ -72,6 +72,6 @@ public class StockNewsFactory {
 
     private StockStory exploreAvgInsiderReturn(Stock stock) {
         // TODO: Find average insider return (e.g. 25% per year)
-        return new StockStory("", StockStory.DEFAULT_HYPE);
+        return new StockStory("{avg insider return}", StockStory.DEFAULT_HYPE, new Date());
     }
 }

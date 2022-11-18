@@ -70,18 +70,17 @@ public abstract class EdgarService {
             HttpRequest request = buildHttpRequest(url, contentType);
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int statusCode = response.statusCode();
-            // handle response status code
             switch (statusCode) {
                 case 200:
                     // decode response body as input stream
                     String encoding = response.headers().firstValue("Content-Encoding").orElse("");
                     return decodeInputStream(response.body(), encoding);
                 case 301:
-                    // handle redirection to provided URL
+                    // redirect to provided URL
                     Optional<String> redirectUrl = response.headers().firstValue("location");
                     return redirectUrl.map(s -> getInputStreamByUrl(s, contentType, attempts)).orElse(null);
                 case 429:
-                    // handle "too many requests" error
+                    // TODO: Handle "too many requests" error.
                     log.error("EDGAR: Too Many Requests");
                     return null;
                 default:

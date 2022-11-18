@@ -14,12 +14,9 @@ public class YamlFactory implements PropertySourceFactory {
     @Override
     @SuppressWarnings("ConstantConditions")
     public @NonNull PropertySource<?> createPropertySource(String name, EncodedResource encodedResource) {
-        YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+        var factory = new YamlPropertiesFactoryBean();
         factory.setResources(encodedResource.getResource());
-
-        // retrieve property resource data
-        Properties properties = factory.getObject();
         String filename = encodedResource.getResource().getFilename();
-        return new PropertiesPropertySource(filename, properties);
+        return new PropertiesPropertySource(filename, factory.getObject());
     }
 }

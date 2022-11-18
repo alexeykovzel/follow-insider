@@ -22,14 +22,14 @@ public class AuthProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        // Verify that credentials are valid
+        // verify that credentials are valid
         User user = userRepository.findByEmail(email);
         if (user == null || !encoder.matches(password, user.getPassword())) {
             log.error("Wrong credentials: {} {}", email, password);
             throw new BadCredentialsException("Wrong username or password");
         }
 
-        // Apply user authorities for this session
+        // apply user authorities for this session
         log.info("Authorizing user: {} {}", email, user.getAuthorities().toString());
         return new UsernamePasswordAuthenticationToken(email, password, user.getAuthorities());
     }

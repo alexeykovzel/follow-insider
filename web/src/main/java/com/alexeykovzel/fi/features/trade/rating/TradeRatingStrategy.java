@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.features.trade.rating;
 
-import com.alexeykovzel.fi.features.stock.record.StockRecordRepository;
+import com.alexeykovzel.fi.features.stock.records.StockRecordRepository;
 import com.alexeykovzel.fi.features.trade.Trade;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
 import com.alexeykovzel.fi.common.DateUtils;

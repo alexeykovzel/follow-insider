@@ -35,8 +35,7 @@ export function fetchAllTrades(table, types) {
 function fetchTrades(table, url, types, withStock) {
     table.reset();
     let typesParam = types ? types.join(",") : "";
-    Utils.fetchJson(location.origin + `${url}?types=${typesParam}`, (data) => {
-        let trades = data.map(obj => Object.assign(new Trade(), obj));
+    Utils.fetchJson(location.origin + `${url}?types=${typesParam}`, (trades) => {
         if (trades.length === 0) {
             Utils.showErrorToast("No trades found");
         }
@@ -89,7 +88,8 @@ function addTradesToTable(table, trades, withStock) {
         }
 
         // add other column values
-        let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions));
+        let positions = Utils.uniqueMerge(trade.insiders.map(insider => insider.positions))
+            .filter(position => position != null && position !== '');
         let positionVal = (positions.length === 0) ? defaultCell : positions.join(", ");
         let colorStyle = "color: " + TRADE_COLORS[trade.type];
         let priceVal = (trade.sharePrice !== 0) ? Utils.formatMoney(trade.sharePrice) : "-";

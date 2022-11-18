@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.features.stock.record;
+package com.alexeykovzel.fi.features.stock.records;
 
 import com.alexeykovzel.fi.features.stock.Stock;
 import com.alexeykovzel.fi.common.DateUtils;

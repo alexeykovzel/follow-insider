@@ -28,4 +28,8 @@ public class TradeService {
                         .build()));
         tradeRatingRepository.saveAll(ratings);
     }
+
+    public String getType(Trade trade) {
+        return trade.getCode().type;
+    }
 }

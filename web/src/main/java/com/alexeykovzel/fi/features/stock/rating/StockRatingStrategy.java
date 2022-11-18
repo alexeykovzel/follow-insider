@@ -34,7 +34,7 @@ public class StockRatingStrategy {
     public double calculateEfficiency(Stock stock) {
         double efficiency = 0;
         double totalWeight = 0;
-        for (TradeRating rating : tradeRatingRepository.findByStockCik(stock.getCik())) {
+        for (TradeRating rating : tradeRatingRepository.findByStock(stock.getCik())) {
             efficiency += rating.getEfficiency() * rating.getWeight();
             totalWeight += rating.getWeight();
         }
@@ -50,16 +50,16 @@ public class StockRatingStrategy {
      */
     public double calculateTrend(Stock stock) {
         String cik = stock.getCik();
-        Date minDate = tradeRepository.findMinDateByCik(cik);
+        Date minDate = tradeRepository.findMinDateByStock(cik);
         if (minDate == null) return 0;
         Date currentDate = new Date();
         double months = DateUtils.monthsBetween(minDate, currentDate);
-        double average = tradeRepository.findBuyCountByCik(cik) / months;
+        double average = tradeRepository.findBuyCountByStock(cik) / months;
         double totalTrend = 0;
 
         for (int i = 1; i <= Math.min(months, TREND_WEIGHTS.size()); i++) {
             Date pastDate = DateUtils.shiftMonths(currentDate, -i);
-            int count = tradeRepository.findBuyCountByCik(cik, pastDate, currentDate);
+            int count = tradeRepository.findBuyCountByStock(cik, pastDate, currentDate);
             double trend = Math.min(1, (count - average) / average);
             totalTrend += trend * TREND_WEIGHTS.get(i);
         }

@@ -5,8 +5,8 @@ import com.alexeykovzel.fi.features.stock.news.StockNewsFactory;
 import com.alexeykovzel.fi.features.stock.rating.StockRating;
 import com.alexeykovzel.fi.features.stock.rating.StockRatingRepository;
 import com.alexeykovzel.fi.features.stock.rating.StockRatingStrategy;
-import com.alexeykovzel.fi.features.stock.record.AlphaVantageAPI;
-import com.alexeykovzel.fi.features.stock.record.StockRecordRepository;
+import com.alexeykovzel.fi.features.stock.records.AlphaVantageAPI;
+import com.alexeykovzel.fi.features.stock.records.StockRecordRepository;
 import com.alexeykovzel.fi.features.trade.TradeRepository;
 import com.alexeykovzel.fi.common.ProgressBar;
 import com.alexeykovzel.fi.common.StringUtils;
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -51,8 +50,7 @@ public class StockService extends EdgarService {
     public void updateStockRecords() {
         stockRecordRepository.deleteAll();
         ProgressBar.execute("Updating stock records...", stockRepository.findAll(), stock ->
-                stockRecordRepository.saveAll(alphaVantageAPI.getStockRecords(stock))
-        );
+                stockRecordRepository.saveAll(alphaVantageAPI.getStockRecords(stock)));
     }
 
     @Transactional
@@ -65,6 +63,16 @@ public class StockService extends EdgarService {
                         .stock(stock)
                         .build()));
         stockRatingRepository.saveAll(ratings);
+    }
+
+    public List<String> getNews(Stock stock) {
+        // set news as brief sentences with main info about the stock
+        return stockNewsFactory.buildNews(stock, 3);
+    }
+
+    public Date getLastActive(Stock stock) {
+        // set last active date as the date of the last transaction
+        return tradeRepository.findMaxDateByStock(stock.getCik());
     }
 
     private Collection<Stock> getStocksLocally() {
@@ -101,24 +109,6 @@ public class StockService extends EdgarService {
             log.error("Failed to access stock data: {}", e.getMessage());
         }
         return stocks;
-    }
-
-    public Optional<StockView> getStockView(Stock stock) {
-        if (stock == null) return Optional.empty();
-        String cik = stock.getCik();
-        // automatically set name, symbol, description
-        StockView view = new ModelMapper().map(stock, StockView.class);
-        // set key points as brief sentences with main info about the stock
-        view.setKeyPoints(stockNewsFactory.buildNews(stock, 3));
-        // set last active date as the date of the last transaction
-        view.setLastActive(tradeRepository.findMaxDateByCik(cik));
-        // set stock rating (if exists)
-        stockRatingRepository.findById(cik).ifPresent(rating -> {
-            view.setTrend(rating.getTrend());
-            view.setEfficiency(rating.getEfficiency());
-            view.setOverall(rating.getOverall());
-        });
-        return Optional.of(view);
     }
 
     private String formatStockName(String val) {
