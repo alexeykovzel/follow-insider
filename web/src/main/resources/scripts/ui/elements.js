@@ -37,10 +37,10 @@ customElements.define("default-header", class extends HTMLElement {
             let userMenu = document.querySelector('.user-menu');
             userMenu.classList.remove('blue-btn');
             userMenu.innerHTML = `
-                <div class="avatar"><img src="../images/icons/profile.svg" alt="Avatar Icon"></div>
+                <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
                 <p></p>`;
             userMenu.querySelector('p').innerText = user.name;
-            if (user.avatar != null) {
+            if ('avatar' in user) {
                 userMenu.querySelector('img').src = user.avatar;
             }
         });

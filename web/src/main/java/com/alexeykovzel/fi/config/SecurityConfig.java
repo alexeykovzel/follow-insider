@@ -24,15 +24,15 @@ public class SecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .loginProcessingUrl("/login/perform")
-                        .usernameParameter("username")
+                        .loginProcessingUrl("/account/login")
+                        .usernameParameter("email")
                         .passwordParameter("password")
                         .failureHandler((request, response, error) -> response.sendError(403, error.getMessage()))
                         .successHandler((request, response, auth) -> response.setStatus(200))
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/account/logout")
                         .logoutSuccessUrl("/")
                         .deleteCookies("JSESSIONID")
                 )
