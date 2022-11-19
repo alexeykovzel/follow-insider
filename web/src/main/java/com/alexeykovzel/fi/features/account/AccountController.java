@@ -29,13 +29,13 @@ public class AccountController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register/admin")
-    public void registerAdmin(@RequestBody Credentials credentials) {
-        register(credentials, Authority.ADMIN);
+    public void registerAdmin(@RequestBody MultiValueMap<String, String> data) {
+        register(data, Authority.ADMIN);
     }
 
     @PostMapping("/register/guest")
-    public void registerQuest(@RequestBody Credentials credentials) {
-        register(credentials, Authority.QUEST);
+    public void registerQuest(@RequestBody MultiValueMap<String, String> data) {
+        register(data, Authority.QUEST);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -50,17 +50,23 @@ public class AccountController {
         userRepository.deleteById(id);
     }
 
-    private void register(Credentials credentials, Authority authority) {
+    private void register(MultiValueMap<String, String> data, Authority authority) {
+        Credentials credentials = getCredentials(data);
         verifyCredentials(credentials);
-        User user = buildUser(credentials, authority.single());
+        User user = User.builder()
+                .fullname(getField(data, "fullname"))
+                .email(credentials.getEmail())
+                .password(encoder.encode(credentials.getPassword()))
+                .authorities(authority.single())
+                .build();
         userRepository.save(user);
         auth.login(credentials);
     }
 
-    private User buildUser(Credentials credentials, List<Authority> authorities) {
-        String email = credentials.getEmail();
-        String password = encoder.encode(credentials.getPassword());
-        return new User(email, password, authorities);
+    private Credentials getCredentials(MultiValueMap<String, String> data) {
+        String username = getField(data, "email");
+        String password = getField(data, "password");
+        return new Credentials(username, password);
     }
 
     private void verifyCredentials(Credentials credentials) {
@@ -85,6 +91,11 @@ public class AccountController {
             log.error("Regex doesn't match: {}", error);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, error);
         }
+    }
+
+    private String getField(MultiValueMap<String, String> data, String name) {
+        List<String> elements = data.get(name);
+        return (elements == null || elements.isEmpty()) ? null : elements.get(0);
     }
 
     private boolean isEmpty(String value) {

@@ -1,4 +1,4 @@
-import * as Utils from "/scripts/helpers/utils.js";
+import {fetchJson} from '/scripts/common/utils.js';
 
 class SearchBar {
     constructor(ref, hints) {
@@ -9,16 +9,16 @@ class SearchBar {
     }
 
     get inputRef() {
-        return this.ref.querySelector("input");
+        return this.ref.querySelector('input');
     }
 
     get hintsRef() {
-        return this.ref.querySelectorAll(".autocomplete>*");
+        return this.ref.querySelectorAll('.autocomplete>*');
     }
 }
 
 export function fetchHints(search) {
-    Utils.fetchJson(location.origin + "/search/hints", (hints) => {
+    fetchJson('/search/hints', (hints) => {
         setHints(search, hints);
     });
 }
@@ -30,7 +30,7 @@ function setHints(search, hints) {
 function autocomplete(search) {
     let ref = search.inputRef;
 
-    ref.addEventListener("input", function () {
+    ref.addEventListener('input', function () {
         let input = this.value;
         input = normalizeInput(input);
         // ignore invalid input
@@ -40,21 +40,21 @@ function autocomplete(search) {
         showMatchingHints(search, input);
     });
 
-    ref.addEventListener("keydown", function (e) {
+    ref.addEventListener('keydown', function (e) {
         switch (e.key) {
-            case "Down":
-            case "ArrowDown":
+            case 'Down':
+            case 'ArrowDown':
                 search.focus++;
                 updateActiveHint(search);
                 break;
 
-            case "Up":
-            case "ArrowUp":
+            case 'Up':
+            case 'ArrowUp':
                 search.focus--;
                 updateActiveHint(search);
                 break;
 
-            case "Enter":
+            case 'Enter':
                 let hints = search.hintsRef;
                 if (search.focus > -1 && hints) {
                     hints[search.focus].click();
@@ -63,19 +63,19 @@ function autocomplete(search) {
     });
 
     // hide autocompletes if clicked somewhere
-    window.addEventListener("click", () => {
+    window.addEventListener('click', () => {
         resetAutocomplete(search);
     });
 }
 
 function resetAutocomplete(search) {
-    let autocomplete = search.ref.querySelector(".autocomplete");
+    let autocomplete = search.ref.querySelector('.autocomplete');
     if (autocomplete !== null) autocomplete.remove();
     search.focus = -1;
 }
 
 function normalizeInput(input) {
-    return input.replace(" ", "").toLowerCase();
+    return input.replace(' ', '').toLowerCase();
 }
 
 function updateActiveHint(search) {
@@ -90,9 +90,9 @@ function updateActiveHint(search) {
     let hints = search.hintsRef;
     for (let i = 0; i < hints.length; i++) {
         if (i === search.focus) {
-            hints[i].classList.add("autocomplete-active");
+            hints[i].classList.add('autocomplete-active');
         } else {
-            hints[i].classList.remove("autocomplete-active");
+            hints[i].classList.remove('autocomplete-active');
         }
     }
 }
@@ -105,8 +105,8 @@ function showMatchingHints(search, input) {
     if (matchCount > 0) {
 
         // create autocomplete list
-        let hints = document.createElement("div");
-        hints.classList.add("autocomplete");
+        let hints = document.createElement('div');
+        hints.classList.add('autocomplete');
         search.ref.appendChild(hints);
 
         // add matches to the autocomplete list

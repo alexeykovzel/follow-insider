@@ -1,0 +1,47 @@
+.auth {
+    margin: 240px auto 0 auto;
+    width: 400px;
+    gap: 30px;
+}
+
+.auth input {
+    border-radius: 10px;
+    border: 1px solid var(--blue-2);
+    padding: 10px 15px;
+    height: 24px;
+}
+
+.auth button {
+    margin-top: 10px;
+    height: 48px;
+}
+
+.input-field {
+    font-size: 16px;
+    gap: 10px;
+}
+
+.divider {
+    height: 1px;
+    width: 100%;
+    background-color: #bbb;
+}
+
+.oauth2 {
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.oauth2 a {
+    color: var(--blue-2) !important;
+    border: 2px solid var(--blue-2);
+    text-align: center;
+    border-radius: 50%;
+    line-height: 42px;
+    height: 40px;
+    width: 40px;
+}
+
+.toggle-link {
+    text-align: center;
+}

@@ -1,8 +1,8 @@
 import {Dashboard, InfoBlock, ScatterChart, Table} from "/scripts/ui/data.js";
 import {fetchStockTrades} from "/scripts/trades.js";
-import {initTabs, Tab} from "/scripts/helpers/tabs.js";
-import {initScore} from "/scripts/helpers/rating.js";
-import * as Utils from "/scripts/helpers/utils.js";
+import {initTabs, Tab} from "/scripts/common/tabs.js";
+import {initScore} from "/scripts/common/rating.js";
+import * as Utils from "/scripts/common/utils.js";
 
 class Stock {
     constructor(name, symbol, description, news, lastActive, rating) {
@@ -48,12 +48,12 @@ ready(function () {
 })
 
 function fetchStock(symbol) {
-    Utils.fetchJson(location.origin + `/stocks/${symbol}/info`, (stock) => initStock(stock));
+    Utils.fetchJson(`/stocks/${symbol}/info`, (stock) => initStock(stock));
 }
 
 function fetchInsiders(table, symbol) {
     table.reset();
-    Utils.fetchJson(location.origin + `/stocks/${symbol}/insiders`, (insiders) => {
+    Utils.fetchJson(`/stocks/${symbol}/insiders`, (insiders) => {
         if (insiders.length === 0) {
             Utils.showErrorToast("No insiders found");
         }
@@ -64,7 +64,7 @@ function fetchInsiders(table, symbol) {
 
 function fetchTradePoints(symbol, range, types, load) {
     let params = `range=${range}&types=${types.join(",")}`;
-    Utils.fetchJson(location.origin + `/stocks/${symbol}/trades/points?${params}`, (points) =>
+    Utils.fetchJson(`/stocks/${symbol}/trades/points?${params}`, (points) =>
         load(points.map(point => [new Date(point.date), point.shareCount])));
 }
 

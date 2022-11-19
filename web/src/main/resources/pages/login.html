@@ -8,16 +8,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=ABeeZee'>
     <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/auth.css">
     <script type="module" src="/scripts/ui/elements.js"></script>
-    <title>Get Started | FollowInsider</title>
+    <title>Login | FI</title>
 </head>
 
 <body>
-<default-header></default-header>
+    <default-header></default-header>
 
-<!-- TODO: Make a login scree. -->
+    <div class="col auth">
+        <button id="auth-btn" type="submit" class="blue-btn"></button>
+        <div class="divider"></div>
+        <div class="row oauth2">
+            <a href="https://twitter.com/" class="fa fa-google"></a>
+            <a href="https://twitter.com/" class="fa fa-facebook"></a>
+            <a href="https://twitter.com/" class="fa fa-linkedin"></a>
+        </div>
+        <p class="toggle-link"></p>
+    </div>
 
-<default-footer></default-footer>
+    <bottom-waves></bottom-waves>
 </body>
+
+<script type="module">
+    import {ready} from '/scripts/common/utils.js';
+    import {openLogin} from '/scripts/account.js';
+
+    ready(() => openLogin());
+</script>
 
 </html>

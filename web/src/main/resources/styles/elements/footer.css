@@ -11,16 +11,16 @@ default-footer {
     gap: 25px;
 }
 
-default-footer a,
+default-footer ul {
+    display: flex;
+    gap: 30px;
+}
+
 .fa {
     text-decoration: none;
     font-family: "FontAwesome", serif !important;
     color: white !important;
-}
-
-default-footer ul {
-    display: flex;
-    gap: 30px;
+    font-size: 25px;
 }
 
 .social {
@@ -33,6 +33,24 @@ default-footer ul {
     color: white;
 }
 
-.fa {
-    font-size: 25px;
+bottom-waves {
+    position: absolute;
+    overflow: hidden;
+    transform: rotate(180deg);
+    line-height: 0;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+}
+
+bottom-waves svg {
+    display: block;
+    position: relative;
+    transform: rotateY(180deg);
+    width: calc(110% + 1.3px);
+    height: 110px;
+}
+
+bottom-waves .shape-fill {
+    fill: var(--blue-2);
 }

@@ -43,8 +43,12 @@ public class DatabaseConfig {
 
         // configure admin account
         if (!userRepository.existsByEmail(adminEmail)) {
-            User admin = new User(adminEmail, encoder.encode(adminPassword), Authority.ADMIN.single());
-            userRepository.save(admin);
+            userRepository.save(User.builder()
+                    .email(adminEmail)
+                    .password(encoder.encode(adminPassword))
+                    .fullname("Aliaksei")
+                    .authorities(Authority.ADMIN.single())
+                    .build());
         }
     }
 

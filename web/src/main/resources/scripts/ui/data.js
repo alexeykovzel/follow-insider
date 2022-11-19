@@ -38,7 +38,7 @@ export class Dashboard {
 
     get html() {
         return `
-            <div class='dashboard'>
+            <div class="dashboard">
                 ${this.blocks.map(block => block.html).join('')}
             </div>
         `;
@@ -61,7 +61,7 @@ export class InfoBlock {
 
     get html() {
         return `
-            <div id='${this.blockId}' class='info-block'>
+            <div id="${this.blockId}" class="info-block">
                <h3>${this.name}</h3>
                ${this.content}
             </div>`;
@@ -80,8 +80,8 @@ export class ScatterChart extends InfoBlock {
     constructor(id, name, labels, load) {
         super(id, name, `
 
-            <time-ranges class='no-select'></time-ranges>
-            <div id='${id}' class='chart'></div>
+            <time-ranges class="no-select"></time-ranges>
+            <div id="${id}" class="chart"></div>
 
         `, true);
         this.labels = labels;
@@ -179,14 +179,14 @@ export class Table {
             this.fractions = Array(this.columns.length).fill(1);
         }
         // set column fractions for each row
-        let template = this.fractions.map(val => val + "fr").join(" ");
-        this.ref.querySelectorAll("tr").forEach(row => {
+        let template = this.fractions.map(val => val + 'fr').join(' ');
+        this.ref.querySelectorAll('tr').forEach(row => {
             row.style.gridTemplateColumns = template;
         });
     }
 
     addAll(rows) {
-        this.body.style.minHeight = "0";
+        this.body.style.minHeight = '0';
         this.loader.hide();
         // append rows to the table
         let table = this.body;
@@ -195,13 +195,13 @@ export class Table {
 
     reset() {
         this.initGrid();
-        this.body.style.minHeight = "200px";
-        this.body.innerHTML = "";
+        this.body.style.minHeight = '200px';
+        this.body.innerHTML = '';
         this.loader.show();
     }
 
     get html() {
-        let headerRow = this.columns.map(col => "<th>" + col + "</th>").join("");
+        let headerRow = this.columns.map(col => '<th>' + col + '</th>').join('');
         let tableHtml = `
             <div id="${this.id}" class="table-wrapper scrollbar">
                 <table>
@@ -210,7 +210,7 @@ export class Table {
                 </table>
             </div>`;
 
-        let filtersHtml = (this.filters != null) ? this.filters : "";
+        let filtersHtml = (this.filters != null) ? this.filters : '';
         return filtersHtml + tableHtml
     }
 
@@ -219,14 +219,14 @@ export class Table {
     }
 
     get body() {
-        return this.ref.querySelector("tbody");
+        return this.ref.querySelector('tbody');
     }
 }
 
 export class Loader {
     constructor(parentId) {
         this.parentId = parentId;
-        this.id = "l-" + parentId;
+        this.id = 'l-' + parentId;
     }
 
     show() {

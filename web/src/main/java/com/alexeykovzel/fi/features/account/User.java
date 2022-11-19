@@ -13,6 +13,7 @@ import java.util.Collection;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Builder
 public class User {
 
     @Id
@@ -23,15 +24,12 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    private String fullname;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Collection<Authority> authorities;
-
-    public User(String email, String password, Collection<Authority> authorities) {
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-    }
 }
