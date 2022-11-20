@@ -1,4 +1,4 @@
-import {fetchJson} from '/scripts/common/utils.js';
+import {fetchJson} from '/scripts/common/rest.js';
 
 class SearchBar {
     constructor(ref, hints) {

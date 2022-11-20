@@ -14,27 +14,41 @@
 </head>
 
 <body>
-    <default-header></default-header>
+<default-header></default-header>
 
-    <div class="col auth">
-        <button id="auth-btn" type="submit" class="blue-btn"></button>
-        <div class="divider"></div>
-        <div class="row oauth2">
-            <a href="https://twitter.com/" class="fa fa-google"></a>
-            <a href="https://twitter.com/" class="fa fa-facebook"></a>
-            <a href="https://twitter.com/" class="fa fa-linkedin"></a>
-        </div>
-        <p class="toggle-link"></p>
+<div class="col auth">
+    <div class="col input-field">
+        <label for="e-mail">E-mail:</label>
+        <input id="e-mail" type="email" placeholder="Enter e-mail:">
     </div>
+    <div class="col input-field">
+        <label for="password">Password:</label>
+        <input id="password" type="password" placeholder="Enter password:">
+    </div>
+    <button id="login-btn" type="submit" class="blue-btn">Login</button>
+    <div class="divider"></div>
+    <div class="row oauth2">
+        <a href="https://twitter.com/" class="fa fa-google"></a>
+        <a href="https://twitter.com/" class="fa fa-facebook"></a>
+        <a href="https://twitter.com/" class="fa fa-linkedin"></a>
+    </div>
+    <p style="text-align: center">Don't have an account yet? <span id="register-link" class="link">Sign up</span></p>
+</div>
 
-    <bottom-waves></bottom-waves>
+<bottom-waves></bottom-waves>
 </body>
 
 <script type="module">
     import {ready} from '/scripts/common/utils.js';
-    import {openLogin} from '/scripts/account.js';
+    import {login} from '/scripts/account.js';
 
-    ready(() => openLogin());
+    ready(() => {
+        document.querySelector('#register-link').onclick = () => location.replace('/signup');
+        document.querySelector('#login-btn').onclick = () => login({
+            'email': document.getElementById('e-mail').value,
+            'password': document.getElementById('password').value
+        });
+    });
 </script>
 
 </html>

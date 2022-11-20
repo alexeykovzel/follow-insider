@@ -53,8 +53,8 @@ public class DatabaseConfig {
     }
 
     public void initDev() {
-//        stockService.updateStocksLocally();
-//        form4Service.updateRecentFilings(0, 20);
+        stockService.updateStocksLocally();
+        form4Service.updateRecentFilings(0, 20);
 
 //        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 //        executor.scheduleAtFixedRate(() -> form4Service.updateRecentFilings(0, 40), 0, 2, TimeUnit.MINUTES);

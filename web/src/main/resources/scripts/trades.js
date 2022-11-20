@@ -1,4 +1,6 @@
 import {TRADE_COLORS} from "/scripts/common/constants.js";
+import {showErrorToast} from '/scripts/ui/popup.js';
+import {fetchJson} from "/scripts/common/rest.js";
 import * as Utils from "/scripts/common/utils.js";
 
 let storedTrades = {};
@@ -35,9 +37,9 @@ export function fetchAllTrades(table, types) {
 function fetchTrades(table, url, types, withStock) {
     table.reset();
     let typesParam = types ? types.join(",") : "";
-    Utils.fetchJson(`${url}?types=${typesParam}`, (trades) => {
+    fetchJson(`${url}?types=${typesParam}`, (trades) => {
         if (trades.length === 0) {
-            Utils.showErrorToast("No trades found");
+            showErrorToast("No trades found");
         }
         addTradesToTable(table, trades, withStock);
         table.initGrid();

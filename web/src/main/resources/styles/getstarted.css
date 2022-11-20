@@ -7,21 +7,21 @@ main {
     max-width: 1200px;
 }
 
-main article {
+article {
     width: calc(20% + 240px);
 }
 
-main h1 {
+article h1 {
     margin-bottom: 30px;
     font-size: 38px;
 }
 
-main h3 {
+article h3 {
     font-size: 22px;
     font-weight: normal;
 }
 
-main button {
+.blue-btn {
     padding: 20px 35px;
     font-size: 18px;
     margin-top: 60px;

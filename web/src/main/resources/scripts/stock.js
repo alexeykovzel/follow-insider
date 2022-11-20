@@ -1,7 +1,9 @@
 import {Dashboard, InfoBlock, ScatterChart, Table} from "/scripts/ui/data.js";
 import {fetchStockTrades} from "/scripts/trades.js";
+import {showErrorToast} from '/scripts/ui/popup.js';
 import {initTabs, Tab} from "/scripts/common/tabs.js";
 import {initScore} from "/scripts/common/rating.js";
+import {fetchJson} from "/scripts/common/rest.js";
 import * as Utils from "/scripts/common/utils.js";
 
 class Stock {
@@ -32,12 +34,7 @@ class Insider {
     }
 }
 
-function ready(callback) {
-    if (document.readyState !== "loading") callback();
-    else document.addEventListener("DOMContentLoaded", callback);
-}
-
-ready(function () {
+Utils.ready(function () {
     // toggle side panel if its arrow is clicked
     document.querySelector("#panel-arrow").onclick = () => toggleSidePanel();
     // get stock symbol from the url
@@ -48,14 +45,14 @@ ready(function () {
 })
 
 function fetchStock(symbol) {
-    Utils.fetchJson(`/stocks/${symbol}/info`, (stock) => initStock(stock));
+    fetchJson(`/stocks/${symbol}/info`, (stock) => initStock(stock));
 }
 
 function fetchInsiders(table, symbol) {
     table.reset();
-    Utils.fetchJson(`/stocks/${symbol}/insiders`, (insiders) => {
+    fetchJson(`/stocks/${symbol}/insiders`, (insiders) => {
         if (insiders.length === 0) {
-            Utils.showErrorToast("No insiders found");
+            showErrorToast("No insiders found");
         }
         addInsidersToTable(table, insiders);
         table.initGrid();
@@ -64,7 +61,7 @@ function fetchInsiders(table, symbol) {
 
 function fetchTradePoints(symbol, range, types, load) {
     let params = `range=${range}&types=${types.join(",")}`;
-    Utils.fetchJson(`/stocks/${symbol}/trades/points?${params}`, (points) =>
+    fetchJson(`/stocks/${symbol}/trades/points?${params}`, (points) =>
         load(points.map(point => [new Date(point.date), point.shareCount])));
 }
 

@@ -56,7 +56,7 @@ body {
     padding: 0;
 }
 
-li {
+li, button {
     cursor: pointer;
 }
 
