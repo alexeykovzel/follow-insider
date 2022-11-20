@@ -7,6 +7,12 @@ main {
     max-width: 1200px;
 }
 
+main .blue-btn {
+    padding: 20px 35px;
+    font-size: 18px;
+    margin-top: 60px;
+}
+
 article {
     width: calc(20% + 240px);
 }
@@ -19,10 +25,4 @@ article h1 {
 article h3 {
     font-size: 22px;
     font-weight: normal;
-}
-
-.blue-btn {
-    padding: 20px 35px;
-    font-size: 18px;
-    margin-top: 60px;
 }

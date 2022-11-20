@@ -1,4 +1,4 @@
-package com.alexeykovzel.fi.features.account;
+package com.alexeykovzel.fi.features.user;
 
 import org.springframework.security.core.GrantedAuthority;
 

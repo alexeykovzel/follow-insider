@@ -1,5 +1,5 @@
 import {Dashboard, InfoBlock, ScatterChart, Table} from "/scripts/ui/data.js";
-import {fetchStockTrades} from "/scripts/trades.js";
+import {fetchStockTrades} from "/scripts/trade.js";
 import {showErrorToast} from '/scripts/ui/popup.js';
 import {initTabs, Tab} from "/scripts/common/tabs.js";
 import {initScore} from "/scripts/common/rating.js";

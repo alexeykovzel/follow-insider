@@ -1,0 +1,41 @@
+.profile {
+    margin: 200px auto 0 15%;
+    gap: 30px;
+}
+
+.profile h1 {
+    margin-bottom: 50px;
+}
+
+.profile .blue-btn {
+    padding: 15px 35px;
+    width: fit-content;
+}
+
+.form-field label {
+    width: 200px;
+}
+
+.form-field input {
+    width: 300px;
+}
+
+.options {
+    margin-top: 120px;
+    gap: 20px;
+}
+
+@media screen and (max-width: 700px) {
+    .profile {
+        margin-top: 140px;
+    }
+
+    .form-field {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .options {
+        margin-top: 50px;
+    }
+}

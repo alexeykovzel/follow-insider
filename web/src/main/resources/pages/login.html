@@ -17,13 +17,13 @@
 <default-header></default-header>
 
 <div class="col auth">
-    <div class="col input-field">
-        <label for="e-mail">E-mail:</label>
-        <input id="e-mail" type="email" placeholder="Enter e-mail:">
+    <div class="col form-field">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" placeholder="Enter e-mail">
     </div>
-    <div class="col input-field">
-        <label for="password">Password:</label>
-        <input id="password" type="password" placeholder="Enter password:">
+    <div class="col form-field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter password">
     </div>
     <button id="login-btn" type="submit" class="blue-btn">Login</button>
     <div class="divider"></div>
@@ -40,12 +40,12 @@
 
 <script type="module">
     import {ready} from '/scripts/common/utils.js';
-    import {login} from '/scripts/account.js';
+    import {login} from '/scripts/user.js';
 
     ready(() => {
         document.querySelector('#register-link').onclick = () => location.replace('/signup');
         document.querySelector('#login-btn').onclick = () => login({
-            'email': document.getElementById('e-mail').value,
+            'email': document.getElementById('email').value,
             'password': document.getElementById('password').value
         });
     });

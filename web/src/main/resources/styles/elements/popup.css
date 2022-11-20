@@ -1,13 +1,13 @@
 .toast {
     position: fixed;
     visibility: hidden;
-    background-color: var(--blue-4);
+    background-color: var(--blue-3);
     transform: translateX(-50%);
     color: white;
     font-size: 14px;
     font-weight: bold;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 15px;
     width: min-content;
     min-width: 220px;
     padding: 16px;

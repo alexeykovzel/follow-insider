@@ -17,16 +17,16 @@
     <default-header></default-header>
 
     <div class="col auth">
-        <div class="col input-field">
-            <label for="fullname">Fullname:</label>
-            <input id="fullname" type="text" placeholder="Enter fullname:">
+        <div class="col form-field">
+            <label for="name">Name</label>
+            <input id="name" type="text" placeholder="Enter name:">
         </div>
-        <div class="col input-field">
-            <label for="e-mail">E-mail:</label>
-            <input id="e-mail" type="email" placeholder="Enter e-mail:">
+        <div class="col form-field">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" placeholder="Enter e-mail:">
         </div>
-        <div class="col input-field">
-            <label for="password">Password:</label>
+        <div class="col form-field">
+            <label for="password">Password</label>
             <input id="password" type="password" placeholder="Enter password:">
         </div>
         <button id="register-btn" type="submit" class="blue-btn">Sign up</button>
@@ -44,14 +44,14 @@
 
 <script type="module">
     import {ready} from '/scripts/common/utils.js';
-    import {register} from '/scripts/account.js';
+    import {register} from '/scripts/user.js';
 
     ready(() => {
         document.querySelector('#login-link').onclick = () => location.replace('/login');
         document.querySelector('#register-btn').onclick = () => register({
-            'email': document.getElementById('e-mail').value,
+            'email': document.getElementById('email').value,
             'password': document.getElementById('password').value,
-            'fullname': document.getElementById('fullname').value
+            'name': document.getElementById('name').value
         });
     });
 </script>

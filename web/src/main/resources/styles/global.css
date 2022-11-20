@@ -133,6 +133,20 @@ article p {
     color: white;
     font-weight: bold;
     font-size: 14px;
+    cursor: pointer;
+}
+
+.form-field {
+    font-size: 16px;
+    gap: 10px;
+}
+
+.form-field input {
+    border-radius: 10px;
+    font-size: 16px;
+    border: 1px solid var(--blue-2);
+    padding: 10px 15px;
+    height: 24px;
 }
 
 .no-select {

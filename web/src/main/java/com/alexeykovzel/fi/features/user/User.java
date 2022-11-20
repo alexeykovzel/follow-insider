@@ -1,6 +1,8 @@
-package com.alexeykovzel.fi.features.account;
+package com.alexeykovzel.fi.features.user;
 
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -24,7 +26,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String fullname;
+    private String name;
 
     @Column(nullable = false)
     private String password;
@@ -32,4 +34,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Collection<Authority> authorities;
+
+    @Projection(types = User.class)
+    public interface Profile {
+
+        @Value("#{target.email}")
+        String getEmail();
+
+        @Value("#{target.name}")
+        String getName();
+    }
 }

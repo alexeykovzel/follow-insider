@@ -1,5 +1,5 @@
 import * as Search from '/scripts/common/search.js';
-import * as Account from '/scripts/account.js';
+import * as User from '/scripts/user.js';
 
 customElements.define('default-header', class extends HTMLElement {
     constructor() {
@@ -18,8 +18,8 @@ customElements.define('default-header', class extends HTMLElement {
                     <div class="col">
                         <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
                         <div class="col" style="gap: 5px">
-                            <p>Aliaksei Kouzel</p>
-                            <p style="opacity: 0.4">alexey.kovzel@gmail.com</p>
+                            <p id="dd-name"></p>
+                            <p id="dd-email" style="opacity: 0.4"></p>
                         </div>
                         <div class="divider"></div>
                     </div>
@@ -40,33 +40,46 @@ customElements.define('default-header', class extends HTMLElement {
                 <li onclick="location.assign('/contact')"><p>Contact</p></li>
             </ul>`;
 
-        // configure user menu for mobile
+        // configure 'burger' menu for mobile
         this.querySelector('.nav-btn').onclick = function () {
             let box = document.querySelector('.nav-box');
             document.querySelector('.header-menu').style.maxHeight = box.checked ? '0' : '240px';
             box.checked = !box.checked;
         };
 
-        // try to fetch user details 
-        Account.fetch((user) => {
-            let menu = this.querySelector('.user-menu');
-            menu.classList.remove('blue-btn');
-            menu.innerHTML = `
-                <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
-                <p></p>`;
-            menu.querySelector('p').innerText = user.name;
-            menu.onclick = () => {
-                let dropdown = document.querySelector('.dd-menu'); 
-                let hidden = window.getComputedStyle(dropdown).display === 'none';
-                dropdown.style.display = hidden ? 'flex' : 'none';
-            };
-            if ('avatar' in user) {
-                menu.querySelector('img').src = user.avatar;
-            }
-        });
+        // handle user login / logout
+        let loginBtn = this.querySelector('.user-menu');
+        loginBtn.onclick = () => location.assign('/login');
+        this.querySelector('#logout-link').onclick = () => User.logout();
 
-        // handle user log out
-        this.querySelector('#logout-link').onclick = () => Account.logout(() => location.replace('/'));
+        // fetch user profile if authorized
+        User.ifAuthorized(() => User.fetchProfile((profile) => {
+            console.log('load profile: ' + JSON.stringify(profile));
+
+            // configure user menu + dropdown
+            let menu = document.createElement('div');
+            let dd = document.querySelector('.dd-menu');
+            dd.querySelector('.avatar').onclick = () => location.assign('/profile');
+            menu.addEventListener('UpdateProfile', () => User.fetchProfile(updateProfile));
+            menu.innerHTML = `<div class="avatar"><img src="" alt="Avatar Icon"></div><p></p>`;
+            menu.classList.add('user-menu');
+            menu.onclick = () => {
+                let hidden = window.getComputedStyle(dd).display === 'none';
+                dd.style.display = hidden ? 'flex' : 'none';
+            };
+
+            // set profile and replace login button
+            updateProfile(profile);
+            loginBtn.after(menu);
+            loginBtn.remove();
+
+            function updateProfile(profile) {
+                dd.querySelector('#dd-email').innerText = profile['email'];
+                dd.querySelector('#dd-name').innerText = profile['name'];
+                menu.querySelector('p').innerText = profile['name'];
+                menu.querySelector('img').src = profile['avatar'] ?? '/images/icons/profile.svg';
+            }
+        }));
 
         // show search hints while typing
         Search.fetchHints(document.getElementById('search'));
@@ -136,14 +149,14 @@ customElements.define('time-ranges', class extends HTMLElement {
     constructor() {
         super();
         let ranges = [
-            { id: '1m', val: '1M', checked: false },
-            { id: '3m', val: '3M', checked: false },
-            { id: '6m', val: '6M', checked: false },
-            { id: '1y', val: '1Y', checked: false },
-            { id: '3y', val: '3Y', checked: false },
-            { id: '5y', val: '5Y', checked: false },
-            { id: '10y', val: '10Y', checked: false },
-            { id: 'max', val: 'MAX', checked: true },
+            {id: '1m', val: '1M', checked: false},
+            {id: '3m', val: '3M', checked: false},
+            {id: '6m', val: '6M', checked: false},
+            {id: '1y', val: '1Y', checked: false},
+            {id: '3y', val: '3Y', checked: false},
+            {id: '5y', val: '5Y', checked: false},
+            {id: '10y', val: '10Y', checked: false},
+            {id: 'max', val: 'MAX', checked: true},
         ];
         this.innerHTML = (ranges.map(range => `
             <div>

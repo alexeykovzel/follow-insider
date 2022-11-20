@@ -15,6 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/signup").setViewName("register");
+        registry.addViewController("/profile").setViewName("profile");
         registry.addViewController("/contact").setViewName("contact");
         registry.addViewController("/faq").setViewName("faq");
     }

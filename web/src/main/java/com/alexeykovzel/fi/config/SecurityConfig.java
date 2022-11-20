@@ -1,6 +1,6 @@
 package com.alexeykovzel.fi.config;
 
-import com.alexeykovzel.fi.features.account.UserService;
+import com.alexeykovzel.fi.features.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -9,8 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -20,11 +20,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeRequests(requests -> requests
+                        .antMatchers(HttpMethod.GET, new String[]{"/profile"}).authenticated()
+                        .antMatchers(HttpMethod.GET, new String[]{}).hasAnyAuthority("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .loginProcessingUrl("/account/login")
+                        .loginProcessingUrl("/user/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .failureHandler((request, response, error) -> response.sendError(403, error.getMessage()))
@@ -32,8 +34,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/account/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/user/logout")
+                        .logoutSuccessHandler(((request, response, authentication) -> {}))
                         .deleteCookies("JSESSIONID")
                 )
                 .rememberMe(rememberMe -> rememberMe

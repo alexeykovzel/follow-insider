@@ -8,14 +8,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=ABeeZee'>
     <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/profile.css">
+    <link rel="stylesheet" href="/styles/auth.css">
     <script type="module" src="/scripts/ui/elements.js"></script>
     <title>Profile | FI</title>
 </head>
 
 <body>
     <default-header></default-header>
-    
-    <default-footer></default-footer>
+
+    <div class="col profile">
+        <h1>Profile</h1>
+        <div class="row form-field">
+            <label for="name">Name</label>
+            <input id="name" type="text">
+        </div>
+        <div class="row form-field">
+            <label for="email">E-mail</label>
+            <input id="email" type="text">
+        </div>
+        <div class="row options">
+            <button id="update-btn" class="blue-btn" type="submit">Update</button>
+            <button id="delete-btn" class="blue-btn" style="background-color: #b71d1d" type="submit">Delete</button>
+        </div>
+</div>
+
+    <bottom-waves></bottom-waves>
 </body>
+
+<script type="module">
+    import {ready} from '/scripts/common/utils.js'
+    import * as Account from '/scripts/user.js'
+
+    ready(() => {
+        let name = document.getElementById('name');
+        let email = document.getElementById('email');
+
+        Account.fetchProfile((profile) => {
+           name.value = profile['name'];
+           email.value = profile['email'];
+        });
+
+        document.getElementById('delete-btn').onclick = () => Account.deleteUser();
+        document.getElementById('update-btn').onclick = () => Account.updateProfile({
+            'name': name.value,
+            'email': email.value,
+        });
+    });
+</script>
 
 </html>

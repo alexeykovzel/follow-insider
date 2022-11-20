@@ -1,8 +1,8 @@
 package com.alexeykovzel.fi.config;
 
-import com.alexeykovzel.fi.features.account.Authority;
-import com.alexeykovzel.fi.features.account.User;
-import com.alexeykovzel.fi.features.account.UserRepository;
+import com.alexeykovzel.fi.features.user.Authority;
+import com.alexeykovzel.fi.features.user.User;
+import com.alexeykovzel.fi.features.user.UserRepository;
 import com.alexeykovzel.fi.features.stock.StockService;
 import com.alexeykovzel.fi.features.trade.TradeService;
 import com.alexeykovzel.fi.features.trade.form4.Form4Service;
@@ -44,9 +44,9 @@ public class DatabaseConfig {
         // configure admin account
         if (!userRepository.existsByEmail(adminEmail)) {
             userRepository.save(User.builder()
+                    .name("Aliaksei Kouzel")
                     .email(adminEmail)
                     .password(encoder.encode(adminPassword))
-                    .fullname("Aliaksei")
                     .authorities(Authority.ADMIN.single())
                     .build());
         }
