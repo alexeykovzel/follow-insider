@@ -14,6 +14,21 @@ customElements.define('default-header', class extends HTMLElement {
                     <img class="ctr" src="/images/icons/search.png" alt="Search Icon">
                 </div>
                 <div class="user-menu blue-btn">Login</div>
+                <div class="col dd-menu" style="display: none">
+                    <div class="col">
+                        <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
+                        <div class="col" style="gap: 5px">
+                            <p>Aliaksei Kouzel</p>
+                            <p style="opacity: 0.4">alexey.kovzel@gmail.com</p>
+                        </div>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="col nav-links">
+                        <p onclick="location.assign('/profile')">Profile</p>
+                        <p onclick="location.assign('/settings')">Settings</p>
+                        <p id="logout-link">Log out</p>
+                    </div>
+                </div>
                 <button class="nav-btn">
                     <input id="nav-box" class="nav-box" type="checkbox"/>
                     <label for="nav-box"><span class="nav-icon"></span></label>
@@ -25,25 +40,33 @@ customElements.define('default-header', class extends HTMLElement {
                 <li onclick="location.assign('/contact')"><p>Contact</p></li>
             </ul>`;
 
-        // configure the navigation menu for mobile
+        // configure user menu for mobile
         this.querySelector('.nav-btn').onclick = function () {
             let box = document.querySelector('.nav-box');
             document.querySelector('.header-menu').style.maxHeight = box.checked ? '0' : '240px';
             box.checked = !box.checked;
         };
 
-        // try to login user silently 
+        // try to fetch user details 
         Account.fetch((user) => {
-            let userMenu = document.querySelector('.user-menu');
-            userMenu.classList.remove('blue-btn');
-            userMenu.innerHTML = `
+            let menu = this.querySelector('.user-menu');
+            menu.classList.remove('blue-btn');
+            menu.innerHTML = `
                 <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
                 <p></p>`;
-            userMenu.querySelector('p').innerText = user.name;
+            menu.querySelector('p').innerText = user.name;
+            menu.onclick = () => {
+                let dropdown = document.querySelector('.dd-menu'); 
+                let hidden = window.getComputedStyle(dropdown).display === 'none';
+                dropdown.style.display = hidden ? 'flex' : 'none';
+            };
             if ('avatar' in user) {
-                userMenu.querySelector('img').src = user.avatar;
+                menu.querySelector('img').src = user.avatar;
             }
         });
+
+        // handle user log out
+        this.querySelector('#logout-link').onclick = () => Account.logout(() => location.replace('/'));
 
         // show search hints while typing
         Search.fetchHints(document.getElementById('search'));

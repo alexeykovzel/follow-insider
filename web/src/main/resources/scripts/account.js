@@ -11,3 +11,7 @@ export function register(details) {
 export function fetch(callback) {
     callback({name: 'Aliaksei'});
 }
+
+export function logout(success) {
+    success();
+}

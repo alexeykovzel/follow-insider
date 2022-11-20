@@ -28,6 +28,7 @@ default-header h2 {
 /* user menu */
 .user-menu {
     margin-left: 25px;
+    height: 100%;
     right: 0;
 }
 
@@ -37,10 +38,43 @@ default-header h2 {
     color: white;
 }
 
+/* user menu (dropdown) */
+.dd-menu {
+    position: absolute;
+    background-color: var(--blue-2);
+    border: 3px solid white;
+    border-radius: 30px;
+    padding: 25px 40px;
+    right: 10px;
+    top: 65px;
+    gap: 20px;
+}
+
+.dd-menu>div {
+    gap: 20px;
+    align-items: center;
+}
+
+.dd-menu .avatar {
+    margin-left: 0;
+    height: 70px;
+    width: 70px;
+}
+
+.dd-menu .avatar img {
+    height: 30px;
+}
+
+.dd-menu p {
+    color: white;
+    font-weight: bold;
+}
+
+/* avatar photo */
 .avatar {
     position: relative;
     cursor: pointer;
-    background-color: var(--blue-2);
+    background-color: white;
     border-radius: 50%;
     margin-left: 5px;
     height: 40px;
@@ -72,12 +106,14 @@ default-header h2 {
 .nav-links p {
     display: inline-block;
     color: white;
+    width: fit-content;
     font-weight: bold;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .nav-links p::after {
-    content: "";
+    content: '';
     display: block;
     margin: auto;
     background: white;
@@ -231,6 +267,7 @@ default-header h2 {
         position: absolute;
         width: min-content;
         margin-right: 20px;
+        cursor: pointer;
         gap: 15px;
     }
 

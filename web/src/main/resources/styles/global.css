@@ -120,6 +120,12 @@ article p {
     color: var(--blue-1);
 }
 
+.divider {
+    height: 1px;
+    width: 100%;
+    background-color: #bbb;
+}
+
 .blue-btn {
     padding: 10px 25px;
     border-radius: 10px;
