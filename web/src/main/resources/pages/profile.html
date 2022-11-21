@@ -29,7 +29,7 @@
         </div>
         <div class="row options">
             <button id="update-btn" class="blue-btn" type="submit">Update</button>
-            <button id="delete-btn" class="blue-btn" style="background-color: #b71d1d" type="submit">Delete</button>
+            <button id="delete-btn" class="blue-btn button-default" style="background-color: #b71d1d" type="submit">Delete</button>
         </div>
 </div>
 
@@ -44,7 +44,7 @@
         let name = document.getElementById('name');
         let email = document.getElementById('email');
 
-        Account.fetchProfile((profile) => {
+        Account.loadProfile((profile) => {
            name.value = profile['name'];
            email.value = profile['email'];
         });

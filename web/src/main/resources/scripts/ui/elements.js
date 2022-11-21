@@ -15,7 +15,7 @@ customElements.define('default-header', class extends HTMLElement {
                 </div>
                 <div class="user-menu blue-btn">Login</div>
                 <div class="col dd-menu" style="display: none">
-                    <div class="col">
+                    <div class="col mini-profile">
                         <div class="avatar"><img src="/images/icons/profile.svg" alt="Avatar Icon"></div>
                         <div class="col" style="gap: 5px">
                             <p id="dd-name"></p>
@@ -23,10 +23,10 @@ customElements.define('default-header', class extends HTMLElement {
                         </div>
                         <div class="divider"></div>
                     </div>
-                    <div class="col nav-links">
-                        <p onclick="location.assign('/profile')">Profile</p>
-                        <p onclick="location.assign('/settings')">Settings</p>
-                        <p id="logout-link">Log out</p>
+                    <div class="col">
+                        <div class="dd-link" onclick="location.assign('/profile')"><p>Profile</p></div>
+                        <div class="dd-link" onclick="location.assign('/settings')"><p>Settings</p></div>
+                        <div class="dd-link" id="logout-link"><p>Log out</p></div>
                     </div>
                 </div>
                 <button class="nav-btn">
@@ -52,28 +52,33 @@ customElements.define('default-header', class extends HTMLElement {
         loginBtn.onclick = () => location.assign('/login');
         this.querySelector('#logout-link').onclick = () => User.logout();
 
-        // fetch user profile if authorized
-        User.ifAuthorized(() => User.fetchProfile((profile) => {
-            console.log('load profile: ' + JSON.stringify(profile));
+        // fetch user profile if exists
+        User.isAuthorized(() => User.loadProfile((profile) => {
 
-            // configure user menu + dropdown
-            let menu = document.createElement('div');
+            // configure dropdown menu
             let dd = document.querySelector('.dd-menu');
             dd.querySelector('.avatar').onclick = () => location.assign('/profile');
-            menu.addEventListener('UpdateProfile', () => User.fetchProfile(updateProfile));
+            window.addEventListener('click', () => dd.style.display = 'none')
+
+            // configure header menu
+            let menu = document.createElement('div');
             menu.innerHTML = `<div class="avatar"><img src="" alt="Avatar Icon"></div><p></p>`;
             menu.classList.add('user-menu');
-            menu.onclick = () => {
+            menu.onclick = (e) => {
+                e.stopPropagation(); // don't hide dropdown menu
                 let hidden = window.getComputedStyle(dd).display === 'none';
                 dd.style.display = hidden ? 'flex' : 'none';
             };
+            document.addEventListener('update-profile', () => {
+                User.loadProfile((profile) => setProfile(profile));
+            });
 
-            // set profile and replace login button
-            updateProfile(profile);
+            // replace login button
+            setProfile(profile);
             loginBtn.after(menu);
             loginBtn.remove();
 
-            function updateProfile(profile) {
+            function setProfile(profile) {
                 dd.querySelector('#dd-email').innerText = profile['email'];
                 dd.querySelector('#dd-name').innerText = profile['name'];
                 menu.querySelector('p').innerText = profile['name'];

@@ -44,30 +44,42 @@ default-header h2 {
     background-color: var(--blue-2);
     border: 3px solid white;
     border-radius: 30px;
-    padding: 25px 35px;
+    padding: 25px 0;
     right: 10px;
+    min-width: 250px;
     top: 65px;
     gap: 20px;
-}
-
-.dd-menu>div {
-    gap: 20px;
-    align-items: center;
-}
-
-.dd-menu .avatar {
-    margin-left: 0;
-    height: 70px;
-    width: 70px;
-}
-
-.dd-menu .avatar img {
-    height: 30px;
 }
 
 .dd-menu p {
     color: white;
     font-weight: bold;
+}
+
+.dd-link {
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+    width: 100%;
+}
+
+.dd-link:hover {
+    background-color: var(--blue-3);
+}
+
+.mini-profile {
+    padding: 0 35px;
+    gap: 20px;
+}
+
+.mini-profile .avatar {
+    margin: 0 auto;
+    height: 80px;
+    width: 80px;
+}
+
+.mini-profile .avatar img {
+    height: 40px;
 }
 
 /* avatar photo */

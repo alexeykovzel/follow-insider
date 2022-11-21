@@ -6,25 +6,11 @@ class User {
     static profile = null;
 }
 
-export function ifAuthorized(then) {
-    console.log('is authorized: ' + User.isAuthorized);
-    if (User.isAuthorized == null) {
-        REST.fetchJson('/user/roles', (roles) => {
-            User.isAuthorized = !roles.find(role => role['authority'] === 'ROLE_ANONYMOUS');
-            ifAuthorized(then);
-        });
-    } else if (User.isAuthorized) {
-        then();
-    }
-}
-
 export function register(details) {
-    console.log('register user: ' + JSON.stringify(details));
     REST.postForm('/user/register', () => location.replace('/home'), details);
 }
 
 export function login(details) {
-    console.log('login user: ' + JSON.stringify(details));
     REST.postForm('/user/login', () => location.replace('/home'), details);
 }
 
@@ -32,23 +18,37 @@ export function logout() {
     REST.postRaw('/user/logout', () => location.replace('/'));
 }
 
-export function fetchProfile(success) {
-    if (User.profile != null) return User.profile;
-    REST.fetchJson('/user/profile', (profile) => {
-        User.profile = profile;
-        success(profile);
-    });
+export function deleteUser() {
+    REST.deleteRaw('/user/delete', () => location.replace('/'));
 }
 
 export function updateProfile(profile) {
-    console.log('update profile: ' + JSON.stringify(profile));
     REST.postForm('/user/profile/update', () => {
         User.profile = profile;
-        document.dispatchEvent(new Event('UpdateProfile'));
+        document.dispatchEvent(new Event('update-profile'));
         showToast('Profile is updated');
     }, profile)
 }
 
-export function deleteUser() {
-    REST.deleteRaw('/user/delete', () => location.replace('/'));
+export function loadProfile(load) {
+    if (User.profile == null) {
+        REST.fetchJson('/user/profile', (profile) => {
+            console.log('load profile: ' + JSON.stringify(profile));
+            User.profile = profile;
+            load(profile);
+        });
+    } else {
+        load(User.profile);
+    }
+}
+
+export function isAuthorized(then) {
+    if (User.isAuthorized == null) {
+        REST.fetchJson('/user/roles', (roles) => {
+            User.isAuthorized = !roles.find(role => role['authority'] === 'ROLE_ANONYMOUS');
+            isAuthorized(then);
+        });
+    } else if (User.isAuthorized) {
+        then();
+    }
 }
